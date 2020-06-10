@@ -2,4 +2,4 @@
 .env
 scripts
 db.sqlite3
-static/
+./static/
