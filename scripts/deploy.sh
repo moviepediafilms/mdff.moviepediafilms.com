@@ -1,21 +1,26 @@
-# /bin/bash
-echo "changing directory"
+#! /bin/bash
+echo "changing directory" | systemd-cat
 cd /home/zeeshan/moviepedia
-echo `pwd`
+echo `pwd` | systemd-cat
 
-echo "git pull origin master"
+echo "git pull origin master" | systemd-cat
 git pull origin master
-echo "ok"
+echo "ok" | systemd-cat
 
-echo "pipenv run python manage.py check --deploy"
+echo "pipenv install" | systemd-cat
+pipenv install
+echo "ok" | systemd-cat
+
+echo "pipenv run python manage.py check --deploy" | systemd-cat
 pipenv run python manage.py check --deploy
-echo "ok"
+echo "ok" | systemd-cat
 
 # pipenv run python manage.py migrate --noinput
-echo "pipenv run python manage.py collectstatic --noinput -c"
-pipenv run python manage.py collectstatic --noinput -c
-echo "ok"
 
-echo "sudo service gunicorn restart"
+echo "pipenv run python manage.py collectstatic --noinput -c" | systemd-cat
+pipenv run python manage.py collectstatic --noinput -c
+echo "ok" | systemd-cat
+
+echo "sudo service gunicorn restart" | systemd-cat
 sudo service gunicorn restart
-echo "ok"
+echo "ok" | systemd-cat
