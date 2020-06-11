@@ -1,15 +1,14 @@
-<!doctype html>
+{% extends 'base.html' %}
+{% load static %}
 
-<html lang="en">
-<head>
-  <meta charset="utf-8">
+{%block head%}
+    <link rel="stylesheet" href="{% static 'dff2020/css/wip.css' %}"/>
+{%endblock%}
 
-  <title>Moviepedia Films</title>
-  <meta name="description" content="Moviepedia Films">
-  <meta name="author" content="Shivam Sharma">
-</head>
-
-<body style="background-color:black">
-    
-</body>
-</html>
+{%block body%}
+    <body>
+        <div class="content">
+            <img src="{% static 'dff2020/img/wip.jpg'%}"/>
+        </div>
+    </body>
+{%endblock%}

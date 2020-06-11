@@ -1,0 +1,16 @@
+# humanstxt.org/
+# The humans responsible & technology colophon
+
+# TEAM
+
+    shivam -- owner -- 
+    zeeshan -- developer -- 
+
+# THANKS
+
+    <name>
+
+# TECHNOLOGY COLOPHON
+
+    CSS3, HTML5
+    Nginx Server Configs, jQuery, Modernizr, Normalize.css

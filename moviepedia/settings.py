@@ -24,6 +24,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG") == "True"
+PRODUCTION = os.getenv("PRODUCTION") == "True"
 
 ALLOWED_HOSTS = (
     ["*"]
@@ -123,9 +124,10 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATIC_ROOT = "static"
+STATICFILES_DIRS = (os.path.join(BASE_DIR, "moviepedia", "static"),)
 
-SECURE_SSL_REDIRECT = True
+
+SECURE_SSL_REDIRECT = True if PRODUCTION else False
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
-
