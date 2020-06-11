@@ -11,6 +11,7 @@
     display: block;
     /* width:290px;
     margin:auto; */
+    font-size: 0.8em!important;
 }
 .social-links .social-link:hover{
     color: #f7cd23!important;
