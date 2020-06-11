@@ -8,17 +8,17 @@ git pull origin master
 echo "ok" | systemd-cat
 
 echo "pipenv install" | systemd-cat
-pipenv install
+/home/zeeshan/.local/bin/pipenv install
 echo "ok" | systemd-cat
 
 echo "pipenv run python manage.py check --deploy" | systemd-cat
-pipenv run python manage.py check --deploy
+/home/zeeshan/.local/bin/pipenv run python manage.py check --deploy
 echo "ok" | systemd-cat
 
 # pipenv run python manage.py migrate --noinput
 
 echo "pipenv run python manage.py collectstatic --noinput -c" | systemd-cat
-pipenv run python manage.py collectstatic --noinput -c
+/home/zeeshan/.local/bin/pipenv run python manage.py collectstatic --noinput -c
 echo "ok" | systemd-cat
 
 echo "sudo service gunicorn restart" | systemd-cat
