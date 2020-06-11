@@ -22,5 +22,5 @@ echo "pipenv run python manage.py collectstatic --noinput -c" | systemd-cat
 echo "ok" | systemd-cat
 
 echo "sudo service gunicorn restart" | systemd-cat
-sudo service gunicorn restart
+service gunicorn restart
 echo "ok" | systemd-cat
