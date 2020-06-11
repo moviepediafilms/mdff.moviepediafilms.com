@@ -2,21 +2,22 @@
 {% load static %}
 
 {%block head%}
-    <link rel="stylesheet" href="{% static 'dff2020/css/home.css' %}"/
-    >
-    <meta name="google-signin-client_id" content="YOUR_CLIENT_ID.apps.googleusercontent.com">
+    <link rel="stylesheet" href="{% static 'dff2020/css/home.css' %}"/>
+    <meta name="google-signin-client_id" content="958441006864-k67eg9rih3ihl2qjn4ua729onbvrvuda.apps.googleusercontent.com">
 {%endblock%}
 
 {%block content%}
-    <div class="text-white container mt-5">
+    <div class="text-white container mt-5 ">
         <div class="header text-center">
         <img src="{% static 'dff2020/img/icon.png'%}" />
-        <div class="g-signin2" data-onsuccess="onSignIn"></div>
+        <br/>
+        <br/>
+        <div class="g-signin2" data-onsuccess="onSignIn" style="display: inline-block;"></div>
         </div>
     </div>
 {%endblock%}
 
-{%block script%}
+{%block scripts%}
 <script src="{% static 'dff2020/js/home.js'%}"></script>
 <script src="https://apis.google.com/js/platform.js" async defer></script>
 {%endblock%}
