@@ -2,13 +2,21 @@
 {% load static %}
 
 {%block head%}
-    <link rel="stylesheet" href="{% static 'dff2020/css/wip.css' %}"/>
+    <link rel="stylesheet" href="{% static 'dff2020/css/home.css' %}"/
+    >
+    <meta name="google-signin-client_id" content="YOUR_CLIENT_ID.apps.googleusercontent.com">
 {%endblock%}
 
-{%block body%}
-    <body>
-        <div class="content">
-            <img src="{% static 'dff2020/img/wip.jpg'%}"/>
+{%block content%}
+    <div class="text-white container mt-5">
+        <div class="header text-center">
+        <img src="{% static 'dff2020/img/icon.png'%}" />
+        <div class="g-signin2" data-onsuccess="onSignIn"></div>
         </div>
-    </body>
+    </div>
+{%endblock%}
+
+{%block script%}
+<script src="{% static 'dff2020/js/home.js'%}"></script>
+<script src="https://apis.google.com/js/platform.js" async defer></script>
 {%endblock%}

@@ -16,29 +16,79 @@
 
   <link rel="manifest" href="site.webmanifest">
   <link rel="apple-touch-icon" href="icon.png">
-  <!-- Place favicon.ico in the root directory -->
-
+  
   <link rel="stylesheet" href="{% static 'css/normalize.css'%}">
-  <link rel="stylesheet" href="{% static 'css/main.css' %}">
 
   <meta name="theme-color" content="#e9e000">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700;800&family=Oswald:wght@700&display=swap" rel="stylesheet">
+  {% comment %} <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"> {% endcomment %}
+  <!-- Bootstrap core CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Material Design Bootstrap -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.0/css/mdb.min.css" rel="stylesheet">
+  
+  <link rel="stylesheet" href="{% static '/css/main.css' %}">
+  <link rel="stylesheet" href="{% static '/css/footer.css' %}"/>
   {%block head%}
   {%endblock%}
 </head>
 
-<body>
+<body class="elegant-color">
 
-  {%block body%}      
+  {%block content%}      
   {%endblock%}
-  <script src="{% static 'js/vendor/modernizr-3.11.2.min.js'%}"></script>
-  <script src="{% static 'js/plugins.js'%}"></script>
-  <script src="{% static 'js/main.js'%}"></script>
 
+  <footer class="elegant-color-dark p-5 text-light mt-3">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm mt-2 text-center align-middle">
+                <img height="100px" src="{% static '/icon_white.png'%}"/><br/><br/>
+                <span class="text-uppercase font-weight-bold heading"><span class="text-muted">@2012</span> Moviepedia Films</span><br/>
+                </div>
+                <div class="col-sm mt-2 text-center align-middle">
+                    <p class="text-uppercase font-weight-bold heading">About Us</p>
+                    <span class="text-small about-us text-muted">
+                    Moviepedia, as a community of film-makers, film enthusiasts, actors, scriptwriters, etc. is constantly growing. We already share similar interests with over 160,000 people across the globe, spreading the nuances of art. We take keen pleasure in curating and reviewing movies. We also provide the independent film makers a distinguished platform to showcase their vision. So, we are organizing the Moviepedia Digital Film Festival 2020, to screen the top 10 films of independent filmmakers, budding artists and storytellers.
+                    </span>
+                </div>
+                <div class="col-sm mt-2 text-center">
+                  <p class="text-uppercase font-weight-bold heading">Contact Us</p>
+                  <div class="text-left social-links">
+                    <a href="#" class="text-decoration-none text-reset social-link"><i class="fa fa-at fa-fw"></i> contactus@moviepediafilms.com</a>
+                    <a href="#" class="text-decoration-none text-reset social-link"><i class="fas fa-phone fa-fw"></i> +91 8400334876</a>
+                    <a href="https://facebook.com/MoviepediaOfficial" class="text-decoration-none text-reset social-link"><i class="fab fa-facebook-f fa-fw"></i>MoviepediaOfficial</a>
+                    <a href="https://instagram.com/movie.pedia" class="text-decoration-none text-reset social-link"><i class="fab fa-instagram fa-fw"></i>movie.pedia</a>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+  
+  <!-- JQuery -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <!-- Bootstrap tooltips -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/umd/popper.min.js"></script>
+  <!-- Bootstrap core JavaScript -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.min.js"></script>
+  <!-- MDB core JavaScript -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.0/js/mdb.min.js"></script>
+  
   <script>
     window.ga = function () { ga.q.push(arguments) }; ga.q = []; ga.l = +new Date;
     ga('create', 'UA-169123145-1', 'auto'); ga('set', 'anonymizeIp', true); ga('set', 'transport', 'beacon'); ga('send', 'pageview')
   </script>
+
+  <script src="{% static 'js/vendor/modernizr-3.11.2.min.js'%}"></script>
+  <script src="{% static 'js/plugins.js'%}"></script>
+  <script src="{% static 'js/main.js'%}"></script>
   <script src="https://www.google-analytics.com/analytics.js" async></script>
+  {%block scripts%}      
+  {%endblock%}
 </body>
 
 </html>
