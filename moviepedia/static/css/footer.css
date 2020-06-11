@@ -5,12 +5,12 @@
     color: #f7cd23!important;   
 }
 .about-us{
-    font-size: 0.9em;
+    font-size: 0.8em;
 }
 .social-links .social-link{
     display: block;
-    width:290px;
-    margin:auto;
+    /* width:290px;
+    margin:auto; */
 }
 .social-links .social-link:hover{
     color: #f7cd23!important;

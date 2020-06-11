@@ -18,8 +18,8 @@
     font-weight: 900;
 }
 .form-check-input[type="checkbox"]:checked+label:before{
-border-right: 2px solid #f7cd23!important;
-border-bottom: 2px solid #f7cd23!important;
+    border-right: 2px solid #f7cd23!important;
+    border-bottom: 2px solid #f7cd23!important;
 }
 
 .form-check {
