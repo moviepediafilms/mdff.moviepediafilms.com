@@ -1,0 +1,30 @@
+.text-warning{
+    color: #f7cd23!important;
+}
+.form-control{
+    border-bottom: 1px solid #f7cd23!important;
+}
+.form-control:focus{
+    border-bottom: 1px solid #f7cd23!important;
+    box-shadow: 0 1px 0 0 #f7cd23!important;
+}
+.form-control:active{
+    border-bottom: 1px solid #f7cd23!important;
+    box-shadow: 0 1px 0 0 #f7cd23!important;
+}
+.btn-warning{
+    background-color: #f7cd23!important;
+    color:black!important;
+    font-weight: 900;
+}
+.form-check-input[type="checkbox"]:checked+label:before{
+border-right: 2px solid #f7cd23!important;
+border-bottom: 2px solid #f7cd23!important;
+}
+
+.form-check {
+    padding-left: 0!important;
+}
+.bg-side{
+    background-color: #ffc221!important;
+}
