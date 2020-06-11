@@ -4,7 +4,7 @@ cd /home/zeeshan/moviepedia
 echo `pwd` | systemd-cat
 
 echo "git pull origin master" | systemd-cat
-git pull origin master
+sudo /usr/bin/git pull origin master
 echo "ok" | systemd-cat
 
 echo "pipenv install" | systemd-cat
