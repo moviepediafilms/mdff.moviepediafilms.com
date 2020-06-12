@@ -24,6 +24,11 @@ echo "pipenv run python manage.py collectstatic --noinput -c" | systemd-cat
 /home/zeeshan/.local/bin/pipenv run python manage.py collectstatic --noinput -c
 echo "ok" | systemd-cat
 
+
+echo "pipenv run python manage.py migrate --noinput" | systemd-cat
+/home/zeeshan/.local/bin/pipenv run python manage.py migrate --noinput
+echo "ok" | systemd-cat
+
 echo "sudo service gunicorn restart" | systemd-cat
 sudo /usr/sbin/service gunicorn restart
 echo "ok" | systemd-cat
