@@ -7,8 +7,11 @@ echo "git pull origin master" | systemd-cat
 sudo /usr/bin/git pull origin master
 echo "ok" | systemd-cat
 
-echo "pipenv install" | systemd-cat
-/home/zeeshan/.local/bin/pipenv install
+echo "pipenv sync" | systemd-cat
+/home/zeeshan/.local/bin/pipenv sync
+echo "ok" | systemd-cat
+echo "pipenv clean" | systemd-cat
+/home/zeeshan/.local/bin/pipenv clean
 echo "ok" | systemd-cat
 
 echo "pipenv run python manage.py check --deploy" | systemd-cat
