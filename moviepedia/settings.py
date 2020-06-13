@@ -11,17 +11,45 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import sys
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = os.getenv("DEBUG") == "True"
+PRODUCTION = os.getenv("PRODUCTION") == "True"
 
 LOGGING = {
     "version": 1,
-    "disable_existing_loggers": False,
+    "disable_existing_loggers": True,
     "formatters": {
-        "console": {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"}
+        "simple_format": {
+            "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        }
     },
-    "handlers": {"console": {"class": "logging.StreamHandler", "formatter": "console"}},
-    "root": {"handlers": ["console"], "level": "DEBUG"},
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "simple_format",
+            "stream": sys.stdout,
+        },
+        "file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "maxBytes": 1024 * 1024 * 5,
+            "backupCount": 5,
+            "filename": "/var/log/moviepedia/moviepedia.log",
+            "formatter": "simple_format",
+        },
+    },
     "loggers": {
-        "app": {"handlers": ["console"], "level": "DEBUG", "propagate": False},
+        "django": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": True,
+        },
+        "app": {
+            "handlers": ["file"],
+            "level": "DEBUG" if DEBUG else "INFO",
+            "propagate": False,
+        },
     },
 }
 
@@ -35,9 +63,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("SECRET_KEY")
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG") == "True"
-PRODUCTION = os.getenv("PRODUCTION") == "True"
 
 ALLOWED_HOSTS = (
     ["*"]
@@ -116,9 +141,9 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
 
@@ -158,3 +183,8 @@ EMAIL_HOST_PASSWORD = os.getenv("SENDGRID_API_KEY")
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 # EMAIL = "info@moviepediafilms.com"
+
+RECAPTCHA_SECRET_KEY = os.getenv("RECAPTCHA_SECRET_KEY")
+
+RAZORPAY_API_KEY = os.getenv("RAZORPAY_API_KEY")
+RAZORPAY_API_SECRET = os.getenv("RAZORPAY_API_SECRET")

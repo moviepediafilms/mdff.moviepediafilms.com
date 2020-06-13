@@ -1,4 +1,13 @@
 {
     "python.formatting.provider": "black",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "python.pythonPath": "/home/zeeshan/.local/share/virtualenvs/moviepedia-QqNxsdTk/bin/python",
+    "python.linting.pylintEnabled": false,
+    "python.linting.pycodestyleEnabled": false,
+    "python.terminal.activateEnvInCurrentTerminal": false,
+    "python.linting.flake8Enabled": true,
+    "python.linting.flake8Args": [
+        "--max-line-length=120"
+    ],
+    "python.linting.enabled": true
 }

@@ -12,4 +12,4 @@ class Movie(models.Model):
 
 
 class Order(models.Model):
-    pass
+    order_id = models.CharField(max_length=100, unique=True, blank=False)
