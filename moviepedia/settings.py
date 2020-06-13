@@ -12,6 +12,19 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "console": {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"}
+    },
+    "handlers": {"console": {"class": "logging.StreamHandler", "formatter": "console"}},
+    "root": {"handlers": ["console"], "level": "DEBUG"},
+    "loggers": {
+        "app": {"handlers": ["console"], "level": "DEBUG", "propagate": False},
+    },
+}
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -123,6 +136,8 @@ USE_L10N = True
 USE_TZ = True
 
 
+LOGIN_URL = "/login"
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
@@ -130,8 +145,16 @@ STATIC_URL = "/static/"
 STATIC_ROOT = "static"
 STATICFILES_DIRS = (os.path.join(BASE_DIR, "moviepedia", "static"),)
 
+if PRODUCTION:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 
-SECURE_SSL_REDIRECT = True if PRODUCTION else False
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+# emai setup to use sendgrid
+EMAIL_HOST = "smtp.sendgrid.net"
+EMAIL_HOST_USER = "apikey"
+EMAIL_HOST_PASSWORD = os.getenv("SENDGRID_API_KEY")
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+# EMAIL = "info@moviepediafilms.com"

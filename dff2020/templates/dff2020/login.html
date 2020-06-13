@@ -11,19 +11,22 @@
     <img src="{% static 'dff2020/img/icon.png'%}" height="150px"/>
 
     <div class="text-uppercase text-warning mt-5 font-weight-bold">Sign In</div>
-    <form class="text-left text-white" action="#!">
+    <form class="text-left text-white" action="/login" method="post">
+        {% csrf_token %}
         <div class="md-form">
             <!-- Name -->
-            <input type="email" id="email" name="email" class="form-control text-reset" autocomplete="email" />
+            <input type="email" id="email" name="email" class="form-control text-reset" autocomplete="email" required/>
             <label for="email">Email Address</label>
         </div>
 
         <div class="md-form">
             <!-- Director -->
-            <input type="password" id="password" name="password" class="form-control text-reset" autocomplete="new-password"/>
+            <input type="password" id="password" name="password" class="form-control text-reset" autocomplete="new-password" required/>
             <label for="password">Password</label>
         </div>
-        
+        <div class="text-sm text-danger">{{error}}</div>
+        <div class="text-sm text-warning">{{message}}</div>
+        <br/>
         <button class="btn btn-sm btn-warning text-dark" type="submit">Log In</button>
         
         <div class="text-warning text-sm mt-2">Don't have a account?  <a class="text-link" href="/" ><b>&nbsp;Create One</b></a></div>

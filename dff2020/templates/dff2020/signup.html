@@ -11,33 +11,51 @@
     <img src="{% static 'dff2020/img/icon.png'%}" height="150px"/>
 
     <div class="text-uppercase text-warning mt-5 font-weight-bold">Sign Up</div>
-    <form class="text-left text-white" action="#!" >
+    <form class="text-left text-white" action="/" method="post" onsubmit="return form_valid();">
+        {% csrf_token %}
         <div class="md-form">
             <!-- Name -->
-            <input type="text" id="name" name="name" class="form-control text-reset" />
+            <input type="text" id="name" name="name" class="form-control text-reset" required/>
             <label for="name">Your Name</label>
         </div>
 
         <div class="md-form">
             <!-- Director -->
-            <input type="email" id="email" name="email" class="form-control text-reset" autocomplete="email"/>
+            <input type="email" id="email" name="email" class="form-control text-reset" autocomplete="email" required/>
             <label for="email">Email Address</label>
         </div>
         <div class="md-form">
             <!-- Director -->
-            <input type="password" id="password" name="password" class="form-control text-reset" autocomplete="new-password"/>
+            <input type="password" onchange="check_match()" minlength="8" maxlength="20" id="password" name="password" class="form-control text-reset" autocomplete="new-password" required/>
             <label for="password">Password</label>
+            <small class="form-text text-muted">
+                Your password must be 8-20 characters long
+            </small>
         </div>
         <div class="md-form">
             <!-- Director -->
-            <input type="password" id="confirm_password" name="confirm_password" class="form-control text-reset" autocomplete="new-password"/>
+            <input type="password" onchange="check_match()" id="confirm_password" name="confirm_password" class="form-control text-reset" autocomplete="new-password" required/>
             <label for="confirm_password">Confirm Password</label>
+            <small id="confirm_password_helptxt" class="form-text text-muted d-none">
+                Password should match
+            </small>
+        </div>
+        <div class="form-check text-left">
+            <input type="checkbox" class="form-check-input " id="agree" name="agree" required>
+            <label class="form-check-label text-warning text-sm" for="agree">I Agree to the <a href="/tos" class="text-warning font-weight-bold">terms & conditions</a> of the event</label>
+            <br/>
         </div>
         <br/>
-        <div class="g-recaptcha" data-sitekey="6Le8yqMZAAAAAP29DeBG_lUiFMJSsliCzUvEPJTk" data-theme="dark"></div>
+        <div class="g-recaptcha" data-size="normal" data-error-callback="capcha_error" data-sitekey="6Le8yqMZAAAAAP29DeBG_lUiFMJSsliCzUvEPJTk" data-theme="dark"></div>
+        <small id="capcha_helptxt" class="form-text text-danger d-none">
+            Please check this to proceed
+        </small>
         <br/>
+        
+        <div class="text-sm text-danger">{{error}}</div>
+        <div class="text-sm text-warning">{{message}}</div>
         <!-- submit button -->
-        <button class="btn btn-sm btn-warning text-dark" type="submit">Sign up</button>
+        <button id="submit-btn" class="btn btn-sm btn-warning text-dark" type="submit">Sign up</button>
 
         <div class="text-warning text-sm mt-2">Already have an account? <a class="text-link" href="/login" ><b> &nbsp;Sign In</b></a></div>
         
@@ -58,7 +76,39 @@ Get ready to unlock your art as <b>Moviepedia</b> is hosting a digital film fest
 <script>
 $(document).ready(function () {
     $('.stepper').mdbStepper();
+    
 })
+var check_match = function(){
+    var pass = $('#password').val();
+    var cnf_pass = $('#confirm_password').val();
+    if(cnf_pass){
+        if (pass !== cnf_pass){
+            $('#confirm_password').addClass('invalid');
+            $('#confirm_password_helptxt').removeClass('d-none');
+            $("#submit-btn").attr("disabled", "");
+        }else{
+            $('#confirm_password').removeClass('invalid');
+            $('#confirm_password_helptxt').addClass('d-none');
+            $("#submit-btn").removeAttr("disabled");
+        }
+    }
+}
+
+var form_valid = function(){
+    var response = grecaptcha.getResponse()
+    console.log(response)
+    if (response == ""){
+        $('#capcha_helptxt').removeClass('d-none');
+        return false;
+    } else {
+        $('#capcha_helptxt').addClass('d-none');
+        return true;
+    }
+}
+
+var capcha_error = function(){
+
+}
 </script>
 
 {%endblock%}

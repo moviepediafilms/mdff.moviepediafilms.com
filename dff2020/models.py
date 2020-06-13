@@ -9,3 +9,7 @@ class Movie(models.Model):
     runtime = models.IntegerField()
     added_at = models.DateTimeField()
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
+
+
+class Order(models.Model):
+    pass

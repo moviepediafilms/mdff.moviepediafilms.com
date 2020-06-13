@@ -12,11 +12,10 @@
                     
     <img src="{% static 'dff2020/img/icon.png'%}" height="150px"/>
 
-    <div class="text-uppercase text-warning mt-5 font-weight-bold">movie registration</div>
-    <form class="text-left text-white" action="#!" >
-
+    <div class="text-uppercase text-warning mt-5 font-weight-bold">Movie registration</div>
+    <form class="text-left text-white" action="/registration" method="post">
+        {% csrf_token %}
         <template v-for="(movie, index) in movies" :key="index">
-
             <div class="md-form">
                 <!-- Name -->
                 <input type="text" :id="'name' + index" name="name" class="form-control text-reset" v-model="movie.name">

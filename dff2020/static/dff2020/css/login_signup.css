@@ -5,3 +5,12 @@
   color:  #ffc221!important;
   font-weight: bold;
 }
+
+.form-check {
+  padding-left: 0;
+}
+
+.form-check-input[type="checkbox"]:checked+label:before{
+  border-right: 2px solid #ffc221;
+  border-bottom: 2px solid #ffc221;
+}
