@@ -2,51 +2,56 @@
 {% load static %}
 
 {%block head%}
-    <link rel="stylesheet" href="{% static 'dff2020/css/base.css' %}"/>
-    <link rel="stylesheet" href="{% static 'dff2020/css/login_signup.css' %}"/>
+<link rel="stylesheet" href="{% static 'dff2020/css/base.css' %}" />
+<link rel="stylesheet" href="{% static 'dff2020/css/login_signup.css' %}" />
 {%endblock%}
 
 {%block left%}
-<div class="container p-5" >
-    <img src="{% static 'dff2020/img/icon.png'%}" height="150px"/>
+<div class="container p-5">
+    <img src="{% static 'dff2020/img/icon.png'%}" height="150px" />
 
     <div class="text-uppercase text-warning mt-5 font-weight-bold">Sign In</div>
     <form class="text-left text-white" action="/login" method="post">
         {% csrf_token %}
         <div class="md-form">
             <!-- Name -->
-            <input type="email" id="email" name="email" class="form-control text-reset" autocomplete="email" required/>
+            <input type="email" id="email" name="email" class="form-control text-reset" autocomplete="email" required />
             <label for="email">Email Address</label>
         </div>
 
         <div class="md-form">
             <!-- Director -->
-            <input type="password" id="password" name="password" class="form-control text-reset" autocomplete="new-password" required/>
+            <input type="password" id="password" name="password" class="form-control text-reset"
+                autocomplete="new-password" required />
             <label for="password">Password</label>
         </div>
         <div class="text-sm text-danger">{{error}}</div>
         <div class="text-sm text-warning">{{message}}</div>
-        <br/>
+        <br />
         <button class="btn btn-sm btn-warning text-dark" type="submit">Log In</button>
-        
-        <div class="text-warning text-sm mt-2">Don't have a account?  <a class="text-link" href="/" ><b>&nbsp;Create One</b></a></div>
+
+        <div class="text-warning text-sm mt-2">Don't have a account? <a class="text-link" href="/"><b>&nbsp;Create
+                    One</b></a></div>
     </form>
 </div>
 {%endblock%}
 
 {%block right%}
 <div class="container p-5 ">
-<p class="font-weight-light mt-5 pt-5">
-Get ready to unlock your art as Moviepedia is hosting a digital film festival to get you through your Lockdown blues. Top 10 short films, hand-picked by our jury of judges from the film industry, would be screened across platforms with a community of 160k+ film enthusiasts and cinephiles. The films would be published with editor's reviews and top 3 entries stand the chance to win cash prizes worth ₹7500!
-</p>
+    <p class="font-weight-light mt-5 pt-5">
+        Get ready to unlock your art as Moviepedia is hosting a digital film festival to get you through your Lockdown
+        blues. Top 10 short films, hand-picked by our jury of judges from the film industry, would be screened across
+        platforms with a community of 160k+ film enthusiasts and cinephiles. The films would be published with editor's
+        reviews and top 3 entries stand the chance to win cash prizes worth ₹7500!
+    </p>
 </div>
 {%endblock%}
 
 {%block scripts%}
 <script src="{% static 'dff2020/js/login.js'%}"></script>
 <script>
-$(document).ready(function () {
-    $('.stepper').mdbStepper();
-})
+    $(document).ready(function () {
+        $('.stepper').mdbStepper();
+    })
 </script>
 {%endblock%}

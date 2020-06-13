@@ -2,15 +2,15 @@
 {% load static %}
 
 {%block head%}
-    <link rel="stylesheet" href="{% static 'dff2020/css/base.css' %}"/>
-    <link rel="stylesheet" href="{% static 'dff2020/css/registration.css' %}"/>
+<link rel="stylesheet" href="{% static 'dff2020/css/base.css' %}" />
+<link rel="stylesheet" href="{% static 'dff2020/css/registration.css' %}" />
 {%endblock%}
 
 {%block left%}
-    
+
 <div class="container p-5" id="movies-app">
-                    
-    <img src="{% static 'dff2020/img/icon.png'%}" height="150px"/>
+
+    <img src="{% static 'dff2020/img/icon.png'%}" height="150px" />
 
     <div class="text-uppercase text-warning mt-5 font-weight-bold">Movie registration</div>
     <form class="text-left text-white" action="/registration" method="post">
@@ -18,33 +18,38 @@
         <template v-for="(movie, index) in movies" :key="index">
             <div class="md-form">
                 <!-- Name -->
-                <input type="text" :id="'name' + index" name="name" class="form-control text-reset" v-model="movie.name">
+                <input type="text" :id="'name' + index" name="name" class="form-control text-reset"
+                    v-model="movie.name">
                 <label :for="'name' + index">Movie Name</label>
             </div>
 
             <div class="md-form">
                 <!-- Director -->
-                <input type="text" :id="'director' + index" name="directory" class="form-control text-reset" v-model="movie.director">
+                <input type="text" :id="'director' + index" name="directory" class="form-control text-reset"
+                    v-model="movie.director">
                 <label :for="'director' + index">Director's Name</label>
             </div>
             <div class="md-form">
                 <!-- Director -->
-                <input type="number" :id="'runtime' + index" name="runtime" class="form-control text-reset" v-model="movie.runtime">
+                <input type="number" :id="'runtime' + index" name="runtime" class="form-control text-reset"
+                    v-model="movie.runtime">
                 <label :for="'runtime' + index">Runtime in minutes</label>
             </div>
             <template v-if="movies.length > 1">
                 <div class="text-left">
-                    <a class="btn-floating btn-sm btn-warning btn-secondary" @click.prevent="remove_movie(index)"><i class="fas fa-minus text-dark"></i></a>
+                    <a class="btn-floating btn-sm btn-warning btn-secondary" @click.prevent="remove_movie(index)"><i
+                            class="fas fa-minus text-dark"></i></a>
                 </div>
             </template>
         </template>
-        
+
         <div class="form-check text-left">
-            <br/>
+            <br />
             <input type="checkbox" class="form-check-input " id="agree" name="agree">
-            <label class="form-check-label text-warning" for="agree">I Agree to the terms & conditions of the event</label>
-            <br/>
-            <br/>
+            <label class="form-check-label text-warning" for="agree">I Agree to the terms & conditions of the
+                event</label>
+            <br />
+            <br />
         </div>
         <!-- submit button -->
         <button class="btn btn-sm btn-warning" type="submit">Submit</button>
@@ -59,7 +64,8 @@
         <!-- First Step -->
         <li class="step active">
             <div data-step-label="June 15th" class="step-title waves-effect waves-dark">Registrations Start</div>
-            <div class="step-new-content text-dark font-weight-lighter">Register your entry, add the number of movies you would like to submit and complete the payment</div>
+            <div class="step-new-content text-dark font-weight-lighter">Register your entry, add the number of movies
+                you would like to submit and complete the payment</div>
         </li>
         <li class="step">
             <div data-step-label="June 21st" class="step-title waves-effect waves-dark">Registrations End</div>
@@ -71,7 +77,8 @@
             <div data-step-label="July 10th" class="step-title waves-effect waves-dark">Submissions closed</div>
         </li>
         <li class="step">
-            <div data-step-label="July 23th - July 29th" class="step-title waves-effect waves-dark">Screening of top 10 films</div>
+            <div data-step-label="July 23th - July 29th" class="step-title waves-effect waves-dark">Screening of top 10
+                films</div>
         </li>
         <li class="step">
             <div data-step-label="July 30th" class="step-title waves-effect waves-dark">Results</div>
@@ -84,8 +91,8 @@
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
 <script src="{% static 'dff2020/js/registration.js'%}"></script>
 <script>
-$(document).ready(function () {
-    $('.stepper').mdbStepper();
-})
+    $(document).ready(function () {
+        $('.stepper').mdbStepper();
+    })
 </script>
 {%endblock%}

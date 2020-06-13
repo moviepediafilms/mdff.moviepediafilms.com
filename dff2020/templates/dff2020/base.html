@@ -2,32 +2,32 @@
 {% load static %}
 
 {%block head%}
-    <link rel="stylesheet" href="{% static 'dff2020/css/base.css' %}"/>
+<link rel="stylesheet" href="{% static 'dff2020/css/base.css' %}" />
 {%endblock%}
 
 {%block content%}
-    <div class="text-white container mt-2 ">
-        <div class="header text-center">
-        
-        <br/>
-        </div>
+<div class="text-white container mt-2 ">
+    <div class="header text-center">
 
-        <div class="container-grid">
-        
+        <br />
+    </div>
+
+    <div class="container-grid">
+
         <div class="row ">
             <div class="col-lg-1 d-lg-block d-md-none"></div>
             <div class="col-lg-6 col-md-8 col-sm-12 bg-dark">
-                
+
                 {%block left%}
                 {%endblock%}
-                
+
             </div>
             <div class="col-lg-4 col-md-4 col-sm-12 bg-side text-dark">
                 {%block right%}
                 {%endblock%}
             </div>
             <div class="col-lg-1 d-lg-block d-md-none"></div>
-            </div>
         </div>
     </div>
+</div>
 {%endblock%}
