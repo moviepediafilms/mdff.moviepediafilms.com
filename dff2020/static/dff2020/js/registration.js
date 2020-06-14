@@ -5,6 +5,7 @@ new Vue({
         per_movie: 299,
         error: '',
         message: '',
+        csrf: '',
     },
     mounted() {
         this.add_movie();

@@ -222,8 +222,9 @@ class VerifyPayment(LoginRequiredMixin, View):
         error = None
         response = {}
         try:
-            data = json.loads(request.data)
-        except Exception:
+            data = json.loads(request.body)
+        except Exception as ex:
+            logger.exception(ex)
             error = "Invalid input"
         else:
             order_id = data.get("razorpay_order_id")
