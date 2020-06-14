@@ -1,9 +1,10 @@
 import re
-import os
+import json
 import logging
 
 import requests
 import razorpay
+import hashlib
 
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
@@ -14,11 +15,14 @@ from django.utils.decorators import method_decorator
 from django.urls import reverse
 from django.views import View
 from django.conf import settings
-
+from django.http import JsonResponse
+from .models import Order, Entry
 
 logger = logging.getLogger("app.dff2020")
 
-client = razorpay.Client(auth=(settings.RAZORPAY_API_KEY, settings.RAZORPAY_API_SECRET))
+rzp_client = razorpay.Client(
+    auth=(settings.RAZORPAY_API_KEY, settings.RAZORPAY_API_SECRET)
+)
 
 
 def get_ip(request):
@@ -106,12 +110,127 @@ class SignUp(View):
 
 
 class Registration(LoginRequiredMixin, View):
-    @method_decorator(login_required)
     def get(self, request):
         return render(request, "dff2020/registration.html")
 
-    @method_decorator(login_required)
+    def _validate_entries(self, entries, request, existing_orders):
+        error = None
+        try:
+            entries = list(entries)
+        except Exception:
+            error = "movies should be a list"
+        if not entries:
+            error = "No Movies were received present"
+        else:
+            for entry in entries:
+                if not all(
+                    [
+                        entry.get("name"),
+                        entry.get("director"),
+                        entry.get("runtime"),
+                        entry.get("link"),
+                    ]
+                ):
+                    error = "All movies must have name, director, runtime and link"
+                    break
+            if not error:
+                existing_entries = []
+                existing_entry_names = []
+                if existing_orders:
+                    existing_entries = Entry.objects.filter(
+                        order__in=[order.id for order in existing_orders]
+                    ).all()
+                    existing_entry_names = [entry.name for entry in existing_entries]
+                entry_names_set = set(entry.get("name") for entry in entries)
+                if len(entry_names_set) != len(entries) or entry_names_set.intersection(
+                    existing_entry_names
+                ):
+                    error = "All movie names should be unique, including any previously submitted movie"
+
+        return (False, error) if error else (True, None)
+
     def post(self, request):
-        return render(
-            request, "dff2020/registration.html", dict(error="cannot login now!")
+        body = request.body
+        logger.debug(body)
+        response = {}
+        error = None
+        try:
+            body = json.loads(body)
+        except Exception as ex:
+            logger.exception(ex)
+            error = "Invalid data format"
+        logger.debug(body)
+        entries = body.get("entries")
+        existing_orders = Order.objects.filter(owner=request.user.id).all()
+        valid, error = self._validate_entries(entries, request, existing_orders)
+        if valid:
+            receipt_number = hashlib.md5(
+                f"{request.user.email}:{len(existing_orders)}".encode()
+            ).hexdigest()
+            amount = len(entries) * 299 * 100  # in paise
+            try:
+                rp_order_res = rzp_client.order.create(
+                    {
+                        "amount": amount,
+                        "currency": "INR",
+                        "receipt": receipt_number,
+                        "payment_capture": 0,
+                        "notes": {"email": request.user.email},
+                    }
+                )
+            except Exception as ex:
+                logger.exception(ex)
+                error = "Error creating order!"
+            else:
+                if rp_order_res.get("status") != "created":
+                    error = "Error creating order!"
+                    logger.error(f"Error creating order at razorpay {rp_order_res}")
+                else:
+                    order = Order.objects.create(
+                        owner=request.user,
+                        amount=amount,
+                        rzp_order_id=rp_order_res.get("id"),
+                        receipt_number=rp_order_res.get("receipt"),
+                    )
+
+                    for entry in entries:
+                        Entry.objectc.create(
+                            name=entry.get("name"),
+                            director=entry.get("director"),
+                            runtime=entry.get("runtime"),
+                            link=entry.get("link"),
+                            synopsis=entry.get("synopsis"),
+                            order=order,
+                        )
+                    response["order_id"] = order.rzp_order_id
+                    response["amount"] = amount
+        return JsonResponse(
+            response if not error else {"success": False, "error": error}
         )
+
+
+class VerifyPayment(LoginRequiredMixin, View):
+    def post(self, request):
+        error = None
+        response = {}
+        try:
+            data = json.loads(request.data)
+        except Exception:
+            error = "Invalid input"
+        else:
+            order_id = data.get("razorpay_order_id")
+            order = Order.objects.filter(rzp_order_id=order_id).first()
+            if not order:
+                # yeah little misleading to avoid narrowing down the bruteforce
+                error = "could not verify signature!"
+            else:
+                try:
+                    rzp_client.utility.verify_payment_signature(data)
+                except Exception:
+                    error = "could not verify signature!"
+                else:
+                    order.rzp_payment_id = data["razorpay_payment_id"]
+                    order.save()
+                    response["status"] = True
+                    response["message"] = "Payment Complete"
+        return JsonResponse({"success": False, "error": error} if error else response)

@@ -19,22 +19,38 @@
             <div class="md-form">
                 <!-- Name -->
                 <input type="text" :id="'name' + index" name="name" class="form-control text-reset"
-                    v-model="movie.name">
+                    v-model="movie.name" required>
                 <label :for="'name' + index">Movie Name</label>
             </div>
 
             <div class="md-form">
                 <!-- Director -->
-                <input type="text" :id="'director' + index" name="directory" class="form-control text-reset"
-                    v-model="movie.director">
+                <input type="text" :id="'director' + index" name="director" class="form-control text-reset"
+                    v-model="movie.director" required>
                 <label :for="'director' + index">Director's Name</label>
             </div>
             <div class="md-form">
-                <!-- Director -->
+                <!-- Runtime -->
                 <input type="number" min="1" max="30" :id="'runtime' + index" name="runtime"
-                    class="form-control text-reset" v-model="movie.runtime">
+                    class="form-control text-reset" v-model="movie.runtime" required>
                 <label :for="'runtime' + index">Runtime in minutes</label>
                 <small class="text-muted">Maximum 30 minutes runtime</small>
+            </div>
+            <div class="md-form">
+                <!-- link -->
+                <input type="text" :id="'link' + index" name="link" class="form-control text-reset"
+                    v-model="movie.link" required>
+                <label :for="'link' + index">Movie's link</label>
+                <small class="text-muted">YouTube or any similar platform link</small>
+            </div>
+            <div class="md-form">
+                <!-- link -->
+                <textarea type="text" :id="'synopsis' + index" name="synopsis" class="md-textarea form-control text-reset"
+                    v-model="movie.synopsis" rows="3"></textarea>
+                <label :for="'synopsis' + index">Synopsis (Optional)</label>
+                {% verbatim %}
+                <small class="text-muted">Concisly describe your movie. {{500 - movie.synopsis.length}} characters left</small>
+                {% endverbatim %}
             </div>
             <template v-if="movies.length > 1">
                 <div class="text-left">
@@ -45,12 +61,15 @@
         </template>
         <!-- submit button -->
 
-        <button class="btn btn-sm btn-warning" type="submit">
+        <button class="btn btn-sm btn-warning" type="submit" @click.prevent="create_order">
             {% verbatim %}
             Pay {{amount}} INR
             {% endverbatim %}
         </button>
-        <button class="btn btn-sm btn-warning" type="submit" @click.prevent="add_movie">Add Another Movie</button>
+        <button class="btn btn-sm btn-warning" type="submit" @click.prevent="add_movie">Add Another Movie</button><br/>
+        {% verbatim %}
+            <small class="text-danger text-sm">{{error}}</small>
+        {% endverbatim %}
     </form>
 </div>
 {%endblock%}
@@ -86,10 +105,12 @@
 
 {%block scripts%}
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="{% static 'dff2020/js/registration.js'%}"></script>
 <script>
     $(document).ready(function () {
         $('.stepper').mdbStepper();
-    })
+    })  
 </script>
 {%endblock%}
