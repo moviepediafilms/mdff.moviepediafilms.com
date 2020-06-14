@@ -194,7 +194,7 @@ class Registration(LoginRequiredMixin, View):
                     )
 
                     for entry in entries:
-                        Entry.objectc.create(
+                        Entry.object.create(
                             name=entry.get("name"),
                             director=entry.get("director"),
                             runtime=entry.get("runtime"),

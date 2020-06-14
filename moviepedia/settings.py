@@ -47,7 +47,7 @@ LOGGING = {
         },
         "app": {
             "handlers": ["console", "file"] if DEBUG else ["file"],
-            "level": "DEBUG" if DEBUG else "INFO",
+            "level": "DEBUG",
             "propagate": False,
         },
     },
