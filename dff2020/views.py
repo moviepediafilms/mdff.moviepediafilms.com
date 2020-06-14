@@ -8,16 +8,17 @@ import hashlib
 
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.utils.decorators import method_decorator
 from django.urls import reverse
 from django.views import View
+from django.views.generic.base import TemplateView
 from django.conf import settings
 from django.http import JsonResponse
-from .models import Order, Entry
 from django.middleware import csrf
+
+from .models import Order, Entry
+
 
 logger = logging.getLogger("app.dff2020")
 
@@ -230,7 +231,7 @@ class VerifyPayment(LoginRequiredMixin, View):
             order_id = data.get("razorpay_order_id")
             order = Order.objects.filter(rzp_order_id=order_id).first()
             if not order:
-                # yeah little misleading to avoid narrowing down the bruteforce
+                # yeah little misleading to avoid narrowing down the bruteforce attacks!
                 error = "could not verify signature!"
             else:
                 try:
@@ -238,8 +239,47 @@ class VerifyPayment(LoginRequiredMixin, View):
                 except Exception:
                     error = "could not verify signature!"
                 else:
-                    order.rzp_payment_id = data["razorpay_payment_id"]
+                    rzp_payment_id = data["razorpay_payment_id"]
+                    order.rzp_payment_id = rzp_payment_id
                     order.save()
+                    try:
+                        rzp_client.payment.capture(
+                            rzp_payment_id, order.amount, {"currency": "INR"}
+                        )
+                    except Exception as ex:
+                        logger.exception(ex)
+                        logger.error("failed to capure the payment")
+                        response["message"] = "Payment is pending!"
+                    else:
+                        response["message"] = "Payment Complete"
                     response["success"] = True
-                    response["message"] = "Payment Complete"
         return JsonResponse({"success": False, "error": error} if error else response)
+
+
+class PaymentResultView(LoginRequiredMixin, TemplateView):
+    template_name = "dff2020/payment_result.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["order_id"] = self.request.GET.get("order_id")
+        context["payment_id"] = self.request.GET.get("payment_id")
+        context["description"] = self.request.GET.get("description")
+        context["status"] = kwargs.get("status")
+        return context
+
+
+class SubmissionView(LoginRequiredMixin, TemplateView):
+    template_name = "dff2020/submissions.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["entries"] = Entry.objects.filter(order__owner=self.request.user).all()
+        return context
+
+
+class FAQView(LoginRequiredMixin, TemplateView):
+    template_name = "dff2020/faq.html"
+
+
+class RulesView(LoginRequiredMixin, TemplateView):
+    template_name = "dff2020/rules.html"

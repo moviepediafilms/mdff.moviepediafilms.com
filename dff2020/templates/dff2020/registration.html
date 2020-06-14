@@ -12,41 +12,41 @@
 
     <img src="{% static 'dff2020/img/icon.png'%}" height="150px" />
     <div class=" text-warning mt-5 font-weight-bold">Hello {{user.first_name}}!</div>
-    <div class="text-warning mt-2">Fill in the details of movie(s) you want to submit</div>
+    <div class="text-warning mt-2">Fill in the details of the movie(s) you want to submit</div>
     <form class="text-left text-white" action="/registration" method="post">
         {% csrf_token %}
         <template v-for="(movie, index) in movies" :key="index">
             <div class="md-form">
                 <!-- Name -->
-                <input type="text" :id="'name' + index" name="name" class="form-control text-reset"
-                    v-model="movie.name" required>
+                <input type="text" :id="'name' + index" name="name" class="form-control text-reset" :class="{'invalid': movie.name.error}"
+                    v-model="movie.name.value" required>
                 <label :for="'name' + index">Movie Name</label>
             </div>
 
             <div class="md-form">
                 <!-- Director -->
-                <input type="text" :id="'director' + index" name="director" class="form-control text-reset"
-                    v-model="movie.director" required>
+                <input type="text" :id="'director' + index" name="director" class="form-control text-reset"  :class="{'invalid': movie.director.error}"
+                    v-model="movie.director.value" required>
                 <label :for="'director' + index">Director's Name</label>
             </div>
             <div class="md-form">
                 <!-- Runtime -->
                 <input type="number" min="1" max="30" :id="'runtime' + index" name="runtime"
-                    class="form-control text-reset" v-model="movie.runtime" required>
+                    class="form-control text-reset"  :class="{'invalid': movie.runtime.error}"v-model="movie.runtime.value" required>
                 <label :for="'runtime' + index">Runtime in minutes</label>
                 <small class="text-muted">Maximum 30 minutes runtime</small>
             </div>
             <div class="md-form">
                 <!-- link -->
-                <input type="text" :id="'link' + index" name="link" class="form-control text-reset"
-                    v-model="movie.link" required>
+                <input type="text" :id="'link' + index" name="link" class="form-control text-reset"  :class="{'invalid': movie.link.error}"
+                    v-model="movie.link.value" required>
                 <label :for="'link' + index">Movie's link</label>
                 <small class="text-muted">YouTube or any similar platform link</small>
             </div>
             <div class="md-form">
                 <!-- link -->
-                <textarea type="text" :id="'synopsis' + index" name="synopsis" class="md-textarea form-control text-reset"
-                    v-model="movie.synopsis" rows="3"></textarea>
+                <textarea type="text" :id="'synopsis' + index" name="synopsis" class="md-textarea form-control text-reset" :class="{'invalid': movie.synopsis.error}"
+                    v-model="movie.synopsis.value" rows="3"></textarea>
                 <label :for="'synopsis' + index">Synopsis (Optional)</label>
                 {% verbatim %}
                 <small class="text-muted">Concisly describe your movie. {{500 - movie.synopsis.length}} characters left</small>
@@ -54,20 +54,17 @@
             </div>
             <template v-if="movies.length > 1">
                 <div class="text-left">
-                    <a class="btn-floating btn-sm btn-warning btn-secondary" @click.prevent="remove_movie(index)"><i
+                    <a title="Delete movie" class="btn-floating btn-sm btn-warning btn-secondary" @click.prevent="remove_movie(index)"><i
                             class="fas fa-minus text-dark"></i></a>
                 </div>
             </template>
         </template>
         <!-- submit button -->
-
-        <button class="btn btn-sm btn-warning" type="submit" @click.prevent="create_order">
-            {% verbatim %}
-            Pay {{amount}} INR
-            {% endverbatim %}
-        </button>
-        <button class="btn btn-sm btn-warning" type="submit" @click.prevent="add_movie">Add Another Movie</button><br/>
         {% verbatim %}
+        <button class="btn btn-sm btn-warning" :class="{'disables': lock_input}" type="submit" @click.prevent="create_order">
+            Pay {{amount}} INR
+        </button>
+        <button class="btn btn-sm btn-warning" :class="{'disables': lock_input}" type="submit" @click.prevent="add_movie" >Add Another Movie</button><br/>
             <small class="text-danger text-sm">{{error}}</small>
             <small class="text-warning text-sm">{{message}}</small>
         {% endverbatim %}
