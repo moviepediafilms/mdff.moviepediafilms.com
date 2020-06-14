@@ -204,6 +204,7 @@ class Registration(LoginRequiredMixin, View):
                         )
                     response["order_id"] = order.rzp_order_id
                     response["amount"] = amount
+                    response["message"] = "your order is created! waiting for youto complete payment!"
         return JsonResponse(
             response if not error else {"success": False, "error": error}
         )

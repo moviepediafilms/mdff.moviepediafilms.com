@@ -40,10 +40,15 @@ new Vue({
             var csrfmiddlewaretoken = this.$el.querySelector('input[name="csrfmiddlewaretoken"]')
             axios.post('/registration', data, { headers: { "X-CSRFToken": csrfmiddlewaretoken.value } })
                 .then(response => {
+
                     if (!response.data.success) {
                         this.error = response.data.error
+                        console.log("creating order failed")
                     }
                     else {
+                        console.log("creating order success")
+                        this.message = response.data.message
+                        this.error = ""
                         var rzp_options = {
                             "key": "rzp_test_Zhdtys04NuaToI", // Enter the Key ID generated from the Dashboard
                             "amount": response.data.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
@@ -55,7 +60,8 @@ new Vue({
                                 "email": response.data.email,
                             }
                         };
-                        new Razorpay(rzp_options).open()
+                        console.log("opening razorpay")
+                        new Razorpay(rzp_options).open();
                     }
                 }, error => {
                     console.log(error)
