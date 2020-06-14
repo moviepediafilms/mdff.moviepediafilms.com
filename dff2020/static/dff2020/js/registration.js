@@ -66,11 +66,12 @@ new Vue({
                 movie.director.error = !movie.director.value
                 movie.runtime.error = !movie.runtime.value
                 movie.link.error = !movie.link.value
-                errors += 1
+                if (movie.link.error || movie.runtime.error || movie.director.error || movie.name.error)
+                    errors += 1
             })
             if (errors > 0)
                 this.error = "Mandatory fields are not provided!"
-            return !(errors > 0)
+            return errors == 0
         },
         create_order() {
             this.lock_input = true
