@@ -273,7 +273,15 @@ class SubmissionView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["entries"] = Entry.objects.filter(order__owner=self.request.user).all()
+        entries = Entry.objects.filter(order__owner=self.request.user).all()
+        context["entries"] = [{
+            'name': entry.name,
+            'link': entry.link,
+            'director': entry.director,
+            'runtime': entry.runtime,
+            'synopsis': entry.synopsis,
+            'payment': 'Complete' if entry.order.rzp_payment_id else 'Incomplete'
+        } for entry in entries]
         return context
 
 
