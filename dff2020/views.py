@@ -202,9 +202,12 @@ class Registration(LoginRequiredMixin, View):
                             synopsis=entry.get("synopsis"),
                             order=order,
                         )
+                    response["success"] = True
                     response["order_id"] = order.rzp_order_id
                     response["amount"] = amount
-                    response["message"] = "your order is created! waiting for youto complete payment!"
+                    response[
+                        "message"
+                    ] = "your order is created! waiting for youto complete payment!"
         return JsonResponse(
             response if not error else {"success": False, "error": error}
         )
@@ -232,6 +235,6 @@ class VerifyPayment(LoginRequiredMixin, View):
                 else:
                     order.rzp_payment_id = data["razorpay_payment_id"]
                     order.save()
-                    response["status"] = True
+                    response["success"] = True
                     response["message"] = "Payment Complete"
         return JsonResponse({"success": False, "error": error} if error else response)
