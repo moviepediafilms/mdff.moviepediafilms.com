@@ -64,14 +64,28 @@ new Vue({
             this.movies.forEach(movie => {
                 movie.name.error = !movie.name.value
                 movie.director.error = !movie.director.value
-                movie.runtime.error = !movie.runtime.value
-                movie.link.error = !movie.link.value
+                if (movie.runtime.value) {
+                    var runtime = parseInt(movie.runtime.value)
+                    movie.runtime.error = !(runtime > 0 && runtime <= 30)
+                } else {
+                    movie.runtime.error = true
+                }
+                movie.link.error = !this.valid_URL(movie.link.value)
                 if (movie.link.error || movie.runtime.error || movie.director.error || movie.name.error)
                     errors += 1
             })
             if (errors > 0)
-                this.error = "Mandatory fields are not provided!"
+                this.error = errors.length == 1 ? "Invalid value" : "Invalid values"
             return errors == 0
+        },
+        valid_URL(str) {
+            var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
+                '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+                '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+                '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+                '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+                '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+            return !!pattern.test(str);
         },
         create_order() {
             this.lock_input = true
