@@ -3,7 +3,8 @@ new Vue({
     data: {
         movies: [],
         per_movie: 299,
-        error: ''
+        error: '',
+        message: '',
     },
     mounted() {
         this.add_movie();
