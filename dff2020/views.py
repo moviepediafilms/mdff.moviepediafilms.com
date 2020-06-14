@@ -17,6 +17,7 @@ from django.views import View
 from django.conf import settings
 from django.http import JsonResponse
 from .models import Order, Entry
+from django.middleware import csrf
 
 logger = logging.getLogger("app.dff2020")
 
@@ -205,6 +206,9 @@ class Registration(LoginRequiredMixin, View):
                     response["success"] = True
                     response["order_id"] = order.rzp_order_id
                     response["amount"] = amount
+                    response["name"] = request.user.get_full_name()
+                    response["email"] = request.user.email
+                    response["csrf"] = csrf.get_token(request)
                     response[
                         "message"
                     ] = "your order is created! waiting for youto complete payment!"
