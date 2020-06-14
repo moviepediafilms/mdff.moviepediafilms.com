@@ -1,0 +1,42 @@
+{% extends 'dff2020/base.html' %}
+{% load static %}
+
+{%block head%}
+<link rel="stylesheet" href="{% static 'dff2020/css/base.css' %}" />
+<link rel="stylesheet" href="{% static 'dff2020/css/login_signup.css' %}" />
+{%endblock%}
+
+{%block left%}
+<div class="container p-5">
+    <img src="{% static 'dff2020/img/icon.png'%}" height="150px" />
+    <div class=" text-warning mt-5 font-weight-bold">Your have {{entries|length}} submissions!</div>
+    <div class="text-warning mt-4">
+    {% for entry in entries%}
+        Name: <b>{{entry.name}}</b><br/>
+        Director: <b>{{entry.director}}</b><br/>
+        Link: <b><a class="text-warning" href="{{entry.link}}">{{entry.link}}</a></b><br/>
+        Runtime: <b>{{entry.runtime}} Minutes</b><br/>
+        Synopsis: <b>{{entry.synopsis}}</b><br/>
+        {% if not forloop.last %}
+            <hr/>
+        {%endif%}
+    {%endfor%}
+    </div>
+</div>
+{%endblock%}
+
+{%block right%}
+<div class="container p-5 ">
+    <div class="font-weight-light mt-3 pt-3 text-center">
+        <h3>Quick Links</h3>
+        <a href="/registration" class="text-dark">Submit more movies</a><br/>
+        <a href="/submissions" class="text-dark">My Submissions</a><br/>
+        <a href="/rules" class="text-dark">Event Rules</a><br/>
+        <a href="/faq" class="text-dark">FAQ</a><br/>
+    </div>
+</div>
+{%endblock%}
+
+{%block scripts%}
+<script src="{% static 'dff2020/js/payment_result.js'%}"></script>
+{%endblock%}

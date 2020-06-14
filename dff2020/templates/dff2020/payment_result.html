@@ -1,0 +1,49 @@
+{% extends 'dff2020/base.html' %}
+{% load static %}
+
+{%block head%}
+<link rel="stylesheet" href="{% static 'dff2020/css/base.css' %}" />
+<link rel="stylesheet" href="{% static 'dff2020/css/login_signup.css' %}" />
+{%endblock%}
+
+{%block left%}
+<div class="container p-5">
+    <img src="{% static 'dff2020/img/icon.png'%}" height="150px" />
+
+    
+    {% if status == 'success' %}
+        <div class="text-uppercase text-warning mt-5 font-weight-bold"><i class="fas fa-check text-success"></i> Payment successfull </div>
+    {%else%}
+        <div class="text-uppercase text-warning mt-5 font-weight-bold"><i class="fas fa-times text-danger"></i> Payment failed </div>
+    {%endif%}
+    
+    {% if description %}
+        <small class="text-warning">{{description}}</small>
+    {%endif%}
+    <div class="text-warning mt-4 text-center">
+        {% if order_id %}
+        Order ID: <b>{{order_id}}</b><br/>
+        {%endif%}
+        {% if payment_id %}
+        Payment ID: <b>{{payment_id}}</b><br/>
+        {%endif%}
+        <p>please take a note of OrderID and PaymentID, if you have any queries please reach out to us with there details</p>
+    </div>
+</div>
+{%endblock%}
+
+{%block right%}
+<div class="container p-5 ">
+    <div class="font-weight-light mt-5 pt-5 text-center">
+        <h3>Quick Links</h3>
+        <a href="/registration" class="text-dark">Submit more movies</a><br/>
+        <a href="/submissions" class="text-dark">My Submissions</a><br/>
+        <a href="/rules" class="text-dark">Event Rules</a><br/>
+        <a href="/faq" class="text-dark">FAQ</a><br/>
+    </div>
+</div>
+{%endblock%}
+
+{%block scripts%}
+<script src="{% static 'dff2020/js/payment_result.js'%}"></script>
+{%endblock%}
