@@ -1,10 +1,12 @@
 {% extends 'dff2020/authenticated_base.html' %}
 {% load static %}
+{% load dff2020_extras %}
+{% load humanize %}
 
 {%block left%}
 <div class="container p-5">
     <img src="{% static 'dff2020/img/icon.png'%}" height="150px" />
-    <div class=" text-warning mt-5 font-weight-bold text-uppercase">{{entries|length}} submissions</div>
+    <div class=" text-warning mt-5 font-weight-bold text-uppercase">You have {{ entries|length|apnumber }} submission{{ entries|length|pluralize }}</div>
     <div class=" mt-4">
     {% for entry in entries%}
             <div class="card card-cascade my-5 bg-muted narrower">
@@ -20,7 +22,7 @@
                 <p class="card-header-subtitle mb-0">{{entry.director}}</p>
 
             </div>
-            <a class="btn-floating btn-action ml-auto mr-4 bg-dark" target="_blank" href="{{entry.link}}">
+            <a class="btn-floating btn-action ml-auto mr-4 bg-dark" target="_blank" href="{{entry.link | complete_link}}">
                 <i class="fas fa-link pl-1 text-warning"></i>
             </a>
             <!-- Card content -->
@@ -30,7 +32,9 @@
                 <hr/>
                 <!-- Card footer -->
                 <small class="text-muted">
-                    Runtime {{entry.runtime}} Minutes <i class="far fa-circle fa-xs mx-1"></i> Payment {{entry.payment}}
+                    <div style="display:inline-block" class="mr-1">Runtime {{entry.runtime}} Minutes</span></div>
+                    <i class="far fa-circle fa-xs d-sm-inline d-none"></i>
+                    <div style="display:inline-block" class="ml-1">Payment {{entry.payment}}</div>
                 </small>
                 
             </div>

@@ -7,6 +7,11 @@
     <div class=" text-warning mt-5 font-weight-bold text-uppercase">rules</div>
     <div class="text-warning mt-4">
     
+    {% for rule in object_list %}
+        <h5 class="font-weight-light mb-4">{{rule.text}}</h5>
+        
+    {% endfor %}
+    
     </div>
 </div>
 {%endblock%}

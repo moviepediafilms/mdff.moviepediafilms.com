@@ -4,8 +4,14 @@
 {%block left%}
 <div class="container p-5">
     <img src="{% static 'dff2020/img/icon.png'%}" height="150px" />
-    <div class=" text-warning mt-5 font-weight-bold text-uppercase">frequently asked questions</div>
+    <div class=" text-warning mt-5 font-weight-bold text-uppercase">FAQ</div>
     <div class="text-warning mt-4">
+        {% for faq in object_list %}
+            <div class="mb-4">
+                <h5 class="font-weight-normal mb-3">{{faq.question}}</h5>
+                <p class="text-muted">{{faq.answer}}</p>
+            </div>
+        {% endfor %}
     </div>
 </div>
 {%endblock%}

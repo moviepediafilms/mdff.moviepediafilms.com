@@ -13,11 +13,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
 from django.views import View
 from django.views.generic.base import TemplateView
+from django.views.generic.list import ListView
 from django.conf import settings
 from django.http import JsonResponse
 from django.middleware import csrf
 
-from .models import Order, Entry
+from .models import Order, Entry, Faq, Rule
 
 
 logger = logging.getLogger("app.dff2020")
@@ -25,6 +26,11 @@ logger = logging.getLogger("app.dff2020")
 rzp_client = razorpay.Client(
     auth=(settings.RAZORPAY_API_KEY, settings.RAZORPAY_API_SECRET)
 )
+
+DOOMS_DAY_MAP = {
+    "signup": "2020-06-15",  # redirect: signup -> registrations are over page
+    "submission": "2020-06-15",  # redirect: submission -> submissions are over page
+}
 
 
 def get_ip(request):
@@ -305,9 +311,11 @@ class SubmissionView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class FAQView(LoginRequiredMixin, TemplateView):
+class FAQView(LoginRequiredMixin, ListView):
+    model = Faq
     template_name = "dff2020/faq.html"
 
 
-class RulesView(LoginRequiredMixin, TemplateView):
+class RulesView(LoginRequiredMixin, ListView):
+    model = Rule
     template_name = "dff2020/rules.html"
