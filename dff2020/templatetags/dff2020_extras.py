@@ -7,7 +7,7 @@ register = template.Library()
 
 @register.filter
 def get_gravatar(user):
-    default_link = "https://moviepediafilms.com/static/dff2020/img/avatar.svg"
+    default_link = "https://moviepediafilms.com/static/dff2020/img/avatar.jpg"
     gravatar_url = (
         "https://www.gravatar.com/avatar/"
         + hashlib.md5(user.email.lower().encode()).hexdigest()
