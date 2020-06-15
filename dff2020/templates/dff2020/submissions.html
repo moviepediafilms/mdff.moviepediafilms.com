@@ -4,18 +4,37 @@
 {%block left%}
 <div class="container p-5">
     <img src="{% static 'dff2020/img/icon.png'%}" height="150px" />
-    <div class=" text-warning mt-5 font-weight-bold">Your have {{entries|length}} submissions!</div>
-    <div class="text-warning mt-4">
+    <div class=" text-warning mt-5 font-weight-bold text-uppercase">{{entries|length}} submissions</div>
+    <div class=" mt-4 px-5 ">
     {% for entry in entries%}
-        Name: <b>{{entry.name}}</b><br/>
-        Director: <b>{{entry.director}}</b><br/>
-        Link: <b><a class="text-warning" href="{{entry.link}}">{{entry.link}}</a></b><br/>
-        Runtime: <b>{{entry.runtime}} Minutes</b><br/>
-        Synopsis: <b>{{entry.synopsis}}</b><br/>
-        Payment: {{entry.payment}}
-        {% if not forloop.last %}
-            <hr/>
-        {%endif%}
+            <div class="card card-cascade my-5 bg-muted narrower">
+
+            <!-- Card image -->
+            <div class="view view-cascade gradient-card-header bg-warning text-dark">
+
+                <!-- Title -->
+                <h2 class="card-header-title mb-1">
+                    {{entry.name}}
+                </h2>
+                <!-- Subtitle -->
+                <p class="card-header-subtitle mb-0">{{entry.director}}</p>
+
+            </div>
+            <a class="btn-floating btn-action ml-auto mr-4 bg-dark" target="_blank" href="{{entry.link}}">
+                <i class="fas fa-link pl-1 text-warning"></i>
+            </a>
+            <!-- Card content -->
+            <div class="card-body card-body-cascade text-center">
+                <!-- Text -->
+                <p class="card-text text-dark">{{entry.synopsis}}</p>
+                <hr/>
+                <!-- Card footer -->
+                <small class="text-muted">
+                    Runtime {{entry.runtime}} Minutes <i class="far fa-circle fa-xs mx-1"></i> Payment {{entry.payment}}
+                </small>
+                
+            </div>
+            </div>
     {%endfor%}
     </div>
 </div>
