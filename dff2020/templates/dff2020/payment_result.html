@@ -1,10 +1,5 @@
-{% extends 'dff2020/base.html' %}
+{% extends 'dff2020/quick_link_base.html' %}
 {% load static %}
-
-{%block head%}
-<link rel="stylesheet" href="{% static 'dff2020/css/base.css' %}" />
-<link rel="stylesheet" href="{% static 'dff2020/css/login_signup.css' %}" />
-{%endblock%}
 
 {%block left%}
 <div class="container p-5">
@@ -30,20 +25,4 @@
         <p>please take a note of OrderID and PaymentID, if you have any queries please reach out to us with there details</p>
     </div>
 </div>
-{%endblock%}
-
-{%block right%}
-<div class="container p-5 ">
-    <div class="font-weight-light mt-5 pt-5 text-center">
-        <h3>Quick Links</h3>
-        <a href="/registration" class="text-dark">Submit more movies</a><br/>
-        <a href="/submissions" class="text-dark">My Submissions</a><br/>
-        <a href="/rules" class="text-dark">Event Rules</a><br/>
-        <a href="/faq" class="text-dark">FAQ</a><br/>
-    </div>
-</div>
-{%endblock%}
-
-{%block scripts%}
-<script src="{% static 'dff2020/js/payment_result.js'%}"></script>
 {%endblock%}

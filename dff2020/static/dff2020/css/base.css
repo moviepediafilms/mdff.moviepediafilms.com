@@ -1,3 +1,13 @@
 .bg-side{
     background-color: #ffc221!important;
 }
+.text-warning{
+    color:  #ffc221!important;
+}
+.text-sm{
+    font-size: 0.8em!important;
+}
+.text-link{
+color:  #ffc221!important;
+font-weight: bold;
+}
