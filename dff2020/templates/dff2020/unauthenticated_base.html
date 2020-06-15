@@ -1,0 +1,21 @@
+{% extends 'dff2020/base.html' %}
+{% load static %}
+{% load dff2020_extras %}
+
+{%block head%}
+<link rel="stylesheet" href="{% static 'dff2020/css/base.css' %}" />
+<link rel="stylesheet" href="{% static 'dff2020/css/login_signup.css' %}" />
+{%endblock%}
+
+
+{%block right%}
+<div class="container p-5">
+    <h3 class="font-weight-bolder">About the event</h3>
+    <p class="font-weight-light pt-3">
+        Get ready to unlock your art as <b>Moviepedia</b> is hosting a digital film festival to get you through your
+        Lockdown blues. Top <b>10</b> short films, hand-picked by our jury of judges from the film industry, would be
+        screened across platforms with a community of <b>160k+</b> film enthusiasts and cinephiles. The films would be
+        published with editor's reviews and top 3 entries stand the chance to win cash prizes worth <b>₹7500</b>!
+    </p>
+</div>
+{%endblock%}

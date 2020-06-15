@@ -1,4 +1,4 @@
-{% extends 'dff2020/base.html' %}
+{% extends 'dff2020/authenticated_base.html' %}
 {% load static %}
 
 {%block head%}
@@ -72,8 +72,7 @@
 </div>
 {%endblock%}
 
-{%block right%}
-<div class="container p-5">
+{%block right_content%}
     <ul class="stepper">
         <!-- First Step -->
         <li class="step active">
@@ -98,7 +97,6 @@
             <div data-step-label="July 30th" class="step-title waves-effect waves-dark">Results</div>
         </li>
     </ul>
-</div>
 {%endblock%}
 
 {%block scripts%}

@@ -1,0 +1,32 @@
+{% extends 'dff2020/base.html' %}
+{% load static %}
+{% load dff2020_extras %}
+
+{%block head%}
+<link rel="stylesheet" href="{% static 'dff2020/css/base.css' %}" />
+{%endblock%}
+
+
+{%block right%}
+<div class="container p-5">
+    <div class="text-center">
+        <img src="{{user|get_gravatar}}" width="70px" class="img-fluid z-depth-1 rounded-circle avatar warning" alt="{{user.get_full_name}}">
+        <h4>{{user.get_full_name}}</h4>
+        <a href="/logout" class="btn btn-small btn-outline-dark btn-sm">Log Out</a>
+    </div>
+    <hr class="bg-dark"/>
+    {%block right_content%}
+        <div class="font-weight-light text-center" >
+            <h3>Quick Links</h3>
+            <a href="/registration" class="text-dark">Submit more movies</a><br/>
+            <a href="/submissions" class="text-dark">My Submissions</a><br/>
+            <a href="/rules" class="text-dark">Event Rules</a><br/>
+            <a href="/faq" class="text-dark">FAQ</a><br/>
+        </div>
+    {%endblock%}
+</div>
+{%endblock%}
+
+{%block scripts%}
+<script src="{% static 'dff2020/js/payment_result.js'%}"></script>
+{%endblock%}

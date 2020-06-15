@@ -7,7 +7,7 @@ import razorpay
 import hashlib
 
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
@@ -57,6 +57,13 @@ def verify_recapcha(request, recapcha_response):
         return False
 
 
+class Logout(View):
+    def get(self, request):
+        if not request.user.is_anonymous:
+            logout(request)
+        return redirect("login")
+
+
 class Login(View):
     def post(self, request):
         username = request.POST.get("email")
@@ -66,6 +73,8 @@ class Login(View):
             if user is not None:
                 logger.debug("user authenticated")
                 login(request, user)
+                if Order.objects.filter(owner=user).exists():
+                    return redirect("submissions")
                 return redirect("registration")
             else:
                 error = "Invalid email and password combination"
@@ -74,6 +83,10 @@ class Login(View):
         return redirect(reverse("login") + f"?error={error}")
 
     def get(self, request):
+        if not request.user.is_anonymous:
+            if Order.objects.filter(owner=request.user).exists():
+                return redirect("submissions")
+            return redirect("registration")
         error = request.GET.get("error") or ""
         message = request.GET.get("message") or ""
         return render(request, "dff2020/login.html", dict(error=error, message=message))
@@ -107,6 +120,10 @@ class SignUp(View):
         return redirect(reverse("signup") + f"?error={error}")
 
     def get(self, request):
+        if not request.user.is_anonymous:
+            if Order.objects.filter(owner=request.user).exists():
+                return redirect("submissions")
+            return redirect("registration")
         error = request.GET.get("error") or ""
         return render(request, "dff2020/signup.html", dict(error=error))
 
@@ -274,14 +291,17 @@ class SubmissionView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         entries = Entry.objects.filter(order__owner=self.request.user).all()
-        context["entries"] = [{
-            'name': entry.name,
-            'link': entry.link,
-            'director': entry.director,
-            'runtime': entry.runtime,
-            'synopsis': entry.synopsis,
-            'payment': 'Complete' if entry.order.rzp_payment_id else 'Incomplete'
-        } for entry in entries]
+        context["entries"] = [
+            {
+                "name": entry.name,
+                "link": entry.link,
+                "director": entry.director,
+                "runtime": entry.runtime,
+                "synopsis": entry.synopsis,
+                "payment": "Complete" if entry.order.rzp_payment_id else "Incomplete",
+            }
+            for entry in entries
+        ]
         return context
 
 
