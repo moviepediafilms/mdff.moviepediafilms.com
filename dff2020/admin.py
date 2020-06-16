@@ -68,6 +68,14 @@ class FaqModelForm(forms.ModelForm):
         fields = "__all__"
 
 
+class RuleModelForm(forms.ModelForm):
+    text = forms.CharField(widget=forms.Textarea)
+
+    class Meta:
+        model = Rule
+        fields = "__all__"
+
+
 @admin.register(Faq)
 class FaqAdmin(admin.ModelAdmin):
     form = FaqModelForm
@@ -76,7 +84,8 @@ class FaqAdmin(admin.ModelAdmin):
 
 @admin.register(Rule)
 class RuleAdmin(admin.ModelAdmin):
-    list_display = ["text"]
+    list_display = ["text", "type"]
+    form = RuleModelForm
 
 
 @admin.register(Entry)

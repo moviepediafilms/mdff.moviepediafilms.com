@@ -36,3 +36,4 @@ class Faq(models.Model):
 
 class Rule(models.Model):
     text = models.CharField(max_length=800)
+    type = models.CharField(max_length=40)

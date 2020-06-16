@@ -1,6 +1,7 @@
 import re
 import json
 import logging
+from collections import defaultdict
 
 import requests
 import razorpay
@@ -316,6 +317,14 @@ class FAQView(LoginRequiredMixin, ListView):
     template_name = "dff2020/faq.html"
 
 
-class RulesView(LoginRequiredMixin, ListView):
-    model = Rule
+class RulesView(LoginRequiredMixin, TemplateView):
     template_name = "dff2020/rules.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        rules_by_type = defaultdict(list)
+        for rule in Rule.objects.all():
+            rules_by_type[rule.type].append(rule)
+        context["rules_by_type"] = dict(rules_by_type)
+        logger.debug(context)
+        return context
