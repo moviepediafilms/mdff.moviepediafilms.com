@@ -1,6 +1,8 @@
 from django.contrib import admin
-from .models import Faq, Rule, Entry, Order
 from django.utils.translation import gettext_lazy as _
+from django import forms
+
+from .models import Faq, Rule, Entry, Order
 
 
 class RuntimeListFilter(admin.SimpleListFilter):
@@ -58,8 +60,17 @@ class OrderAdmin(admin.ModelAdmin):
         return obj.amount / 100
 
 
+class FaqModelForm(forms.ModelForm):
+    answer = forms.CharField(widget=forms.Textarea)
+
+    class Meta:
+        model = Faq
+        fields = "__all__"
+
+
 @admin.register(Faq)
 class FaqAdmin(admin.ModelAdmin):
+    form = FaqModelForm
     list_display = ["question", "answer"]
 
 
