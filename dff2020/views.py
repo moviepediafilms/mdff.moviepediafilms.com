@@ -153,7 +153,7 @@ class PasswordReset(View):
         try:
             # urlsafe_base64_decode() decodes to bytestring
             uid = urlsafe_base64_decode(uid).decode()
-            user = User.objects.filter.get(pk=uid)
+            user = User.objects.get(pk=uid)
         except (
             TypeError,
             ValueError,
