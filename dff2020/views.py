@@ -171,7 +171,7 @@ class PasswordReset(View):
                 session_token = self.request.session.get("_password_reset_token")
                 if self.token_generator.check_token(user, session_token):
                     # If the token is valid, display the password reset form.
-                    return render(self.template_name)
+                    return render(request, "dff2020/password_reset.html", {})
             else:
                 if self.token_generator.check_token(user, token):
                     # Store the token in the session and redirect to the
@@ -183,7 +183,9 @@ class PasswordReset(View):
                     return redirect(redirect_url)
 
         # Display the "Password reset unsuccessful" page.
-        return render("dff2020/error.html", {"error": "Password reset unsuccessful"})
+        return render(
+            request, "dff2020/error.html", {"error": "Password reset unsuccessful"}
+        )
 
     def post(self, request, uid, token):
         user = self.get_user(uid)
@@ -192,10 +194,10 @@ class PasswordReset(View):
             password = request.POST["password"]
             cnf_password = request.POST["confirm_password"]
             if password == cnf_password:
-                user.ser_password(password)
+                user.set_password(password)
                 user.save()
                 del self.request.session["_password_reset_token"]
-                return render("dff2020/password_reset_success.html")
+                return render(request, "dff2020/password_reset_success.html")
 
 
 class ForgotPasswordView(TemplateView):
@@ -217,6 +219,7 @@ class ForgotPasswordView(TemplateView):
                 link = f"https://{request.get_host()}" + reverse(
                     "dff2020:password-reset", args=[uid, token]
                 )
+                logger.debug(link)
                 send_password_reset_email(user, link)
             message = "If this email is registered! you should receive an email with link to reset your password."
         else:
