@@ -193,7 +193,7 @@ class Registration(LoginRequiredMixin, View):
             receipt_number = hashlib.md5(
                 f"{request.user.email}:{len(existing_orders)}".encode()
             ).hexdigest()
-            amount = len(entries) * 299 * 100  # in paise
+            amount = len(entries) * 29900  # in paise
             try:
                 rp_order_res = rzp_client.order.create(
                     {
