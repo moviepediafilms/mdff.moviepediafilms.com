@@ -11,3 +11,6 @@
 color:  #ffc221!important;
 font-weight: bold;
 }
+[v-cloak] {
+    display: none;
+}

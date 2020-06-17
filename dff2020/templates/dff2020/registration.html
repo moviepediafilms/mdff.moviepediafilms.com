@@ -11,7 +11,7 @@
 <div class="container p-5" id="movies-app">
 
     <img src="{% static 'dff2020/img/icon.png'%}" height="150px" />
-    <div class=" text-warning mt-5 font-weight-bold">Hello {{user.first_name}}!</div>
+    <div class=" text-warning mt-5 font-weight-bold" v-cloak>Hello {{user.first_name}}!</div>
     <div class="text-warning mt-2">Fill in the details of the movie(s) you want to submit</div>
     <form class="text-left text-white" action="/registration" method="post">
         {% csrf_token %}
@@ -49,7 +49,7 @@
                     v-model="movie.synopsis.value" rows="3"></textarea>
                 <label :for="'synopsis' + index">Synopsis (Optional)</label>
                 {% verbatim %}
-                <small class="text-muted">{{500 - movie.synopsis.value.length}} characters left</small>
+                <small class="text-muted" v-cloak>{{500 - movie.synopsis.value.length}} characters left</small>
                 {% endverbatim %}
             </div>
             <template v-if="movies.length > 1">
@@ -60,15 +60,15 @@
             </template>
         </template>
         {% verbatim %}
-        <small class="text-danger text-sm">{{error}}</small>
-        <small class="text-warning text-sm">{{message}}</small>
+        <small class="text-danger text-sm" v-cloak>{{error}}</small>
+        <small class="text-warning text-sm" v-cloak>{{message}}</small>
         <br/>
         <!-- submit button -->
         <button class="btn btn-sm btn-warning" :class="{'disables': lock_input}" type="submit" @click.prevent="create_order">
             Proceed to Payment
         </button>
         <button class="btn btn-sm btn-warning" :class="{'disables': lock_input}" type="submit" @click.prevent="add_movie" >Add Another Movie</button><br/>
-            <small class="text-muted">Order total: {{amount}} INR</small><br/>
+            <small class="text-muted" v-cloak>Order total: {{amount}} INR</small><br/>
         {% endverbatim %}
     </form>
 </div>
