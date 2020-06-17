@@ -49,7 +49,7 @@
                     v-model="movie.synopsis.value" rows="3"></textarea>
                 <label :for="'synopsis' + index">Synopsis (Optional)</label>
                 {% verbatim %}
-                <small class="text-muted">Concisly describe your movie. {{500 - movie.synopsis.length}} characters left</small>
+                <small class="text-muted">{{500 - movie.synopsis.value.length}} characters left</small>
                 {% endverbatim %}
             </div>
             <template v-if="movies.length > 1">

@@ -65,7 +65,7 @@ new Vue({
                 movie.name.error = !movie.name.value
                 movie.director.error = !movie.director.value
                 if (movie.runtime.value) {
-                    var runtime = parseInt(movie.runtime.value)
+                    var runtime = parseFloat(movie.runtime.value)
                     movie.runtime.error = !(runtime > 0 && runtime <= 30)
                 } else {
                     movie.runtime.error = true
