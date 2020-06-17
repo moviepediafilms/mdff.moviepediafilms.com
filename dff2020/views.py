@@ -17,7 +17,7 @@ from django.views.generic.base import TemplateView
 from django.views.generic.list import ListView
 from django.conf import settings
 from django.http import JsonResponse
-from django.middleware import csrf
+
 
 from .models import Order, Entry, Faq, Rule
 
@@ -229,11 +229,6 @@ class Registration(LoginRequiredMixin, View):
                             order=order,
                         )
                     response["success"] = True
-                    response["order_id"] = order.rzp_order_id
-                    response["amount"] = amount
-                    response["name"] = request.user.get_full_name()
-                    response["email"] = request.user.email
-                    response["csrf"] = csrf.get_token(request)
                     response[
                         "message"
                     ] = "your order is created! waiting for youto complete payment!"
@@ -309,6 +304,21 @@ class SubmissionView(LoginRequiredMixin, TemplateView):
             }
             for entry in entries
         ]
+
+        context["orders"] = [
+            dict(
+                id=order.rzp_order_id,
+                amount=order.amount,
+                amount_txt=order.amount / 100.0,
+                status=bool(order.rzp_payment_id),
+                movies=[
+                    entry.name for entry in Entry.objects.filter(order=order).all()
+                ],
+            )
+            for order in Order.objects.filter(owner=self.request.user).all()
+        ]
+        context["name"] = self.request.user.get_full_name()
+        context["email"] = self.request.user.email
         return context
 
 

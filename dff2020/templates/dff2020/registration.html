@@ -62,7 +62,7 @@
         <!-- submit button -->
         {% verbatim %}
         <button class="btn btn-sm btn-warning" :class="{'disables': lock_input}" type="submit" @click.prevent="create_order">
-            Pay {{amount}} INR
+            Proceed to Payment
         </button>
         <button class="btn btn-sm btn-warning" :class="{'disables': lock_input}" type="submit" @click.prevent="add_movie" >Add Another Movie</button><br/>
             <small class="text-danger text-sm">{{error}}</small>

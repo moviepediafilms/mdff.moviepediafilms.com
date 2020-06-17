@@ -6,8 +6,40 @@
 {%block left%}
 <div class="container p-5">
     <img src="{% static 'dff2020/img/icon.png'%}" height="150px" />
-    <div class=" text-warning mt-5 font-weight-bold text-uppercase">You have {{ entries|length|apnumber }} submission{{ entries|length|pluralize }}</div>
+    <div class=" text-warning mt-5 mb-3 font-weight-bold text-uppercase">You have {{ orders|length|apnumber }} order{{ orders|length|pluralize }}</div>
+    <div>
+    {%for order in orders%}
+        
+            <div class="card-deck text-dark">
+                <!-- Card -->
+                <div class="card mb-2">
+                    <!--Card content-->
+                    <div class="card-body">
+                    <h6 class="card-title">Movies
+                        {% for movie in order.movies%}
+                            <span class="text-dark badge badge-primary ">{{movie}}</span>
+                        {%endfor%}
+                    </h6>
+                    <!--Text-->
+                    <p class="card-text">
+                          OrderID: {{order.id}}
+                    </p>
+                    {% if order.status %}
+                        <i class="fa fa-check text-light-green text-success"></i> {{order.amount_txt}} INR Paid
+                    {%else%}
+                        <button type="button" class="btn btn-warning btn-sm text-dark font-weight-bold" onClick="open_rzp('{{order.id}}', {{order.amount}})">Pay {{order.amount_txt}} INR</button>
+                    {%endif%}
+                    </div>
+                </div>
+                <!-- Card -->
+            </div>
+            
+            
+        
+    {%endfor%}
+    </div>
     <div class=" mt-4">
+    <div class="text-warning mt-5 font-weight-bold text-uppercase">{{entries|length}} Movie Entr{{entries|length|pluralize:'y,ies'}}</div>
     {% for entry in entries%}
             <div class="card card-cascade my-5 bg-muted narrower">
 
@@ -42,4 +74,57 @@
     {%endfor%}
     </div>
 </div>
+{%endblock%}
+
+{%block scripts%}
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+function rzp_response_handler(rzp_response) {
+    console.log(rzp_response);
+    if (rzp_response.error) {
+        console.log("Payment failed!")
+        window.location = `/payment/error?description=${rzp_response.description}&order_id=${rzp_response.meta.order_id}&payment_id=${rzp_response.meta.payment_id}`;
+    }
+    else {
+        this.lock_input = true
+        console.log("Payment success! call server for ")
+        this.message = "verifying payment! "
+        axios.post('/verify_payment', rzp_response, { headers: { "X-CSRFToken": this.csrf } })
+            .then(response => {
+                this.lock_input = false
+                console.log(response);
+                if (response.data.success) {
+                    this.message = response.data.message
+                    // redirect user
+                    window.location.href = `/payment/success?description=Payment Successful&order_id=${rzp_response.razorpay_order_id}&payment_id=${rzp_response.razorpay_payment_id}`;
+                } else {
+                    this.error = response.data.error
+                    window.location = `/payment/error?description=${response.data.error}&order_id=${rzp_response.razorpay_order_id}&payment_id=${rzp_response.razorpay_payment_id}`;
+                }
+            }, error => {
+                this.lock_input = false
+                this.error = 'Payment verification failed!'
+                console.log(error);
+                window.location.href = `/payment/error?description=${this.error}&order_id=${rzp_response.razorpay_order_id}&payment_id=${rzp_response.razorpay_payment_id}`;
+            })
+    }
+}
+var rzp_options = {
+    "key": "rzp_test_Zhdtys04NuaToI",
+    "currency": "INR",
+    "handler": rzp_response_handler,
+    "prefill": {
+        "name": "{{name}}",
+        "email": "{{email}}",
+    }
+};
+function open_rzp(order_id, amount){
+    var options = Object.assign({}, rzp_options)
+    options.order_id = order_id
+    options.amount = amount
+    new Razorpay(options).open();
+}
+
+</script>
 {%endblock%}
