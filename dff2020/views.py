@@ -232,7 +232,7 @@ class Registration(LoginRequiredMixin, View):
                             Entry.objects.create(
                                 name=entry.get("name"),
                                 director=entry.get("director"),
-                                runtime=int(entry.get("runtime")),
+                                runtime=int(float(entry.get("runtime"))),
                                 link=entry.get("link"),
                                 synopsis=entry.get("synopsis"),
                                 order=order,
