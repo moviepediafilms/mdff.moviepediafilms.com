@@ -276,7 +276,7 @@ class VerifyPayment(LoginRequiredMixin, View):
                     rzp_payment_id = data["razorpay_payment_id"]
                     order.rzp_payment_id = rzp_payment_id
                     order.save()
-                    send_film_registration_email(request.user)
+                    send_film_registration_email(request.user, order)
                     try:
                         rzp_client.payment.capture(
                             rzp_payment_id, order.amount, {"currency": "INR"}
