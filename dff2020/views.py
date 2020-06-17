@@ -9,8 +9,10 @@ import razorpay
 
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.views import View
 from django.views.generic.base import TemplateView
@@ -18,6 +20,8 @@ from django.views.generic.list import ListView
 from django.conf import settings
 from django.http import JsonResponse
 from django.middleware import csrf
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 
 from .models import Order, Entry, Faq, Rule
 from .email import (
@@ -92,7 +96,7 @@ class Login(View):
                 error = "Invalid email and password combination"
         else:
             error = "username or password cannot be empty"
-        return redirect(reverse("login") + f"?error={error}")
+        return redirect(reverse("dff2020:login") + f"?error={error}")
 
     def get(self, request):
         if not request.user.is_anonymous:
@@ -129,8 +133,8 @@ class SignUp(View):
             user.save()
             message = "Congratulations!! Your account is created please login!"
             send_welcome_email(user)
-            return redirect(reverse("login") + f"?message={message}")
-        return redirect(reverse("signup") + f"?error={error}")
+            return redirect(reverse("dff2020:login") + f"?message={message}")
+        return redirect(reverse("dff2020:signup") + f"?error={error}")
 
     def get(self, request):
         if not request.user.is_anonymous:
@@ -139,6 +143,85 @@ class SignUp(View):
             return redirect("registration")
         error = request.GET.get("error") or ""
         return render(request, "dff2020/signup.html", dict(error=error))
+
+
+class PasswordReset(View):
+    template_name = "dff2020/password_reset.html"
+    token_generator = default_token_generator
+
+    def get_user(self, uid):
+        try:
+            # urlsafe_base64_decode() decodes to bytestring
+            uid = urlsafe_base64_decode(uid).decode()
+            user = User.objects.filter.get(pk=uid)
+        except (
+            TypeError,
+            ValueError,
+            OverflowError,
+            User.DoesNotExist,
+            ValidationError,
+        ):
+            user = None
+        return user
+
+    def get(self, request, uid, token):
+        user = self.get_user(uid)
+        if user is not None:
+            if token == "set-password":
+                session_token = self.request.session.get("_password_reset_token")
+                if self.token_generator.check_token(user, session_token):
+                    # If the token is valid, display the password reset form.
+                    return render(self.template_name)
+            else:
+                if self.token_generator.check_token(user, token):
+                    # Store the token in the session and redirect to the
+                    # password reset form at a URL without the token. That
+                    # avoids the possibility of leaking the token in the
+                    # HTTP Referer header.
+                    self.request.session["_password_reset_token"] = token
+                    redirect_url = self.request.path.replace(token, "set-password")
+                    return redirect(redirect_url)
+
+        # Display the "Password reset unsuccessful" page.
+        return render("dff2020/error.html", {"error": "Password reset unsuccessful"})
+
+    def post(self, request, uid, token):
+        user = self.get_user(uid)
+        token = self.request.session["_password_reset_token"]
+        if self.token_generator.check_token(user, token):
+            password = request.POST["password"]
+            cnf_password = request.POST["confirm_password"]
+            if password == cnf_password:
+                user.ser_password(password)
+                user.save()
+                del self.request.session["_password_reset_token"]
+                return render("dff2020/password_reset_success.html")
+
+
+class ForgotPasswordView(TemplateView):
+    template_name = "dff2020/forgot_password.html"
+    token_generator = default_token_generator
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["msg"] = self.request.GET.get("msg", "")
+        return context
+
+    def post(self, request):
+        recapcha = request.POST.get("g-recaptcha-response", "")
+        if verify_recapcha(request, recapcha):
+            user = User.objects.filter(email=request.POST.get("email")).first()
+            if user is not None:
+                token = self.token_generator.make_token(user)
+                uid = urlsafe_base64_encode(force_bytes(user.pk))
+                link = f"https://{request.get_host()}" + reverse(
+                    "dff2020:password-reset", args=[uid, token]
+                )
+                send_password_reset_email(user, link)
+            message = "If this email is registered! you should receive an email with link to reset your password."
+        else:
+            message = "Invalid captcha"
+        return redirect(reverse("dff2020:forgot_password") + f"?msg={message}")
 
 
 class Registration(LoginRequiredMixin, View):

@@ -8,13 +8,13 @@ black = "*"
 flake8 = "*"
 
 [packages]
-django = "*"
 whitenoise = "*"
 gunicorn = "*"
 mysqlclient = "*"
 requests = "*"
 razorpay = "*"
 sendgrid = "*"
+django = "==3.0"
 
 [requires]
 python_version = "3.8"

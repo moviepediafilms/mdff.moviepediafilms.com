@@ -18,9 +18,11 @@ def send_welcome_email(user):
     _send(data)
 
 
-def send_password_reset_email(user):
+def send_password_reset_email(user, link):
     data = _get_base_data(user)
     data["template_id"] = settings.SENDGRID_TEMPLATE_PASSWORD_RESET
+    dynamic_template_data = data["personalizations"][0]["dynamic_template_data"]
+    dynamic_template_data["link"] = link
     _send(data)
 
 
