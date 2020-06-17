@@ -1,11 +1,11 @@
 import re
 import json
 import logging
+import hashlib
 from collections import defaultdict
 
 import requests
 import razorpay
-import hashlib
 
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
@@ -20,6 +20,11 @@ from django.http import JsonResponse
 from django.middleware import csrf
 
 from .models import Order, Entry, Faq, Rule
+from .email import (
+    send_password_reset_email,
+    send_welcome_email,
+    send_film_registration_email,
+)
 
 
 logger = logging.getLogger("app.dff2020")
@@ -123,6 +128,7 @@ class SignUp(View):
                 user.last_name = name[1]
             user.save()
             message = "Congratulations!! Your account is created please login!"
+            send_welcome_email(user)
             return redirect(reverse("login") + f"?message={message}")
         return redirect(reverse("signup") + f"?error={error}")
 
@@ -270,6 +276,7 @@ class VerifyPayment(LoginRequiredMixin, View):
                     rzp_payment_id = data["razorpay_payment_id"]
                     order.rzp_payment_id = rzp_payment_id
                     order.save()
+                    send_film_registration_email(request.user)
                     try:
                         rzp_client.payment.capture(
                             rzp_payment_id, order.amount, {"currency": "INR"}

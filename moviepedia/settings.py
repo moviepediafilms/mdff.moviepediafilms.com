@@ -177,13 +177,16 @@ if PRODUCTION:
     CSRF_COOKIE_SECURE = True
     SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 
-# emai setup to use sendgrid
-EMAIL_HOST = "smtp.sendgrid.net"
-EMAIL_HOST_USER = "apikey"
-EMAIL_HOST_PASSWORD = os.getenv("SENDGRID_API_KEY")
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-# EMAIL = "info@moviepediafilms.com"
+# sendgrid API
+SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
+SENDGRID_EMAIL = "info@moviepediafilms.com"
+SENDGRID_NAME = "Moviepedia Films"
+SENDGRID_REPLY_TO = "moviepedia14@gmail.com"
+
+SENDGRID_TEMPLATE_WELCOME = "welcome email"
+SENDGRID_TEMPLATE_FILM_REG = "film_registration"
+SENDGRID_TEMPLATE_PASSWORD_RESET = "forgot_password"
+
 
 RECAPTCHA_SECRET_KEY = os.getenv("RECAPTCHA_SECRET_KEY")
 
