@@ -172,6 +172,14 @@ class Registration(LoginRequiredMixin, View):
                     existing_entry_names
                 ):
                     error = "All movie names should be unique, including any previously submitted movie"
+                try:
+                    runtime = float(entry.get("runtime"))
+                except Exception as ex:
+                    logger.error(ex)
+                    error = "runtime should be a number"
+                else:
+                    if 0 > runtime or runtime > 30:
+                        error = "runtime should be between 0.1 to 30"
 
         return (False, error) if error else (True, None)
 
@@ -185,53 +193,54 @@ class Registration(LoginRequiredMixin, View):
         except Exception as ex:
             logger.exception(ex)
             error = "Invalid data format"
-        logger.debug(body)
-        entries = body.get("entries")
-        existing_orders = Order.objects.filter(owner=request.user.id).all()
-        valid, error = self._validate_entries(entries, request, existing_orders)
-        if valid:
-            receipt_number = hashlib.md5(
-                f"{request.user.email}:{len(existing_orders)}".encode()
-            ).hexdigest()
-            amount = len(entries) * 29900  # in paise
-            try:
-                rp_order_res = rzp_client.order.create(
-                    {
-                        "amount": amount,
-                        "currency": "INR",
-                        "receipt": receipt_number,
-                        "payment_capture": 0,
-                        "notes": {"email": request.user.email},
-                    }
-                )
-            except Exception as ex:
-                logger.exception(ex)
-                error = "Error creating order!"
-            else:
-                if rp_order_res.get("status") != "created":
-                    error = "Error creating order!"
-                    logger.error(f"Error creating order at razorpay {rp_order_res}")
-                else:
-                    order = Order.objects.create(
-                        owner=request.user,
-                        amount=amount,
-                        rzp_order_id=rp_order_res.get("id"),
-                        receipt_number=rp_order_res.get("receipt"),
+        else:
+            logger.debug(body)
+            entries = body.get("entries")
+            existing_orders = Order.objects.filter(owner=request.user.id).all()
+            valid, error = self._validate_entries(entries, request, existing_orders)
+            if valid:
+                receipt_number = hashlib.md5(
+                    f"{request.user.email}:{len(existing_orders)}".encode()
+                ).hexdigest()
+                amount = len(entries) * 29900  # in paise
+                try:
+                    rp_order_res = rzp_client.order.create(
+                        {
+                            "amount": amount,
+                            "currency": "INR",
+                            "receipt": receipt_number,
+                            "payment_capture": 0,
+                            "notes": {"email": request.user.email},
+                        }
                     )
-
-                    for entry in entries:
-                        Entry.objects.create(
-                            name=entry.get("name"),
-                            director=entry.get("director"),
-                            runtime=entry.get("runtime"),
-                            link=entry.get("link"),
-                            synopsis=entry.get("synopsis"),
-                            order=order,
+                except Exception as ex:
+                    logger.exception(ex)
+                    error = "Error creating order!"
+                else:
+                    if rp_order_res.get("status") != "created":
+                        error = "Error creating order!"
+                        logger.error(f"Error creating order at razorpay {rp_order_res}")
+                    else:
+                        order = Order.objects.create(
+                            owner=request.user,
+                            amount=amount,
+                            rzp_order_id=rp_order_res.get("id"),
+                            receipt_number=rp_order_res.get("receipt"),
                         )
-                    response["success"] = True
-                    response[
-                        "message"
-                    ] = "your order is created! waiting for youto complete payment!"
+
+                        for entry in entries:
+                            Entry.objects.create(
+                                name=entry.get("name"),
+                                director=entry.get("director"),
+                                runtime=int(entry.get("runtime")),
+                                link=entry.get("link"),
+                                synopsis=entry.get("synopsis"),
+                                order=order,
+                            )
+                        response["success"] = True
+                        response[
+                            "message"
+                        ] = "your order is created! waiting for youto complete payment!"
         return JsonResponse(
             response if not error else {"success": False, "error": error}
         )
