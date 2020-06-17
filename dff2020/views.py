@@ -17,7 +17,7 @@ from django.views.generic.base import TemplateView
 from django.views.generic.list import ListView
 from django.conf import settings
 from django.http import JsonResponse
-
+from django.middleware import csrf
 
 from .models import Order, Entry, Faq, Rule
 
@@ -319,6 +319,7 @@ class SubmissionView(LoginRequiredMixin, TemplateView):
         ]
         context["name"] = self.request.user.get_full_name()
         context["email"] = self.request.user.email
+        context["csrf"] = csrf.get_token(self.request)
         return context
 
 

@@ -59,16 +59,16 @@
                 </div>
             </template>
         </template>
-        <!-- submit button -->
         {% verbatim %}
+        <small class="text-danger text-sm">{{error}}</small>
+        <small class="text-warning text-sm">{{message}}</small>
+        <br/>
+        <!-- submit button -->
         <button class="btn btn-sm btn-warning" :class="{'disables': lock_input}" type="submit" @click.prevent="create_order">
             Proceed to Payment
         </button>
         <button class="btn btn-sm btn-warning" :class="{'disables': lock_input}" type="submit" @click.prevent="add_movie" >Add Another Movie</button><br/>
-            <small class="text-muted">Order total: {{amount}} INR</small>
-            <small class="text-danger text-sm">{{error}}</small>
-            <small class="text-warning text-sm">{{message}}</small>
-
+            <small class="text-muted">Order total: {{amount}} INR</small><br/>
         {% endverbatim %}
     </form>
 </div>

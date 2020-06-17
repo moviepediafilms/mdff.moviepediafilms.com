@@ -79,6 +79,7 @@
 {%block scripts%}
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script>
 function rzp_response_handler(rzp_response) {
     console.log(rzp_response);
@@ -87,24 +88,16 @@ function rzp_response_handler(rzp_response) {
         window.location = `/payment/error?description=${rzp_response.description}&order_id=${rzp_response.meta.order_id}&payment_id=${rzp_response.meta.payment_id}`;
     }
     else {
-        this.lock_input = true
-        console.log("Payment success! call server for ")
-        this.message = "verifying payment! "
-        axios.post('/verify_payment', rzp_response, { headers: { "X-CSRFToken": this.csrf } })
+        axios.post('/verify_payment', rzp_response, { headers: { "X-CSRFToken": "{{csrf}}" } })
             .then(response => {
-                this.lock_input = false
                 console.log(response);
                 if (response.data.success) {
-                    this.message = response.data.message
                     // redirect user
                     window.location.href = `/payment/success?description=Payment Successful&order_id=${rzp_response.razorpay_order_id}&payment_id=${rzp_response.razorpay_payment_id}`;
                 } else {
-                    this.error = response.data.error
                     window.location = `/payment/error?description=${response.data.error}&order_id=${rzp_response.razorpay_order_id}&payment_id=${rzp_response.razorpay_payment_id}`;
                 }
             }, error => {
-                this.lock_input = false
-                this.error = 'Payment verification failed!'
                 console.log(error);
                 window.location.href = `/payment/error?description=${this.error}&order_id=${rzp_response.razorpay_order_id}&payment_id=${rzp_response.razorpay_payment_id}`;
             })
