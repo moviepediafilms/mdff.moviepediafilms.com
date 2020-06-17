@@ -47,5 +47,6 @@ def _send(data):
     except Exception as ex:
         logger.exception(ex)
         logger.warning("sending email failed!")
+        logger.debug(data)
     else:
         logger.debug(f"sendgrid: {response}")
