@@ -18,7 +18,7 @@
             <p class="text-warning">{{description}}</p>
         {%endif%}
         {% if status == 'success' %}
-            <p></p>
+            <p>Film submitted. <a href="{% url 'dff2020:registration'%}" class="text-warning font-weight-bold">click here<a> to add more films</p>
         {% endif %}
         {% if order_id %}
             <small class="text-muted">OrderID <b>{{order_id}}</b></small><br/>
