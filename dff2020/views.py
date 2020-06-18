@@ -301,7 +301,7 @@ class Registration(LoginRequiredMixin, View):
                             "amount": amount,
                             "currency": "INR",
                             "receipt": receipt_number,
-                            "payment_capture": 0,
+                            "payment_capture": 1,
                             "notes": {"email": request.user.email},
                         }
                     )
@@ -425,12 +425,12 @@ class SubmissionView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class FAQView(LoginRequiredMixin, ListView):
+class FAQView(ListView):
     model = Faq
     template_name = "dff2020/faq.html"
 
 
-class RulesView(LoginRequiredMixin, TemplateView):
+class RulesView(TemplateView):
     template_name = "dff2020/rules.html"
 
     def get_context_data(self, **kwargs):

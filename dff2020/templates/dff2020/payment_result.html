@@ -7,7 +7,7 @@
 
     
     {% if status == 'success' %}
-        <div class="text-uppercase text-warning mt-5 font-weight-bold"><i class="fas fa-check text-success"></i> Successfull </div>
+        <div class="text-uppercase text-warning mt-5 font-weight-bold"><i class="fas fa-check text-success"></i> Success </div>
     {%else%}
         <div class="text-uppercase text-warning mt-5 font-weight-bold"><i class="fas fa-times text-danger"></i> Failed </div>
     {%endif%}
@@ -17,14 +17,17 @@
         {% if description %}
             <p class="text-warning">{{description}}</p>
         {%endif%}
+        {% if status == 'success' %}
+            <p></p>
+        {% endif %}
         {% if order_id %}
-            OrderID <b>{{order_id}}</b><br/>
+            <small class="text-muted">OrderID <b>{{order_id}}</b></small><br/>
         {%endif%}
         {% if payment_id %}
-            PaymentID <b>{{payment_id}}</b><br/>
+            <small class="text-muted">PaymentID <b>{{payment_id}}</b></small><br/>
         {%endif%}
         <br/>
-        <p>Please take a note of OrderID and PaymentID</p>
+        <small class="text-muted">Please take a note of OrderID and PaymentID</small>
         <br/>
         <small class="text-muted">If you have any queries please reach out to us at contactus@moviepediafilms.com</small>
     </div>

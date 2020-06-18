@@ -3,10 +3,10 @@
 
 {%block left%}
 <div class="container p-5">
-    <img src="{% static 'dff2020/img/icon.png'%}" height="150px" />
+    <img src="{% static '/dff2020/img/icon.png'%}" height="150px" />
 
     <div class="text-uppercase text-warning mt-5 font-weight-bold">Sign In</div>
-    <form class="text-left text-white" action="/login" method="post">
+    <form class="text-left text-white" action="{%url 'dff2020:login'%}" method="post">
         {% csrf_token %}
         <div class="md-form">
             <!-- Name -->
@@ -25,9 +25,9 @@
         <div class="text-sm text-warning">{{message}}</div>
         <br />
         <button class="btn btn-sm btn-warning text-dark font-weight-bold" type="submit">Log In</button>
-        <div class="text-warning text-sm mt-2">Don't have a account? <a class="text-link" href="/"><b>&nbsp;Create
+        <div class="text-warning text-sm mt-2">Don't have a account? <a class="text-link" href="{%url 'dff2020:signup'%}"><b>&nbsp;Create
                     One</b></a></div>
-        <div class="text-warning text-sm mt-2"><a class="text-link" href="forgot-password"><b>Forgot password ?</b></a></div>
+        <div class="text-warning text-sm mt-2"><a class="text-link" href="{%url 'dff2020:forgot_password'%}"><b>Forgot password ?</b></a></div>
     </form>
 </div>
 {%endblock%}

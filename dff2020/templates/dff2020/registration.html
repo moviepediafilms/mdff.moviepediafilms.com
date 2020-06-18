@@ -13,7 +13,7 @@
     <img src="{% static 'dff2020/img/icon.png'%}" height="150px" />
     <div class=" text-warning mt-5 font-weight-bold" v-cloak>Hello {{user.first_name}}!</div>
     <div class="text-warning mt-2">Fill in the details of the movie(s) you want to submit</div>
-    <form class="text-left text-white" action="/registration" method="post">
+    <form class="text-left text-white" action="{% url 'dff2020:registration'%}" method="post">
         {% csrf_token %}
         <template v-for="(movie, index) in movies" :key="index">
             <div class="md-form">
