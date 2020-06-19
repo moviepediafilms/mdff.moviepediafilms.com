@@ -1,9 +1,11 @@
-{% extends 'dff2020/authenticated_base.html' %}
+{% extends 'dff2020/base_single_panel.html' %}
 {% load static %}
 
 {%block left%}
 <div class="container p-5">
-    <img src="{% static '/dff2020/img/icon.png'%}" height="150px" />
+    <div class="text-left ">
+        <a class="img-fluid" href="{%url 'dff2020:home'%}"><img src="{% static 'dff2020/img/icon.png'%}" height="150px" /></a>
+    </div>
     <div class=" text-warning mt-5 font-weight-bold text-uppercase">FAQ</div>
     <div class="text-warning mt-4">
         {% for faq in object_list %}

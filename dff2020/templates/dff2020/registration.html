@@ -10,7 +10,9 @@
 
 <div class="container p-5" id="movies-app">
 
-    <img src="{% static 'dff2020/img/icon.png'%}" height="150px" />
+    <div class="text-left ">
+        <a class="img-fluid" href="{%url 'dff2020:home'%}"><img src="{% static 'dff2020/img/icon.png'%}" height="150px" /></a>
+    </div>
     <div class=" text-warning mt-5 font-weight-bold" v-cloak>Hello {{user.first_name}}!</div>
     <div class="text-warning mt-2">Fill in the details of the movie(s) you want to submit</div>
     <form class="text-left text-white" action="{% url 'dff2020:registration'%}" method="post">

@@ -5,7 +5,9 @@
 
 {%block left%}
 <div class="container p-5">
-    <img src="{% static 'dff2020/img/icon.png'%}" height="150px" />
+    <div class="text-left ">
+        <a class="img-fluid" href="{%url 'dff2020:home'%}"><img src="{% static 'dff2020/img/icon.png'%}" height="150px" /></a>
+    </div>
     {% if pending_orders %}
         <div class=" text-warning mt-5 mb-3 font-weight-bold text-uppercase">You have {{ pending_orders|length|apnumber }}  pending order{{ pending_orders|length|pluralize }}</div>
     {%else%}
