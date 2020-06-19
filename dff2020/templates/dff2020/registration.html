@@ -16,6 +16,12 @@
     <form class="text-left text-white" action="{% url 'dff2020:registration'%}" method="post">
         {% csrf_token %}
         <template v-for="(movie, index) in movies" :key="index">
+            <template v-if="movies.length > 1">
+                <div class="text-right" style="margin-bottom: -55px;">
+                    <a title="Delete movie" class="btn-floating btn-sm btn-warning btn-secondary" @click.prevent="remove_movie(index)"><i
+                            class="fas fa-minus text-dark"></i></a>
+                </div>
+            </template>
             <div class="md-form">
                 <!-- Name -->
                 <input type="text" :id="'name' + index" name="name" class="form-control text-reset" :class="{'invalid': movie.name.error}"
@@ -52,12 +58,6 @@
                 <small class="text-muted" v-cloak>{{500 - movie.synopsis.value.length}} characters left</small>
                 {% endverbatim %}
             </div>
-            <template v-if="movies.length > 1">
-                <div class="text-left">
-                    <a title="Delete movie" class="btn-floating btn-sm btn-warning btn-secondary" @click.prevent="remove_movie(index)"><i
-                            class="fas fa-minus text-dark"></i></a>
-                </div>
-            </template>
         </template>
         {% verbatim %}
         <small class="text-danger text-sm" v-cloak>{{error}}</small>

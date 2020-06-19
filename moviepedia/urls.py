@@ -20,7 +20,5 @@ from django.views.generic import TemplateView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("privacy-policy/", TemplateView.as_view(template_name="privacy_policy.html")),
-    path("tos/", TemplateView.as_view(template_name="tos.html")),
     path("", include("dff2020.urls")),
 ]

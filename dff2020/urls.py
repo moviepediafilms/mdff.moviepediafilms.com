@@ -5,7 +5,7 @@ from . import views
 app_name = "dff2020"
 
 urlpatterns = [
-    path("", TemplateView.as_view(template_name="dff2020/home.html"),name="home"),
+    path("", TemplateView.as_view(template_name="dff2020/home.html"), name="home"),
     path("signup", views.SignUp.as_view(), name="signup"),
     path("login", views.Login.as_view(), name="login"),
     path("forgot-password", views.ForgotPasswordView.as_view(), name="forgot_password"),
@@ -24,5 +24,12 @@ urlpatterns = [
     path(
         "refund-policy/",
         TemplateView.as_view(template_name="dff2020/refund_policy.html"),
+        name="refund-policy",
     ),
+    path(
+        "privacy-policy/",
+        TemplateView.as_view(template_name="dff2020/privacy_policy.html"),
+        name="privacy-policy",
+    ),
+    path("tos/", TemplateView.as_view(template_name="dff2020/tos.html"), name="tos"),
 ]

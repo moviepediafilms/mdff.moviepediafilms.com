@@ -10,12 +10,13 @@
 <h1 class="d-none">Moviepedia Digital Film Fest</h1>
 <div class="bg" style="display: flex; align-items: center; margin-bottom: -16px;">
     <div class="text-center" style="width:100%; margin-top: 350px">
-        
-            <a href="{% url 'dff2020:signup' %}" class="btn btn-sm btn-warning text-dark font-weight-bold">Particiate</a>
-            <a href="{% url 'dff2020:login' %}" class="btn btn-sm btn-warning text-dark font-weight-bold">Login</a>
-            <a href="{% url 'dff2020:faq' %}" class="btn btn-sm btn-warning text-dark font-weight-bold">FAQ</a>
-            <a href="{% url 'dff2020:rules' %}" class="btn btn-sm btn-warning text-dark font-weight-bold">Rules & Regulations</a>
-        
+        <a href="{% url 'dff2020:signup' %}" class="btn btn-sm btn-warning text-dark font-weight-bold">Participate</a><br/>
+        <div class="mt-5">
+            <small><a href="{% url 'dff2020:login' %}" class="text-light font-weight-bold">Login</a></small>
+            <small><a href="{% url 'dff2020:faq' %}" class="text-light mx-4 font-weight-bold">FAQ</a></small>
+            <small><a href="{% url 'dff2020:rules' %}" class="text-light font-weight-bold">Rules & Regulations</a></small>
+        </div>
     </div>
+    
 </div>
 {%endblock%}

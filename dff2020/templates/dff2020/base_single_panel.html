@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{%block head%}
+<link rel="stylesheet" href="{% static '/dff2020/css/base.css' %}" />
+{%endblock%}
+
+{%block content%}
+<div class="text-white container mt-2 ">
+    <div class="header text-center">
+        <br />
+    </div>
+
+    <div class="container-grid">
+
+        <div class="row ">
+            <div class="col-lg-1 d-lg-block d-md-none"></div>
+            <div class="col-lg-10 bg-dark">
+
+                {%block left%}
+                {%endblock%}
+
+            </div>
+            <div class="col-lg-1 d-lg-block d-md-none"></div>
+        </div>
+    </div>
+</div>
+{%endblock%}

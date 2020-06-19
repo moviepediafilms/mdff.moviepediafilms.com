@@ -6,10 +6,14 @@
 {%block left%}
 <div class="container p-5">
     <img src="{% static 'dff2020/img/icon.png'%}" height="150px" />
-    <div class=" text-warning mt-5 mb-3 font-weight-bold text-uppercase">You have {{ orders|length|apnumber }} order{{ orders|length|pluralize }}</div>
+    {% if pending_orders %}
+        <div class=" text-warning mt-5 mb-3 font-weight-bold text-uppercase">You have {{ pending_orders|length|apnumber }}  pending order{{ pending_orders|length|pluralize }}</div>
+    {%else%}
+        <div class=" text-warning mt-5 mb-3 font-weight-bold text-uppercase">You have {{ orders|length|apnumber }}  order{{ orders|length|pluralize }}</div>
+    {%endif%}
+
     <div>
-    {%for order in orders%}
-        
+    {%for order in all_orders%}
             <div class="card-deck text-dark">
                 <!-- Card -->
                 <div class="card mb-2">
@@ -22,20 +26,19 @@
                     </h6>
                     <!--Text-->
                     <p class="card-text">
+                          Status: {% if order.status %}Complete{%else%}Pending{%endif%}<br/>
                           OrderID: {{order.id}}
                     </p>
                     {% if order.status %}
                         <i class="fa fa-check text-light-green text-success"></i> {{order.amount_txt}} INR Paid
                     {%else%}
                         <button type="button" class="btn btn-warning btn-sm text-dark font-weight-bold" onClick="open_rzp('{{order.id}}', {{order.amount}})">Pay {{order.amount_txt}} INR</button>
+                        <br/><small class="text-muted">Click Pay to complete your order</small>
                     {%endif%}
                     </div>
                 </div>
                 <!-- Card -->
             </div>
-            
-            
-        
     {%endfor%}
     </div>
     <div class="mt-4">

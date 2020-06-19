@@ -1,13 +1,13 @@
-{% extends 'dff2020/authenticated_base.html' %}
+{% extends 'dff2020/base_single_panel.html' %}
 {% load static %}
 
 {%block left%}
 <div class="container p-5">
-    <img src="{% static 'dff2020/img/icon.png'%}" height="150px" />
+    <div class="text-left ">
+        <a class="img-fluid" href="{%url 'dff2020:home'%}"><img src="{% static 'dff2020/img/icon.png'%}" height="150px" /></a>
+    </div>
     <div class=" text-warning mt-5 font-weight-bold text-uppercase">Rules and Regulations</div>
     <div class="text-warning mt-4">
-    
-    
     {% for rule_type, rules in rules_by_type.items %}
         <h5 class="font-weight-light mb-4">{{rule_type}}</h5>
         <ul class="text-muted">

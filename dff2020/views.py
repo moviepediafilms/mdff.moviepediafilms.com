@@ -402,13 +402,17 @@ class SubmissionView(LoginRequiredMixin, TemplateView):
                 "director": entry.director,
                 "runtime": entry.runtime,
                 "synopsis": entry.synopsis,
-                "payment": "Complete" if entry.order.rzp_payment_id else "Incomplete",
+                "payment": "Complete",
             }
             for entry in entries
+            if entry.order.rzp_payment_id
         ]
 
-        context["orders"] = [
-            dict(
+        context["orders"] = []
+        context["pending_orders"] = []
+
+        for order in Order.objects.filter(owner=self.request.user).all():
+            order_details = dict(
                 id=order.rzp_order_id,
                 amount=order.amount,
                 amount_txt=order.amount / 100.0,
@@ -417,8 +421,11 @@ class SubmissionView(LoginRequiredMixin, TemplateView):
                     entry.name for entry in Entry.objects.filter(order=order).all()
                 ],
             )
-            for order in Order.objects.filter(owner=self.request.user).all()
-        ]
+            if order.rzp_payment_id:
+                context["orders"].append(order_details)
+            else:
+                context["pending_orders"].append(order_details)
+        context["all_orders"] = context["pending_orders"] + context["orders"]
         context["name"] = self.request.user.get_full_name()
         context["email"] = self.request.user.email
         context["csrf"] = csrf.get_token(self.request)
