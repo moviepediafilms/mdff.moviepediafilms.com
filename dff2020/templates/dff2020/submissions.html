@@ -6,47 +6,52 @@
 {%block left%}
 <div class="container p-5">
     <div class="text-left ">
-        <a class="img-fluid" href="{%url 'dff2020:home'%}"><img src="{% static 'dff2020/img/icon.png'%}" height="150px" /></a>
+        <a class="img-fluid" href="{%url 'dff2020:home'%}"><img src="{% static 'dff2020/img/icon.png'%}"
+                height="150px" /></a>
     </div>
     {% if pending_orders %}
-        <div class=" text-warning mt-5 mb-3 font-weight-bold text-uppercase">You have {{ pending_orders|length|apnumber }}  pending order{{ pending_orders|length|pluralize }}</div>
+    <div class=" text-warning mt-5 mb-3 font-weight-bold text-uppercase">You have {{ pending_orders|length|apnumber }}
+        pending order{{ pending_orders|length|pluralize }}</div>
     {%else%}
-        <div class=" text-warning mt-5 mb-3 font-weight-bold text-uppercase">You have {{ orders|length|apnumber }}  order{{ orders|length|pluralize }}</div>
+    <div class=" text-warning mt-5 mb-3 font-weight-bold text-uppercase">You have {{ orders|length|apnumber }}
+        order{{ orders|length|pluralize }}</div>
     {%endif%}
 
     <div>
-    {%for order in all_orders%}
-            <div class="card-deck text-dark">
-                <!-- Card -->
-                <div class="card mb-2">
-                    <!--Card content-->
-                    <div class="card-body">
+        {%for order in all_orders%}
+        <div class="card-deck text-dark">
+            <!-- Card -->
+            <div class="card mb-2">
+                <!--Card content-->
+                <div class="card-body">
                     <h6 class="card-title">
                         {% for movie in order.movies%}
-                            <span class="text-dark badge badge-primary ">{{movie}}</span>
+                        <span class="text-dark badge badge-primary ">{{movie}}</span>
                         {%endfor%}
                     </h6>
                     <!--Text-->
                     <p class="card-text">
-                          Status: {% if order.status %}Complete{%else%}Pending{%endif%}<br/>
-                          OrderID: {{order.id}}
+                        Status: {% if order.status %}Complete{%else%}Pending{%endif%}<br />
+                        OrderID: {{order.id}}
                     </p>
                     {% if order.status %}
-                        <i class="fa fa-check text-light-green text-success"></i> {{order.amount_txt}} INR Paid
+                    <i class="fa fa-check text-light-green text-success"></i> {{order.amount_txt}} INR Paid
                     {%else%}
-                        <button type="button" class="btn btn-warning btn-sm text-dark font-weight-bold" onClick="open_rzp('{{order.id}}', {{order.amount}})">Pay {{order.amount_txt}} INR</button>
-                        <br/><small class="text-muted">Click Pay to complete your order</small>
+                    <button type="button" class="btn btn-warning btn-sm text-dark font-weight-bold"
+                        onClick="open_rzp('{{order.id}}', {{order.amount}})">Pay {{order.amount_txt}} INR</button>
+                    <br /><small class="text-muted">Click Pay to complete your order</small>
                     {%endif%}
-                    </div>
                 </div>
-                <!-- Card -->
             </div>
-    {%endfor%}
+            <!-- Card -->
+        </div>
+        {%endfor%}
     </div>
     <div class="mt-4">
-    <div class="text-warning mt-5 font-weight-bold text-uppercase">{{entries|length}} Movie Entr{{entries|length|pluralize:'y,ies'}}</div>
-    {% for entry in entries%}
-            <div class="card card-cascade my-5 bg-muted narrower">
+        <div class="text-warning mt-5 font-weight-bold text-uppercase">{{entries|length}} Movie
+            Entr{{entries|length|pluralize:'y,ies'}}</div>
+        {% for entry in entries%}
+        <div class="card card-cascade my-5 bg-muted narrower">
 
             <!-- Card image -->
             <div class="view view-cascade gradient-card-header bg-warning text-dark">
@@ -59,25 +64,27 @@
                 <p class="card-header-subtitle mb-0">{{entry.director}}</p>
 
             </div>
-            <a class="btn-floating btn-action ml-auto mr-4 bg-dark" target="_blank" href="{{entry.link | complete_link}}">
+            <a class="btn-floating btn-action ml-auto mr-4 bg-dark" target="_blank"
+                href="{{entry.link | complete_link}}">
                 <i class="fas fa-link pl-1 text-warning"></i>
             </a>
             <!-- Card content -->
             <div class="card-body card-body-cascade text-center">
                 <!-- Text -->
                 <p class="card-text text-dark">{{entry.synopsis}}</p>
-                <hr/>
+                <hr />
                 <!-- Card footer -->
                 <small class="text-muted">
                     <div style="display:inline-block" class="mr-1">Runtime {{entry.runtime}} Minutes</span></div>
                     <i class="far fa-circle fa-xs d-sm-inline d-none"></i>
                     <div style="display:inline-block" class="ml-1">Payment {{entry.payment}}</div>
                 </small>
-                
+
             </div>
-            </div>
-    {%endfor%}
-    <a href="/registration" class="text-center btn btn-warning text-dark font-weight-bold btn-md">Submit More Movies</a>
+        </div>
+        {%endfor%}
+        <a href="/registration" class="text-center btn btn-warning text-dark font-weight-bold btn-md">Submit More
+            Movies</a>
     </div>
 </div>
 {%endblock%}
@@ -87,43 +94,43 @@
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script>
-function rzp_response_handler(rzp_response) {
-    console.log(rzp_response);
-    if (rzp_response.error) {
-        console.log("Payment failed!")
-        window.location = `/payment/error?description=${rzp_response.description}&order_id=${rzp_response.meta.order_id}&payment_id=${rzp_response.meta.payment_id}`;
+    function rzp_response_handler(rzp_response) {
+        console.log(rzp_response);
+        if (rzp_response.error) {
+            console.log("Payment failed!")
+            window.location = `/payment/error?description=${rzp_response.description}&order_id=${rzp_response.meta.order_id}&payment_id=${rzp_response.meta.payment_id}`;
+        }
+        else {
+            axios.post('/verify_payment', rzp_response, { headers: { "X-CSRFToken": "{{csrf}}" } })
+                .then(response => {
+                    console.log(response);
+                    if (response.data.success) {
+                        // redirect user
+                        window.location.href = `/payment/success?description=Payment Successful&order_id=${rzp_response.razorpay_order_id}&payment_id=${rzp_response.razorpay_payment_id}`;
+                    } else {
+                        window.location = `/payment/error?description=${response.data.error}&order_id=${rzp_response.razorpay_order_id}&payment_id=${rzp_response.razorpay_payment_id}`;
+                    }
+                }, error => {
+                    console.log(error);
+                    window.location.href = `/payment/error?description=${this.error}&order_id=${rzp_response.razorpay_order_id}&payment_id=${rzp_response.razorpay_payment_id}`;
+                })
+        }
     }
-    else {
-        axios.post('/verify_payment', rzp_response, { headers: { "X-CSRFToken": "{{csrf}}" } })
-            .then(response => {
-                console.log(response);
-                if (response.data.success) {
-                    // redirect user
-                    window.location.href = `/payment/success?description=Payment Successful&order_id=${rzp_response.razorpay_order_id}&payment_id=${rzp_response.razorpay_payment_id}`;
-                } else {
-                    window.location = `/payment/error?description=${response.data.error}&order_id=${rzp_response.razorpay_order_id}&payment_id=${rzp_response.razorpay_payment_id}`;
-                }
-            }, error => {
-                console.log(error);
-                window.location.href = `/payment/error?description=${this.error}&order_id=${rzp_response.razorpay_order_id}&payment_id=${rzp_response.razorpay_payment_id}`;
-            })
+    var rzp_options = {
+        "key": "rzp_live_Zeqao5NdTFDvho",
+        "currency": "INR",
+        "handler": rzp_response_handler,
+        "prefill": {
+            "name": "{{name}}",
+            "email": "{{email}}",
+        }
+    };
+    function open_rzp(order_id, amount) {
+        var options = Object.assign({}, rzp_options)
+        options.order_id = order_id
+        options.amount = amount
+        new Razorpay(options).open();
     }
-}
-var rzp_options = {
-    "key": "rzp_test_Zhdtys04NuaToI",
-    "currency": "INR",
-    "handler": rzp_response_handler,
-    "prefill": {
-        "name": "{{name}}",
-        "email": "{{email}}",
-    }
-};
-function open_rzp(order_id, amount){
-    var options = Object.assign({}, rzp_options)
-    options.order_id = order_id
-    options.amount = amount
-    new Razorpay(options).open();
-}
 
 </script>
 {%endblock%}
