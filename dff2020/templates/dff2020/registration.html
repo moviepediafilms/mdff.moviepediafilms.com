@@ -11,7 +11,8 @@
 <div class="container p-5" id="movies-app">
 
     <div class="text-left ">
-        <a class="img-fluid" href="{%url 'dff2020:home'%}"><img src="{% static 'dff2020/img/icon.png'%}" height="150px" /></a>
+        <a class="img-fluid" href="{%url 'dff2020:home'%}"><img src="{% static 'dff2020/img/icon.png'%}"
+                height="150px" /></a>
     </div>
     <div class=" text-warning mt-5 font-weight-bold" v-cloak>Hello {{user.first_name}}!</div>
     <div class="text-warning mt-2">Fill in the details of the movie(s) you want to submit</div>
@@ -20,40 +21,42 @@
         <template v-for="(movie, index) in movies" :key="index">
             <template v-if="movies.length > 1">
                 <div class="text-right" style="margin-bottom: -55px;">
-                    <a title="Delete movie" class="btn-floating btn-sm btn-warning btn-secondary" @click.prevent="remove_movie(index)"><i
-                            class="fas fa-minus text-dark"></i></a>
+                    <a title="Delete movie" class="btn-floating btn-sm btn-warning btn-secondary"
+                        @click.prevent="remove_movie(index)"><i class="fas fa-minus text-dark"></i></a>
                 </div>
             </template>
             <div class="md-form">
                 <!-- Name -->
-                <input type="text" :id="'name' + index" name="name" class="form-control text-reset" :class="{'invalid': movie.name.error}"
-                    v-model="movie.name.value" required>
+                <input type="text" :id="'name' + index" name="name" class="form-control text-reset"
+                    :class="{'invalid': movie.name.error}" v-model="movie.name.value" required>
                 <label :for="'name' + index">Movie Name</label>
             </div>
 
             <div class="md-form">
                 <!-- Director -->
-                <input type="text" :id="'director' + index" name="director" class="form-control text-reset"  :class="{'invalid': movie.director.error}"
-                    v-model="movie.director.value" required>
+                <input type="text" :id="'director' + index" name="director" class="form-control text-reset"
+                    :class="{'invalid': movie.director.error}" v-model="movie.director.value" required>
                 <label :for="'director' + index">Director's Name</label>
             </div>
             <div class="md-form">
                 <!-- Runtime -->
                 <input type="number" min="1" max="30" :id="'runtime' + index" name="runtime"
-                    class="form-control text-reset"  :class="{'invalid': movie.runtime.error}"v-model="movie.runtime.value" required>
+                    class="form-control text-reset" :class="{'invalid': movie.runtime.error}"
+                    v-model="movie.runtime.value" required>
                 <label :for="'runtime' + index">Runtime in minutes</label>
                 <small class="text-muted">Maximum 30 minutes runtime</small>
             </div>
             <div class="md-form">
                 <!-- link -->
-                <input type="text" :id="'link' + index" name="link" class="form-control text-reset"  :class="{'invalid': movie.link.error}"
-                    v-model="movie.link.value" required>
+                <input type="text" :id="'link' + index" name="link" class="form-control text-reset"
+                    :class="{'invalid': movie.link.error}" v-model="movie.link.value" required>
                 <label :for="'link' + index">Movie's link</label>
                 <small class="text-muted">YouTube or any similar platform link</small>
             </div>
             <div class="md-form">
                 <!-- link -->
-                <textarea type="text" :id="'synopsis' + index" name="synopsis" class="md-textarea form-control text-reset" :class="{'invalid': movie.synopsis.error}"
+                <textarea type="text" :id="'synopsis' + index" name="synopsis"
+                    class="md-textarea form-control text-reset" :class="{'invalid': movie.synopsis.error}"
                     v-model="movie.synopsis.value" rows="3"></textarea>
                 <label :for="'synopsis' + index">Synopsis (Optional)</label>
                 {% verbatim %}
@@ -64,40 +67,42 @@
         {% verbatim %}
         <small class="text-danger text-sm" v-cloak>{{error}}</small>
         <small class="text-warning text-sm" v-cloak>{{message}}</small>
-        <br/>
+        <br />
         <!-- submit button -->
-        <button class="btn btn-sm btn-warning" :class="{'disables': lock_input}" type="submit" @click.prevent="create_order">
+        <button class="btn btn-sm btn-warning" :class="{'disables': lock_input}" type="submit"
+            @click.prevent="create_order">
             Proceed to Payment
         </button>
-        <button class="btn btn-sm btn-warning" :class="{'disables': lock_input}" type="submit" @click.prevent="add_movie" >Add Another Movie</button><br/>
-            <small class="text-muted" v-cloak>Order total: {{amount}} INR</small><br/>
+        <button class="btn btn-sm btn-warning" :class="{'disables': lock_input}" type="submit"
+            @click.prevent="add_movie">Add Another Movie</button><br />
+        <small class="text-muted" v-cloak>Order total: {{amount}} INR</small><br />
         {% endverbatim %}
     </form>
 </div>
 {%endblock%}
 
 {%block right_content%}
-    <ul class="stepper">
-        <!-- First Step -->
-        <li class="step active">
-            <div data-step-label="June 15th" class="step-title waves-effect waves-dark">Registrations Start</div>
-            <div class="step-new-content text-dark font-weight-lighter">Register your entry, add the number of movies
-                you would like to submit and complete the payment</div>
-        </li>
-        <li class="step">
-            <div data-step-label="June 21st" class="step-title waves-effect waves-dark">Registrations End</div>
-        </li>
-        <li class="step">
-            <div data-step-label="July 10th" class="step-title waves-effect waves-dark">Submissions closed</div>
-        </li>
-        <li class="step">
-            <div data-step-label="July 23th - July 29th" class="step-title waves-effect waves-dark">Screening of top 10
-                films</div>
-        </li>
-        <li class="step">
-            <div data-step-label="July 30th" class="step-title waves-effect waves-dark">Results</div>
-        </li>
-    </ul>
+<ul class="stepper">
+    <!-- First Step -->
+    <li class="step active">
+        <div data-step-label="June 20th" class="step-title waves-effect waves-dark">Registrations Start</div>
+        <div class="step-new-content text-dark font-weight-lighter">Register your entry, add the number of movies
+            you would like to submit and complete the payment</div>
+    </li>
+    <li class="step">
+        <div data-step-label="June 25st" class="step-title waves-effect waves-dark">Registrations End</div>
+    </li>
+    <li class="step">
+        <div data-step-label="July 10th" class="step-title waves-effect waves-dark">Submissions closed</div>
+    </li>
+    <li class="step">
+        <div data-step-label="July 24th - August 1st" class="step-title waves-effect waves-dark">Screening of top 10
+            films</div>
+    </li>
+    <li class="step">
+        <div data-step-label="August 2nd" class="step-title waves-effect waves-dark">Results</div>
+    </li>
+</ul>
 {%endblock%}
 
 {%block scripts%}
