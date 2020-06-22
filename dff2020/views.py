@@ -251,6 +251,8 @@ class Registration(LoginRequiredMixin, View):
                 ):
                     error = "All movies must have name, director, runtime and link"
                     break
+                if entry.get("synopsis") is not None:
+                    entry["synopsis"] = entry.get("synopsis")[:500]
             if not error:
                 existing_entries = []
                 existing_entry_names = []
