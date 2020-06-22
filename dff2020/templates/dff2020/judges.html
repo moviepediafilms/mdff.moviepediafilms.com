@@ -1,0 +1,39 @@
+{% extends 'dff2020/base_single_panel.html' %}
+{% load static %}
+
+{%block left%}
+<div class="container p-5">
+    <div class="text-left ">
+        <a class="img-fluid" href="{%url 'dff2020:home'%}"><img src="{% static 'dff2020/img/icon.png'%}"
+                height="150px" /></a>
+    </div>
+    <h2 class=" text-warning mt-5 font-weight-bold text-center text-uppercase">Meet the Jury</h2>
+    <!-- Card -->
+    <div class="row row-cols-1 row-cols-md-2 mt-4">
+        {% for judge in judges %}
+        <div class="col  mb-4">
+            <div class="card testimonial-card text-dark h-100 ">
+                <!-- Background color -->
+                <div class="card-up bg-warning lighten-1"></div>
+
+                <!-- Avatar -->
+                <div class="avatar mx-auto white">
+                    <img src="{{judge.image}}" class="rounded-circle" alt="{{judge.name}}">
+                </div>
+
+                <!-- Content -->
+                <div class="card-body">
+                    <!-- Name -->
+                    <h4 class="card-title">{{judge.name}}</h4>
+                    <hr>
+                    <!-- Quotation -->
+                    <p><i class="fas fa-quote-left"></i> {{judge.about}}
+                    </p>
+                </div>
+            </div>
+        </div>
+        {%endfor%}
+        <!-- Card -->
+    </div>
+</div>
+{%endblock%}

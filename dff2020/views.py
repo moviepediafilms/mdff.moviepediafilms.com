@@ -22,6 +22,7 @@ from django.http import JsonResponse
 from django.middleware import csrf
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.templatetags.static import static
 
 from .models import Order, Entry, Faq, Rule
 from .email import (
@@ -253,6 +254,10 @@ class Registration(LoginRequiredMixin, View):
                     break
                 if entry.get("synopsis") is not None:
                     entry["synopsis"] = entry.get("synopsis")[:500]
+                entry["name"] = entry.get("name")[:50]
+                entry["director"] = entry.get("director")[:50]
+                entry["link"] = entry.get("link")[:500]
+
             if not error:
                 existing_entries = []
                 existing_entry_names = []
@@ -449,4 +454,39 @@ class RulesView(TemplateView):
             rules_by_type[rule.type].append(rule)
         context["rules_by_type"] = dict(rules_by_type)
         logger.debug(context)
+        return context
+
+
+class JudgesView(TemplateView):
+    template_name = "dff2020/judges.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["judges"] = [
+            dict(
+                name="Suganndha Mehrotra",
+                image=static("dff2020/img/smehrotra.png"),
+                about="Suganndha has worked as an Assistant Director for R. Balki in Paa and Second Assistant Director for Neeraj Pandey in films like Special 26, Baby. She has also worked as an Executive Producer in Homeshop18",
+            ),
+            dict(
+                name="Pawan Sony",
+                image=static("dff2020/img/psoni.png"),
+                about="Pawan Sony has written for films like Stree (dir. Amar Kaushik) Dil Dosti Etc. (dir. Manish Tiwary), Sixteen (dir. Raj Purohit) and many more. He has published a graphic novel called Bhishma published by Holy Cow.",
+            ),
+            dict(
+                name="Nagesh Naradasi",
+                image=static("dff2020/img/nnaradasi.png"),
+                about="Nagesh Naradasi is an Indian film Director, who has worked predominantly in Telugu movie industry . Nagesh Naradasi has worked in popular movies like Viraaj , Desa Dimmari .",
+            ),
+            dict(
+                name="Shubham Gaur",
+                image=static("dff2020/img/sgaur.png"),
+                about="Shubham has worked as a non-fiction writer in UTV And NDTV imagine for 2 yrs. It has been 10 years since he's been working as casting director in Mumbai. Some of his work includes The Lunchbox, Sense8, The Jungle Book, etc.",
+            ),
+            dict(
+                name="Harshit Bansal",
+                image=static("dff2020/img/hbansal.png"),
+                about="Harshit is the founder and curator of 'Humans of Cinema', a digital film appreciation platform where cinephiles have conversations around their favorite films and the impact of cinema. He also hosts a film podcast where he chats with film artists about their craft and their love for cinema.",
+            ),
+        ]
         return context

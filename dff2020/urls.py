@@ -32,4 +32,5 @@ urlpatterns = [
         name="privacy-policy",
     ),
     path("tos/", TemplateView.as_view(template_name="dff2020/tos.html"), name="tos"),
+    path("judges/", views.JudgesView.as_view(), name="judges"),
 ]
