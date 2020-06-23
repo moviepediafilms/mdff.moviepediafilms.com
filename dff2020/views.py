@@ -488,5 +488,10 @@ class JudgesView(TemplateView):
                 image=static("dff2020/img/hbansal.png"),
                 about="Harshit is the founder and curator of 'Humans of Cinema', a digital film appreciation platform where cinephiles have conversations around their favorite films and the impact of cinema. He also hosts a film podcast where he chats with film artists about their craft and their love for cinema.",
             ),
+            dict(
+                name="Puneet Prakash",
+                image=static("dff2020/img/pprakash.png"),
+                about="Puneet Prakash is an award winning ad film maker who is in short time has acquired the reputation of an emotional storyteller with his ad films. His Gillette film on gender equality won the Cannes Silver Lion for India. Recently, it also won 3 Spikes Asia Awards for Film, music & entertainment & 2 Effie awards.",
+            ),
         ]
         return context
