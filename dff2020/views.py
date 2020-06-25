@@ -326,20 +326,25 @@ class Registration(LoginRequiredMixin, View):
                             rzp_order_id=rp_order_res.get("id"),
                             receipt_number=rp_order_res.get("receipt"),
                         )
-
-                        for entry in entries:
-                            Entry.objects.create(
-                                name=entry.get("name"),
-                                director=entry.get("director"),
-                                runtime=int(float(entry.get("runtime"))),
-                                link=entry.get("link"),
-                                synopsis=entry.get("synopsis"),
-                                order=order,
-                            )
-                        response["success"] = True
-                        response[
-                            "message"
-                        ] = "your order is created! waiting for youto complete payment!"
+                        try:
+                            for entry in entries:
+                                Entry.objects.create(
+                                    name=entry.get("name"),
+                                    director=entry.get("director"),
+                                    runtime=int(float(entry.get("runtime"))),
+                                    link=entry.get("link"),
+                                    synopsis=entry.get("synopsis"),
+                                    order=order,
+                                )
+                        except Exception as ex:
+                            order.delete()
+                            logger.exception(ex)
+                            error = f"Error creating your entry '{entry.get('name')}', Only english alphabets and symbols (UTF-8 charset) are allowed"
+                        else:
+                            response["success"] = True
+                            response[
+                                "message"
+                            ] = "your order is created! waiting for youto complete payment!"
         return JsonResponse(
             response if not error else {"success": False, "error": error}
         )
