@@ -82,37 +82,22 @@
 {%endblock%}
 
 {%block right_content%}
-<ul class="stepper">
+{% verbatim %}
+<ul class="stepper" id="steps">
     <!-- First Step -->
-    <li class="step active">
-        <div data-step-label="June 20th" class="step-title waves-effect waves-dark">Registrations Start</div>
-        <div class="step-new-content text-dark font-weight-lighter">Register your entry, add the number of movies
-            you would like to submit and complete the payment</div>
-    </li>
-    <li class="step">
-        <div data-step-label="June 26th" class="step-title waves-effect waves-dark">Registrations End</div>
-    </li>
-    <li class="step">
-        <div data-step-label="July 10th" class="step-title waves-effect waves-dark">Submissions closed</div>
-    </li>
-    <li class="step">
-        <div data-step-label="July 24th - August 1st" class="step-title waves-effect waves-dark">Screening of top 10
-            films</div>
-    </li>
-    <li class="step">
-        <div data-step-label="August 2nd" class="step-title waves-effect waves-dark">Results</div>
+    <li class="step" :class="{active: active_step_id == step.id }" v-for="step in steps" :key="step.id" v-cloak>
+        <div :data-step-label="step.date" class="step-title waves-effect waves-dark">{{step.name}}</div>
+        <div class="step-new-content text-dark font-weight-lighter">{{step.desc}}</div>
     </li>
 </ul>
+{% endverbatim %}
 {%endblock%}
 
 {%block scripts%}
-<script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+<script src="https://unpkg.com/vue@2.6.11/dist/vue.min.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.31/moment-timezone-with-data.min.js"></script>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="{% static 'dff2020/js/registration.js'%}"></script>
-<script>
-    $(document).ready(function () {
-        $('.stepper').mdbStepper();
-    })  
-</script>
 {%endblock%}
