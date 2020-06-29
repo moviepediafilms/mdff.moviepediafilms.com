@@ -327,16 +327,15 @@ class Registration(LoginRequiredMixin, View):
                 if late_user and not has_paid_orders:
                     amount += 9900
                 try:
-                    rp_order_res = {"status": "created", "id": "xyz", "receipt": "123"}
-                    # rp_order_res = rzp_client.order.create(
-                    #     {
-                    #         "amount": amount,
-                    #         "currency": "INR",
-                    #         "receipt": receipt_number,
-                    #         "payment_capture": 1,
-                    #         "notes": {"email": request.user.email},
-                    #     }
-                    # )
+                    rp_order_res = rzp_client.order.create(
+                        {
+                            "amount": amount,
+                            "currency": "INR",
+                            "receipt": receipt_number,
+                            "payment_capture": 1,
+                            "notes": {"email": request.user.email},
+                        }
+                    )
                 except Exception as ex:
                     logger.exception(ex)
                     error = "Error creating order!"
