@@ -3,11 +3,11 @@ import json
 import logging
 import hashlib
 from collections import defaultdict
-
+from datetime import datetime
 import requests
 import razorpay
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.models import User
@@ -34,14 +34,11 @@ from .email import (
 
 logger = logging.getLogger("app.dff2020")
 
+LATE_DATE = datetime.strptime("2020-07-01T00:00:00+05:30", "%Y-%m-%dT%H:%M:%S%z")
+
 rzp_client = razorpay.Client(
     auth=(settings.RAZORPAY_API_KEY, settings.RAZORPAY_API_SECRET)
 )
-
-DOOMS_DAY_MAP = {
-    "signup": "2020-06-15",  # redirect: signup -> registrations are over page
-    "submission": "2020-06-15",  # redirect: submission -> submissions are over page
-}
 
 
 def get_ip(request):
@@ -230,6 +227,11 @@ class ForgotPasswordView(TemplateView):
 
 class Registration(LoginRequiredMixin, View):
     def get(self, request):
+        if self.has_unpaid_first_order(request):
+            return redirect(
+                reverse("dff2020:submissions")
+                + "?error=Please complete existing order before submitting another movie!"
+            )
         return render(request, "dff2020/registration.html")
 
     def _validate_entries(self, entries, request, existing_orders):
@@ -239,7 +241,7 @@ class Registration(LoginRequiredMixin, View):
         except Exception:
             error = "movies should be a list"
         if not entries:
-            error = "No Movies were received present"
+            error = "No Movies were received"
         else:
             for entry in entries:
                 if not all(
@@ -279,10 +281,31 @@ class Registration(LoginRequiredMixin, View):
                 else:
                     if 0 > runtime or runtime > 30:
                         error = "runtime should be between 0.1 to 30"
-
         return (False, error) if error else (True, None)
 
+    def has_unpaid_first_order(self, request):
+        if request.user.date_joined > LATE_DATE:
+            orders = Order.objects.filter(owner=request.user.id).all()
+            return (
+                len(orders) > 0
+                and len([odr for odr in orders if odr.rzp_payment_id is not None]) < 1
+            )
+        return False
+
     def post(self, request):
+        if self.has_unpaid_first_order(request):
+            return redirect(
+                reverse("dff2020:submissions")
+                + "?error=Please complete existing order before submitting another movie!"
+            )
+        late_user = request.user.date_joined > LATE_DATE
+        has_paid_orders = (
+            Order.objects.filter(
+                owner=request.user.id, rzp_payment_id__isnull=False
+            ).count()
+            > 0
+        )
+
         body = request.body
         logger.debug(body)
         response = {}
@@ -293,7 +316,6 @@ class Registration(LoginRequiredMixin, View):
             logger.exception(ex)
             error = "Invalid data format"
         else:
-            logger.debug(body)
             entries = body.get("entries")
             existing_orders = Order.objects.filter(owner=request.user.id).all()
             valid, error = self._validate_entries(entries, request, existing_orders)
@@ -302,6 +324,8 @@ class Registration(LoginRequiredMixin, View):
                     f"{request.user.email}:{len(existing_orders)}".encode()
                 ).hexdigest()
                 amount = len(entries) * 29900  # in paise
+                if late_user and not has_paid_orders:
+                    amount += 9900
                 try:
                     rp_order_res = rzp_client.order.create(
                         {
@@ -425,6 +449,7 @@ class SubmissionView(LoginRequiredMixin, TemplateView):
 
         for order in Order.objects.filter(owner=self.request.user).all():
             order_details = dict(
+                pk=order.id,
                 id=order.rzp_order_id,
                 amount=order.amount,
                 amount_txt=order.amount / 100.0,
@@ -441,7 +466,18 @@ class SubmissionView(LoginRequiredMixin, TemplateView):
         context["name"] = self.request.user.get_full_name()
         context["email"] = self.request.user.email
         context["csrf"] = csrf.get_token(self.request)
+        context["error"] = self.request.GET.get("error", "")
         return context
+
+
+class OrderDeleteView(LoginRequiredMixin, View):
+    def get(self, *args, **kwargs):
+        order = get_object_or_404(
+            Order, pk=kwargs.get("order_id"), owner=self.request.user
+        )
+        if order:
+            order.delete()
+        return redirect(reverse("dff2020:submissions"))
 
 
 class FAQView(ListView):
@@ -458,7 +494,6 @@ class RulesView(TemplateView):
         for rule in Rule.objects.all():
             rules_by_type[rule.type].append(rule)
         context["rules_by_type"] = dict(rules_by_type)
-        logger.debug(context)
         return context
 
 

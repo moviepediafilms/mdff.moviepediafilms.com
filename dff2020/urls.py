@@ -10,6 +10,9 @@ urlpatterns = [
     path("login", views.Login.as_view(), name="login"),
     path("forgot-password", views.ForgotPasswordView.as_view(), name="forgot_password"),
     path("reset/<uid>/<token>", views.PasswordReset.as_view(), name="password-reset",),
+    path(
+        "order/delete/<order_id>", views.OrderDeleteView.as_view(), name="delete-order"
+    ),
     path("logout", views.Logout.as_view(), name="logout"),
     path("registration", views.Registration.as_view(), name="registration"),
     path("verify_payment", views.VerifyPayment.as_view(), name="verify_payment"),

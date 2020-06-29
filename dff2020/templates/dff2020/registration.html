@@ -99,5 +99,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.31/moment-timezone-with-data.min.js"></script>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    var user_joining_date = "{{user.date_joined.isoformat}}";
+</script>
 <script src="{% static 'dff2020/js/registration.js'%}"></script>
 {%endblock%}

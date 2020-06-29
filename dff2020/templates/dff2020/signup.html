@@ -4,11 +4,13 @@
 {%block left%}
 <div class="container p-5">
     <div class="text-left ">
-        <a class="img-fluid" href="{%url 'dff2020:home'%}"><img src="{% static 'dff2020/img/icon.png'%}" height="150px" /></a>
+        <a class="img-fluid" href="{%url 'dff2020:home'%}"><img src="{% static 'dff2020/img/icon.png'%}"
+                height="150px" /></a>
     </div>
 
     <div class="text-uppercase text-warning mt-5 font-weight-bold">Sign Up</div>
-    <form class="text-left text-white" action="{% url 'dff2020:signup' %}" GET /static/css/dff2020/home.css method="post" onsubmit="return form_valid();">
+    <form class="text-left text-white" action="{% url 'dff2020:signup' %}" GET /static/css/dff2020/home.css
+        method="post" onsubmit="return form_valid();">
         {% csrf_token %}
         <div class="md-form">
             <!-- Name -->
@@ -58,7 +60,8 @@
         <!-- submit button -->
         <button id="submit-btn" class="btn btn-sm btn-warning text-dark" type="submit">Sign up</button>
 
-        <div class="text-warning text-sm mt-2">Already have an account? <a class="text-link" href="{% url 'dff2020:login'%}"><b>
+        <div class="text-warning text-sm mt-2">Already have an account? <a class="text-link"
+                href="{% url 'dff2020:login'%}"><b>
                     &nbsp;Sign In</b></a></div>
 
     </form>
@@ -90,7 +93,6 @@
 
     var form_valid = function () {
         var response = grecaptcha.getResponse()
-        console.log(response)
         if (response == "") {
             $('#capcha_helptxt').removeClass('d-none');
             return false;
