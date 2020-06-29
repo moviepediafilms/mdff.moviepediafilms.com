@@ -11,13 +11,9 @@ var app = new Vue({
     },
     mounted() {
         var late_start = moment.tz("2020-07-01T00:00:00", "Asia/Kolkata");
-        console.log(late_start.format())
-        console.log(moment(user_joining_date).format())
-        console.log(moment(user_joining_date).tz("Asia/Kolkata").format())
         if (moment(user_joining_date).isAfter(late_start)) {
             this.extra_fees = 99
         }
-        console.log("extra_fees", this.extra_fees)
         this.add_movie();
     },
     computed: {
@@ -81,20 +77,17 @@ var app = new Vue({
                     })
                 })
                 data = { 'entries': movies }
-                console.log("creating order", data)
                 var csrfmiddlewaretoken = this.$el.querySelector('input[name="csrfmiddlewaretoken"]')
                 axios.post('/registration', data, { headers: { "X-CSRFToken": csrfmiddlewaretoken.value } })
                     .then(response => {
                         this.lock_input = false
                         if (!response.data.success) {
                             this.error = response.data.error
-                            console.log("creating order failed")
                         }
                         else {
                             this.lock_input = true
                             this.error = ""
                             this.message = response.data.message
-                            console.log("creating order success")
                             window.location = '/submissions'
                         }
                     }, error => {
