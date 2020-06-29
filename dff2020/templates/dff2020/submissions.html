@@ -18,6 +18,11 @@
     {%endif%}
 
     <div>
+        {% if error %}
+        <small class="text-danger">{{error}}</small>
+        <br />
+        <br />
+        {% endif %}
         {%for order in all_orders%}
         <div class="card-deck text-dark">
             <!-- Card -->
@@ -39,6 +44,9 @@
                     {%else%}
                     <button type="button" class="btn btn-warning btn-sm text-dark font-weight-bold"
                         onClick="open_rzp('{{order.id}}', {{order.amount}})">Pay {{order.amount_txt}} INR</button>
+                    <a href="/order/delete/{{order.pk}}"
+                        class="btn btn-outline-danger btn-sm text-dark font-weight-bold">Delete
+                    </a>
                     <br /><small class="text-muted">Click Pay to complete your order</small>
                     {%endif%}
                 </div>

@@ -11,23 +11,25 @@
 <div class="container p-5">
     {% if user.is_authenticated %}
     <div class="text-center">
-        <img src="{{user|get_gravatar}}" width="70px" class="img-fluid z-depth-1 rounded-circle avatar warning" alt="{{user.get_full_name}}">
+        <img src="{{user|get_gravatar}}" width="70px" class="img-fluid z-depth-1 rounded-circle avatar warning"
+            alt="{{user.get_full_name}}">
         <h4>{{user.get_full_name}}</h4>
+        <h6>{{user.email}}</h6>
         <a href="{% url 'dff2020:logout'%}" class="btn btn-small btn-outline-dark btn-sm">Log Out</a>
     </div>
-    <hr class="bg-dark"/>
+    <hr class="bg-dark" />
     {% endif %}
     {%block right_content%}
-        <div class="font-weight-light text-center" >
-            <h3>Quick Links</h3>
-            <a href="{%url 'dff2020:home'%}" class="text-dark">Home</a><br/>
-            {% if user.is_authenticated %}
-                <a href="{%url 'dff2020:registration'%}" class="text-dark">Submit More Movies</a><br/>
-                <a href="{%url 'dff2020:submissions'%}" class="text-dark">My Submissions</a><br/>
-            {% endif %}
-            <a href="{%url 'dff2020:rules'%}" class="text-dark">Rules & Regulations</a><br/>
-            <a href="{%url 'dff2020:faq'%}" class="text-dark">Frequently Asked Questions</a><br/>
-        </div>
+    <div class="font-weight-light text-center">
+        <h3>Quick Links</h3>
+        <a href="{%url 'dff2020:home'%}" class="text-dark">Home</a><br />
+        {% if user.is_authenticated %}
+        <a href="{%url 'dff2020:registration'%}" class="text-dark">Submit More Movies</a><br />
+        <a href="{%url 'dff2020:submissions'%}" class="text-dark">My Submissions</a><br />
+        {% endif %}
+        <a href="{%url 'dff2020:rules'%}" class="text-dark">Rules & Regulations</a><br />
+        <a href="{%url 'dff2020:faq'%}" class="text-dark">Frequently Asked Questions</a><br />
+    </div>
     {%endblock%}
 </div>
 {%endblock%}

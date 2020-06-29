@@ -6,14 +6,23 @@ var app = new Vue({
         error: '',
         message: '',
         csrf: '',
-        lock_input: false
+        lock_input: false,
+        extra_fees: 0,
     },
     mounted() {
+        var late_start = moment.tz("2020-07-01T00:00:00", "Asia/Kolkata");
+        console.log(late_start.format())
+        console.log(moment(user_joining_date).format())
+        console.log(moment(user_joining_date).tz("Asia/Kolkata").format())
+        if (moment(user_joining_date).isAfter(late_start)) {
+            this.extra_fees = 99
+        }
+        console.log("extra_fees", this.extra_fees)
         this.add_movie();
     },
     computed: {
         amount() {
-            return this.movies.length * 299;
+            return this.movies.length * 299 + this.extra_fees;
         }
     },
     methods: {
@@ -149,7 +158,6 @@ var steps = new Vue({
     computed: {
         active_step_id() {
             var today = moment().tz("Asia/Kolkata")
-            console.log(today.format())
             var active_step_id = 1
             this.steps.forEach(step => {
                 if (today.isAfter(step.activate_on)) {
