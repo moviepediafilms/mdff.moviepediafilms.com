@@ -126,7 +126,7 @@ var steps = new Vue({
                 name: "Late Registrations & Submissions Closed",
                 desc: "No Submissions and/or registrations will be accepted after 10th July 11:59 PM",
                 date: "July 10th",
-                activate_on: moment('Jun 30 2020', "MMM DD YYYY", "Asia/Kolkata")
+                activate_on: moment('Jul 01 2020', "MMM DD YYYY", "Asia/Kolkata")
             },
             {
                 id: 5,
