@@ -61,4 +61,4 @@ def _send(data):
         logger.debug(data)
         logger.debug(json.dumps(ex.body))
     else:
-        logger.debug(f"sendgrid: {response}")
+        logger.debug(f"sendgrid: {response.status_code}")
