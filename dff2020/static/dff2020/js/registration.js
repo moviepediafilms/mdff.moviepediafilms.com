@@ -131,20 +131,27 @@ var steps = new Vue({
             },
             {
                 id: 4,
-                name: "Late Registrations & Submissions Closed",
-                desc: "No Submissions and/or registrations will be accepted after 10th July 11:59 PM",
-                date: "July 10th",
+                name: "Late Registrations",
+                desc: "New users can create their account on the website but a late fee of ₹99 will be charged while submission. The movie submission fee stays as is, i.e. ₹299 per entry.",
+                date: "July 1st",
                 activate_on: moment('Jul 01 2020', "MMM DD YYYY", "Asia/Kolkata")
             },
             {
                 id: 5,
+                name: "Late Registrations & Submissions Closed",
+                desc: "No Submissions and/or registrations will be accepted after 10th July 11:59 PM",
+                date: "July 10th",
+                activate_on: moment('Jul 10 2020', "MMM DD YYYY", "Asia/Kolkata")
+            },
+            {
+                id: 6,
                 name: "Screening of top 10 Films",
                 desc: "Top 10 entries hand-picked by our jury of judges will be screened across platforms of Moviepedia",
                 date: "July 24th - August 1st",
                 activate_on: moment('Jul 10 2020', "MMM DD YYYY", "Asia/Kolkata")
             },
             {
-                id: 6,
+                id: 7,
                 name: "Results",
                 desc: "Winners will be announced on the final day of the Film Festival",
                 date: "August 2nd",
