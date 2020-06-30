@@ -120,3 +120,35 @@ class SubmissionsTestCase(LoggedInTestCase):
         )
         self.assertInHTML("this_is_an_error", res.content.decode())
 
+
+class SubmissionTestCase(LoggedInTestCase):
+    def setUp(self):
+        super().setUp()
+        self.order = Order.objects.create(
+            rzp_order_id="order_XXX",
+            receipt_number="receipt_XXX",
+            amount=29900,
+            owner=self.user,
+        )
+
+    def tearDown(self):
+        self.order.delete()
+        return super().tearDown()
+
+    def test_delete_button_visible_on_unpaid(self):
+        res = self.client.get(reverse("dff2020:submissions"))
+        self.assertContains(res, reverse("dff2020:delete-order", args=(self.order.id,)))
+
+    def test_delete_button_hidden_on_paid(self):
+        self.order.rzp_payment_id = "pay_XXX"
+        self.order.save()
+        res = self.client.get(reverse("dff2020:submissions"))
+        self.assertNotContains(
+            res, reverse("dff2020:delete-order", args=(self.order.id,))
+        )
+
+    def test_should_not_delete_paid_order(self):
+        self.order.rzp_payment_id = "pay_XXX"
+        self.order.save()
+        self.client.get(reverse("dff2020:delete-order", args=(self.order.id,)))
+        self.assertEqual(Order.objects.filter(owner=self.user).count(), 1)

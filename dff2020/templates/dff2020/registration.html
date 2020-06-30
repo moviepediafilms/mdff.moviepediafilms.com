@@ -75,7 +75,10 @@
         </button>
         <button class="btn btn-sm btn-warning" :class="{'disables': lock_input}" type="submit"
             @click.prevent="add_movie">Add Another Movie</button><br />
-        <small class="text-muted" v-cloak>Order total: {{amount}} INR</small><br />
+        <small class="text-muted" v-cloak>Order total: {{amount_str}} <template v-if="extra_fees > 0">
+                <a title="Late Registration Fee"><i
+                        class="fa fa-info-circle fa-sm text-muted"></i></a></template></small><br />
+
         {% endverbatim %}
     </form>
 </div>

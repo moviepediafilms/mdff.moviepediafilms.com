@@ -368,7 +368,7 @@ class Registration(LoginRequiredMixin, View):
                             response["success"] = True
                             response[
                                 "message"
-                            ] = "your order is created! waiting for youto complete payment!"
+                            ] = "Your order is created !"
         return JsonResponse(
             response if not error else {"success": False, "error": error}
         )
@@ -475,7 +475,7 @@ class OrderDeleteView(LoginRequiredMixin, View):
         order = get_object_or_404(
             Order, pk=kwargs.get("order_id"), owner=self.request.user
         )
-        if order:
+        if order and order.rzp_payment_id is None:
             order.delete()
         return redirect(reverse("dff2020:submissions"))
 

@@ -19,6 +19,12 @@ var app = new Vue({
     computed: {
         amount() {
             return this.movies.length * 299 + this.extra_fees;
+        },
+        amount_str() {
+            if (this.extra_fees > 0)
+                return "₹" + this.movies.length * 299 + " + ₹" + this.extra_fees
+            else
+                return "₹" + this.movies.length * 299
         }
     },
     methods: {
