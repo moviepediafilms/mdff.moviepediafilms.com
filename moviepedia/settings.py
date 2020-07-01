@@ -71,6 +71,8 @@ ALLOWED_HOSTS = (
         "moviepediafilms.com",
         "www.moviepediafilms.com",
         "139.59.70.233",
+        "uat.moviepediafilms.com",
+        "139.59.28.20",
         "localhost",
     ]
 )

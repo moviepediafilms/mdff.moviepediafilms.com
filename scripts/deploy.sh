@@ -3,8 +3,8 @@ echo "changing directory" | systemd-cat
 cd /home/zeeshan/moviepedia
 echo `pwd` | systemd-cat
 
-echo "git pull origin master" | systemd-cat
-sudo /usr/bin/git pull origin master
+echo "git pull" | systemd-cat
+sudo /usr/bin/git pull
 echo "ok" | systemd-cat
 
 echo "pipenv sync" | systemd-cat
