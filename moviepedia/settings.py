@@ -126,7 +126,7 @@ WSGI_APPLICATION = "moviepedia.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "moviepedia",
+        "NAME": os.getenv("MOVEIPEDIA_DB_NAME", "moviepedia"),
         "USER": os.getenv("MOVEIPEDIA_DB_USER"),
         "PASSWORD": os.getenv("MOVEIPEDIA_DB_PASSWORD"),
         "HOST": os.getenv("MOVEIPEDIA_DB_IP"),
