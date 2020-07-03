@@ -554,20 +554,21 @@ class DetailShortlistView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         movie = Shortlist.objects.order_by("-added_on").first()
-        context["movie"] = movie
-        context["jury_rating"] = movie.jury_rating * 10
-        user_ratings = movie.rating_set.all()
-        context["audience_rating"] = (
-            sum(r.rating for r in user_ratings) / len(user_ratings)
-        ) * 10
-        context["ratings"] = [
-            dict(
-                profile_pic=get_gravatar(rating.user),
-                user_full_name=rating.user.get_full_name(),
-                stars=range(int(rating.rating)),
-                half_star=int(rating.rating) != rating.rating,
-                review=rating.review,
-            )
-            for rating in user_ratings
-        ]
+        if movie:
+            context["movie"] = movie
+            context["jury_rating"] = movie.jury_rating * 10
+            user_ratings = movie.rating_set.all()
+            context["audience_rating"] = (
+                sum(r.rating for r in user_ratings) / len(user_ratings)
+            ) * 10
+            context["ratings"] = [
+                dict(
+                    profile_pic=get_gravatar(rating.user),
+                    user_full_name=rating.user.get_full_name(),
+                    stars=range(int(rating.rating)),
+                    half_star=int(rating.rating) != rating.rating,
+                    review=rating.review,
+                )
+                for rating in user_ratings
+            ]
         return context
