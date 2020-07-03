@@ -3,7 +3,6 @@ import json
 import logging
 import hashlib
 from collections import defaultdict
-from datetime import datetime
 import requests
 import razorpay
 
@@ -24,17 +23,17 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.templatetags.static import static
 
-from .models import Order, Entry, Faq, Rule
+from .constants import LATE_REGISTRATION_START_DATE
+from .models import Order, Entry, Faq, Rule, Shortlist, Rating
 from .email import (
     send_password_reset_email,
     send_welcome_email,
     send_film_registration_email,
 )
-
+from dff2020.templatetags.dff2020_extras import get_gravatar
 
 logger = logging.getLogger("app.dff2020")
 
-LATE_DATE = datetime.strptime("2020-07-01T00:00:00+05:30", "%Y-%m-%dT%H:%M:%S%z")
 
 rzp_client = razorpay.Client(
     auth=(settings.RAZORPAY_API_KEY, settings.RAZORPAY_API_SECRET)
@@ -289,7 +288,7 @@ class Registration(LoginRequiredMixin, View):
         return (False, error) if error else (True, None)
 
     def has_unpaid_first_order(self, request):
-        if request.user.date_joined > LATE_DATE:
+        if request.user.date_joined > LATE_REGISTRATION_START_DATE:
             orders = Order.objects.filter(owner=request.user.id).all()
             return (
                 len(orders) > 0
@@ -303,7 +302,7 @@ class Registration(LoginRequiredMixin, View):
                 reverse("dff2020:submissions")
                 + "?error=Please complete existing order before submitting another movie!"
             )
-        late_user = request.user.date_joined > LATE_DATE
+        late_user = request.user.date_joined > LATE_REGISTRATION_START_DATE
         has_paid_orders = (
             Order.objects.filter(
                 owner=request.user.id, rzp_payment_id__isnull=False
@@ -536,5 +535,39 @@ class JudgesView(TemplateView):
                 image=static("dff2020/img/pprakash.png"),
                 about="Puneet Prakash is an award winning ad film maker who is in short time has acquired the reputation of an emotional storyteller with his ad films. His Gillette film on gender equality won the Cannes Silver Lion for India. Recently, it also won 3 Spikes Asia Awards for Film, music & entertainment & 2 Effie awards.",
             ),
+        ]
+        return context
+
+
+class ShortlistView(TemplateView):
+    template_name = "dff2020/shortlist.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["movies"] = Shortlist.objects.all()
+        return context
+
+
+class DetailShortlistView(TemplateView):
+    template_name = "dff2020/shortlist_details.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        movie = Shortlist.objects.order_by("-added_on").first()
+        context["movie"] = movie
+        context["jury_rating"] = movie.jury_rating * 10
+        user_ratings = movie.rating_set.all()
+        context["audience_rating"] = (
+            sum(r.rating for r in user_ratings) / len(user_ratings)
+        ) * 10
+        context["ratings"] = [
+            dict(
+                profile_pic=get_gravatar(rating.user),
+                user_full_name=rating.user.get_full_name(),
+                stars=range(int(rating.rating)),
+                half_star=int(rating.rating) != rating.rating,
+                review=rating.review,
+            )
+            for rating in user_ratings
         ]
         return context

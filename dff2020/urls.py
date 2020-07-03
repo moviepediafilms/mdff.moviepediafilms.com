@@ -1,5 +1,5 @@
 from django.urls import path
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView
 from . import views
 
 app_name = "dff2020"
@@ -36,4 +36,8 @@ urlpatterns = [
     ),
     path("tos/", TemplateView.as_view(template_name="dff2020/tos.html"), name="tos"),
     path("judges/", views.JudgesView.as_view(), name="judges"),
+    path(
+        "shortlist/today", views.DetailShortlistView.as_view(), name="shortlist-today"
+    ),
+    path("shortlist", views.ShortlistView.as_view(), name="shortlists"),
 ]

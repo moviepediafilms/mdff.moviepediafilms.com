@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 class Order(models.Model):
@@ -22,6 +23,9 @@ class Entry(models.Model):
     runtime = models.IntegerField()
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f"{self.name} ({self.director})"
+
     class Meta:
         verbose_name_plural = "Entries"
 
@@ -30,6 +34,9 @@ class Faq(models.Model):
     question = models.CharField(max_length=200)
     answer = models.CharField(max_length=700)
 
+    def __str__(self):
+        return f"{self.question}"
+
     class Meta:
         verbose_name_plural = "FAQs"
 
@@ -37,3 +44,58 @@ class Faq(models.Model):
 class Rule(models.Model):
     text = models.CharField(max_length=800)
     type = models.CharField(max_length=40)
+
+    def __str__(self):
+        return f"{self.text}"
+
+
+class Shortlist(models.Model):
+    entry = models.ForeignKey(Entry, on_delete=models.CASCADE)
+    review = models.CharField(max_length=2000)
+    jury_rating = models.FloatField(
+        validators=[MaxValueValidator(10), MinValueValidator(0)]
+    )
+    added_on = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{str(self.entry)}: {self.jury_rating}"
+
+
+class Rating(models.Model):
+    shortlist = models.ForeignKey(Shortlist, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    rating = models.FloatField(validators=[MaxValueValidator(10), MinValueValidator(0)])
+    review = models.CharField(max_length=2000)
+    added_on = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.shortlist.entry}: {self.rating} ({self.user.username})"
+
+
+class Question(models.Model):
+    shortlist = models.ForeignKey(Shortlist, on_delete=models.CASCADE)
+    text = models.CharField(max_length=500)
+
+    def __str__(self):
+        return f"{str(self.shortlist.entry)}: {self.text}"
+
+
+class Option(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    text = models.CharField(max_length=100)
+    is_correct = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.question.text}: {self.text}"
+
+
+class QuizEntry(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    selected_option = models.ForeignKey(Option, on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return f"{self.user.username}: {self.question.text}"
+
+    class Meta:
+        verbose_name_plural = "Quiz Entries"

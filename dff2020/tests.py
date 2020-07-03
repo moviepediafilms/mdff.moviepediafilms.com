@@ -19,9 +19,15 @@ class LoggedInTestCase(TestCase):
 # feature disabled/inactive
 class RegistrationTestCase:
     def set_late_user(self, is_late):
-        june_30 = datetime.strptime("2020-07-01T00:00:01+05:30", "%Y-%m-%dT%H:%M:%S%z")
-        june_29 = datetime.strptime("2020-06-30T00:00:01+05:30", "%Y-%m-%dT%H:%M:%S%z")
-        self.user.date_joined = june_30 if is_late else june_29
+        after_late_regitation_date = datetime.strptime(
+            "2020-07-01T00:00:01+05:30", "%Y-%m-%dT%H:%M:%S%z"
+        )
+        before_late_regitation_date = datetime.strptime(
+            "2020-06-30T00:00:01+05:30", "%Y-%m-%dT%H:%M:%S%z"
+        )
+        self.user.date_joined = (
+            after_late_regitation_date if is_late else before_late_regitation_date
+        )
         self.user.save()
 
     @mock.patch("dff2020.views.rzp_client")
@@ -153,3 +159,47 @@ class SubmissionTestCase(LoggedInTestCase):
         self.order.save()
         self.client.get(reverse("dff2020:delete-order", args=(self.order.id,)))
         self.assertEqual(Order.objects.filter(owner=self.user).count(), 1)
+
+
+class SignupTestCase(TestCase):
+    def setUp(self):
+        self.send_welcome_email_patcher = mock.patch("dff2020.views.send_welcome_email")
+        self.verify_recapcha_patcher = mock.patch("dff2020.views.verify_recapcha")
+        self.send_welcome_email = self.send_welcome_email_patcher.start()
+        self.verify_recapcha = self.verify_recapcha_patcher.start()
+
+    def tearDown(self):
+        self.send_welcome_email_patcher.stop()
+        self.verify_recapcha_patcher.stop()
+
+    def test_new_account_create(self):
+        "Allow new users to create account"
+        self.verify_recapcha.return_value = True
+        res = self.client.post(
+            reverse("dff2020:signup"),
+            data={
+                "name": "A",
+                "email": "abcd@gmail.com",
+                "password": "B",
+                "agree": True,
+                "g-recaptcha-response": "sdfhgjjsdf",
+            },
+        )
+        self.assertEqual(res.status_code, 302)
+        self.assertEqual(User.objects.filter(username="abcd@gmail.com").count(), 1)
+
+    def test_new_account_create(self):
+        "New account creation not allowed after END_USER_CREATION_DATE"
+        self.verify_recapcha.return_value = True
+        res = self.client.post(
+            reverse("dff2020:signup"),
+            data={
+                "name": "A",
+                "email": "abcd@gmail.com",
+                "password": "B",
+                "agree": True,
+                "g-recaptcha-response": "sdfhgjjsdf",
+            },
+        )
+        self.assertEqual(res.status_code, 302)
+        self.assertEqual(User.objects.filter(username="abcd@gmail.com").count(), 1)

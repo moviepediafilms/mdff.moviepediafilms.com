@@ -1,0 +1,4 @@
+.percent::after{content: ""!important}
+.sec-text{
+    color: #ff4444 !important;
+}

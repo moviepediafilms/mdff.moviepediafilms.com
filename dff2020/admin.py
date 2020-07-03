@@ -2,7 +2,17 @@ from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from django import forms
 
-from .models import Faq, Rule, Entry, Order
+from .models import (
+    Faq,
+    Rule,
+    Entry,
+    Order,
+    Shortlist,
+    Rating,
+    Question,
+    Option,
+    QuizEntry,
+)
 
 
 class RuntimeListFilter(admin.SimpleListFilter):
@@ -95,3 +105,28 @@ class EntryAdmin(admin.ModelAdmin):
 
     def synopsis_short(self, obj):
         return obj.synopsis[:50]
+
+
+@admin.register(Shortlist)
+class ShortlistAdmin(admin.ModelAdmin):
+    list_display = ["entry", "jury_rating", "review", "added_on"]
+
+
+@admin.register(Rating)
+class RatingAdmin(admin.ModelAdmin):
+    list_display = ["shortlist", "user", "rating", "review", "added_on"]
+
+
+@admin.register(Question)
+class QuestionAdmin(admin.ModelAdmin):
+    list_display = ("shortlist", "text")
+
+
+@admin.register(Option)
+class OptionAdmin(admin.ModelAdmin):
+    list_display = ["question", "text", "is_correct"]
+
+
+@admin.register(QuizEntry)
+class QuizEntryAdmin(admin.ModelAdmin):
+    list_display = []

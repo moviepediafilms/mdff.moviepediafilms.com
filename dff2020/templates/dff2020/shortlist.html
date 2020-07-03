@@ -1,0 +1,33 @@
+{% extends 'dff2020/base_single_panel.html' %}
+{% load static %}
+
+{%block left%}
+<div class="container p-5">
+    <div class="text-left ">
+        <a class="img-fluid" href="{%url 'dff2020:home'%}"><img src="{% static 'dff2020/img/icon.png'%}"
+                height="150px" /></a>
+    </div>
+    <div class=" text-warning mt-5 font-weight-bold text-uppercase">MDFF-2020 Shortlist</div>
+    <div class="text-warning mt-4">
+
+
+
+        <ul class="list-unstyled">
+            <li class="media">
+                <img class="d-flex mr-3" src="{{movie.entry.link}}" alt="{{movie.entry.name}}">
+                <div class="media-body">
+                    <h5 class="mt-0 mb-2 font-weight-bold">{{movie.entry.directory}}</h5>
+                    <!--Review-->
+
+                    <i class="fas fa-star blue-text"> </i>
+                    <i class="fas fa-star blue-text"> </i>
+                    <i class="fas fa-star blue-text"> </i>
+                    <p>{{movie.review}}</p>
+                </div>
+            </li>
+        </ul>
+
+
+    </div>
+</div>
+{%endblock%}
