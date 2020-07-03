@@ -22,7 +22,7 @@
         </div>
 
         <div class="row mt-5">
-            <div class="col">
+            <div class="col-6">
                 <h2><i class="fas fa-film"></i> {{movie.entry.name}}</h2>
                 <h4 class="text-muted"><small>by </small> {{movie.entry.director}}</h4>
                 <p class="text-muted"><i class="fas fa-quote-left"></i> {{movie.entry.synopsis}}</p>
@@ -32,7 +32,7 @@
                 <span class="min-chart mt-0 mb-3" id="chart-jury" data-percent="{{jury_rating}}">
                     <span class="percent text-muted font-weight-bold"></span>
                 </span>
-                <p class="text-uppercase sec-text font-weight-bold"><i class="fas fa-gavel"></i> Jury</p>
+                <p class="text-uppercase text-success font-weight-bold"><i class="fas fa-gavel"></i> Jury</p>
 
             </div>
             <div class="col text-center">
@@ -49,26 +49,38 @@
         </div>
 
         <h5 class="mt-5 mb-4 text-uppercase font-weight-bold">Audience Review</h5>
-        <ul class="list-unstyled">
+
+
+
+
+        <div class="card-columns">
+
             {% for rating in ratings%}
-            <li class="media mb-3">
-                <img class="d-flex align-self-start mr-3 rounded-circle" height="40px" src="{{rating.profile_pic}}"
-                    alt="{{rating.get_full_name}}">
-                <div class="media-body">
-                    <div class="text-muted">{{rating.user_full_name}}</div>
-                    <!--Review-->
-                    {% for i in rating.stars %}
-                    <i class="fas fa-xs fa-star warning-text"> </i>
-                    {%endfor%}
-                    {% if rating.half_star%}
-                    <i class="fas fa-xs fa-star-half warning-text"> </i>
-                    {%endif%}
-                    <br />
-                    <small>{{rating.review}}</small>
+            <div class="card bg-grey">
+                <div class="card-header">
+                    <div class="row">
+
+                        <img class="d-inline-block mr-3 rounded-circle" height="40px" src="{{rating.profile_pic}}"
+                            alt="{{rating.get_full_name}}">
+
+                        <small class="text-dark">
+                            {{rating.user_full_name}}<br />
+                            {% for i in rating.stars %}
+                            <i class="fas fa-xs fa-star warning-text"> </i>
+                            {%endfor%}
+                            {% if rating.half_star%}
+                            <i class="fas fa-xs fa-star-half warning-text"> </i>
+                            {%endif%}
+                        </small>
+
+                    </div>
                 </div>
-            </li>
+                <div class="card-body">
+                    <p class="card-text">{{rating.review}}</p>
+                </div>
+            </div>
             {% endfor %}
-        </ul>
+        </div>
 
 
     </div>
@@ -80,7 +92,7 @@
 <script>
     $(function () {
         $('#chart-jury').easyPieChart({
-            barColor: "#ff4444",
+            barColor: "#00C851",
             trackColor: "#212121",
             scaleLength: 0,
             lineWidth: 7,
