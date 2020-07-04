@@ -61,7 +61,7 @@ class Shortlist(models.Model):
         return f"{str(self.entry)}: {self.jury_rating}"
 
 
-class Rating(models.Model):
+class UserRating(models.Model):
     shortlist = models.ForeignKey(Shortlist, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     rating = models.FloatField(validators=[MaxValueValidator(10), MinValueValidator(0)])
@@ -70,6 +70,9 @@ class Rating(models.Model):
 
     def __str__(self):
         return f"{self.shortlist.entry}: {self.rating} ({self.user.username})"
+
+    class Meta:
+        unique_together = [["shortlist", "user"]]
 
 
 class Question(models.Model):

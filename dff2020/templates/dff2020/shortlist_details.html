@@ -47,28 +47,24 @@
             <button class="btn btn-sm text-dark font-weight-bold btn-warning">Rate this movie</button>
         </div>
 
-        <h5 class="mt-5 mb-4 text-uppercase font-weight-bold">Audience Review</h5>
-
-
-
+        <h5 class="mt-5 mb-4 text-uppercase font-weight-bold">Audience Reviews</h5>
 
         <div class="card-columns">
-
             {% for rating in ratings%}
-            <div class="card bg-grey">
+            <div class="card bg-dark">
                 <div class="card-header">
                     <div class="row">
 
                         <img class="d-inline-block mr-3 rounded-circle" height="40px" src="{{rating.profile_pic}}"
                             alt="{{rating.get_full_name}}">
 
-                        <small class="text-dark">
+                        <small class="text-light">
                             {{rating.user_full_name}}<br />
                             {% for i in rating.stars %}
-                            <i class="fas fa-xs fa-star warning-text"> </i>
+                            <i class="fas fa-xs fa-star light-text"> </i>
                             {%endfor%}
                             {% if rating.half_star%}
-                            <i class="fas fa-xs fa-star-half warning-text"> </i>
+                            <i class="fas fa-xs fa-star-half light-text"> </i>
                             {%endif%}
                         </small>
 

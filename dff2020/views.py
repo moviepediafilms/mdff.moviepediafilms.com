@@ -24,7 +24,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.templatetags.static import static
 
 from .constants import LATE_REGISTRATION_START_DATE
-from .models import Order, Entry, Faq, Rule, Shortlist, Rating
+from .models import Order, Entry, Faq, Rule, Shortlist, UserRating
 from .email import (
     send_password_reset_email,
     send_welcome_email,
@@ -557,7 +557,7 @@ class DetailShortlistView(TemplateView):
         if movie:
             context["movie"] = movie
             context["jury_rating"] = movie.jury_rating * 10
-            user_ratings = movie.rating_set.all()
+            user_ratings = movie.userrating_set.all()
             context["audience_rating"] = (
                 sum(r.rating for r in user_ratings) / len(user_ratings)
             ) * 10

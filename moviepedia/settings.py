@@ -114,6 +114,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "moviepedia.context_processors.base",
             ],
         },
     },
@@ -203,3 +204,6 @@ RAZORPAY_API_SECRET = os.getenv("RAZORPAY_API_SECRET")
 
 # dff2020 specific settings
 END_USER_CREATION_DATE = ""
+
+
+GOOGLE_ANALYTICS = os.getenv("GOOGLE_ANALYTICS")

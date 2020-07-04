@@ -8,7 +8,7 @@ from .models import (
     Entry,
     Order,
     Shortlist,
-    Rating,
+    UserRating,
     Question,
     Option,
     QuizEntry,
@@ -112,8 +112,8 @@ class ShortlistAdmin(admin.ModelAdmin):
     list_display = ["entry", "jury_rating", "review", "added_on"]
 
 
-@admin.register(Rating)
-class RatingAdmin(admin.ModelAdmin):
+@admin.register(UserRating)
+class UserRatingAdmin(admin.ModelAdmin):
     list_display = ["shortlist", "user", "rating", "review", "added_on"]
 
 
