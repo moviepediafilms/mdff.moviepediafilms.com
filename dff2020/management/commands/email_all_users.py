@@ -24,7 +24,7 @@ class Command(BaseCommand):
                 }
             )
         body = {
-            "template_id": "d-fba944f29af840258c443104560d90b4",
+            "template_id": "d-09dd23e22267423db7f4061bfce363db",
             "from": {"email": settings.SENDGRID_EMAIL, "name": settings.SENDGRID_NAME},
             "reply_to": {
                 "email": settings.SENDGRID_REPLY_TO,
