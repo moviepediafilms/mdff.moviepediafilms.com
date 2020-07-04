@@ -552,15 +552,25 @@ class DetailShortlistView(TemplateView):
     template_name = "dff2020/shortlist_details.html"
 
     def get_context_data(self, **kwargs):
+        dummy_rating = 100
         context = super().get_context_data(**kwargs)
         movie = Shortlist.objects.order_by("-added_on").first()
         if movie:
             context["movie"] = movie
-            context["jury_rating"] = movie.jury_rating * 10
             user_ratings = movie.userrating_set.all()
+            user_voted = any(
+                rating.user == self.request.user for rating in user_ratings
+            )
+            context["user_voted"] = user_voted
+
+            context["jury_rating"] = (
+                movie.jury_rating * 10 if user_voted else dummy_rating
+            )
             context["audience_rating"] = (
-                sum(r.rating for r in user_ratings) / len(user_ratings)
-            ) * 10
+                (sum(r.rating for r in user_ratings) / len(user_ratings)) * 10
+                if user_voted
+                else dummy_rating
+            )
             context["ratings"] = [
                 dict(
                     profile_pic=get_gravatar(rating.user),
@@ -571,4 +581,5 @@ class DetailShortlistView(TemplateView):
                 )
                 for rating in user_ratings
             ]
+
         return context

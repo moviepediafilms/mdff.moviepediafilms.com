@@ -27,28 +27,41 @@
                 <h4 class="text-muted"><small>by </small> {{movie.entry.director}}</h4>
                 <p class="text-muted"><i class="fas fa-quote-left"></i> {{movie.entry.synopsis}}</p>
             </div>
+
             <div class="col-md-3 col-sm-12 text-center mt-5">
                 <span class="min-chart mt-0 mb-3" id="chart-jury" data-percent="{{jury_rating}}">
                     <span class="percent text-muted font-weight-bold"></span>
                 </span>
-                <p class="text-uppercase text-success font-weight-bold"><i class="fas fa-gavel"></i> Jury</p>
+                <p class="text-success font-weight-bold"><i class="fas fa-gavel"></i> JURY
+                    {%if not user_voted%}
+                    <br /><small class="text-muted">Rate to see actual ratings</small>
+                    {%endif%}
+                </p>
 
             </div>
             <div class="col-md-3 col-sm-12 text-center mt-5">
                 <span class="min-chart mt-0 mb-3" id="chart-audience" data-percent="{{audience_rating}}">
                     <span class="percent text-muted font-weight-bold"></span>
                 </span>
-                <p class="text-uppercase font-weight-bold"><i class="fas fa-users"></i> Audience</p>
-
+                <p class="font-weight-bold"><i class="fas fa-users"></i> AUDIENCE
+                    {%if not user_voted%}
+                    <br /><small class="text-muted">Rate to see actual ratings</small>
+                    {%endif%}
+                </p>
             </div>
         </div>
 
+        {% if not user_voted %}
         <div class="text-center my-4">
             <button class="btn btn-sm text-dark font-weight-bold btn-warning">Rate this movie</button>
+
         </div>
+        {% endif %}
 
         <h5 class="mt-5 mb-4 text-uppercase font-weight-bold">Audience Reviews</h5>
 
+
+        {% if user_voted %}
         <div class="card-columns">
             {% for rating in ratings%}
             <div class="card bg-dark">
@@ -76,8 +89,17 @@
             </div>
             {% endfor %}
         </div>
-
-
+        {%else%}
+        <div class="card bg-light">
+            <div class="card-body  py-4">
+                <h5 class="card-title text-center text-muted">
+                    <i class="fas fa-lock mb-3"></i>
+                    <br />
+                    Rate the movie to unlock
+                </h5>
+            </div>
+        </div>
+        {%endif %}
     </div>
 </div>
 {%endblock%}
@@ -85,9 +107,15 @@
 {%block scripts%}
 <script src="{% static '/js/vendor/compiled-addons.min.js'%}"></script>
 <script>
+    var barColorJury = "#00C851";
+    var barColorAudience = "#ffc221";
+    {%if not user_voted %}
+    barColorJury = "#2F2F2F";
+    barColorAudience = "#2F2F2F";
+    {% endif %}
     $(function () {
         $('#chart-jury').easyPieChart({
-            barColor: "#00C851",
+            barColor: barColorJury,
             trackColor: "#212121",
             scaleLength: 0,
             lineWidth: 7,
@@ -97,7 +125,7 @@
             }
         });
         $('#chart-audience').easyPieChart({
-            barColor: "#ffc221",
+            barColor: barColorAudience,
             trackColor: "#212121",
             scaleLength: 0,
             lineWidth: 7,
