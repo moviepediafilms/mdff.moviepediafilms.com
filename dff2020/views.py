@@ -639,6 +639,7 @@ class RateApiView(LoginRequiredMixin, View):
             review = review[:2000]
         error = None
         message = None
+        reload = False
         try:
             rating = float(rating)
             if rating < 0 or rating > 10:
@@ -659,17 +660,19 @@ class RateApiView(LoginRequiredMixin, View):
                     shortlist=shortlist, user=request.user
                 ).first()
                 if user_rating:
+                    reload = True
                     raise Exception("You have already rated this movie")
                 UserRating.objects.create(
                     shortlist=shortlist, user=request.user, rating=rating, review=review
                 )
                 message = "You have successfully submited your rating"
+                
             except Exception as ex:
                 logger.warning(ex)
                 error = str(ex)
 
         return JsonResponse(
-            {"success": False, "error": error}
+            {"success": False, "error": error, "reload": reload}
             if error
-            else {"success": True, "message": message}
+            else {"success": True, "message": message, "reload": reload}
         )

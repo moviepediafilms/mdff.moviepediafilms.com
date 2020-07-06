@@ -185,6 +185,11 @@ var rating_app = new Vue({
                 } else {
                     app.form.error = response.data.error
                     this.loading = false;
+                    if (response.data.reload) {
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 2000);
+                    }
                 }
             }).catch(error => {
                 console.log(error)
