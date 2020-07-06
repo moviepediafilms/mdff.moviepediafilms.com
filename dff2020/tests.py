@@ -189,6 +189,22 @@ class SignupTestCase(TestCase):
         self.assertEqual(User.objects.filter(username="abcd@gmail.com").count(), 1)
 
     def test_new_account_create(self):
+        "Allow new users to create account"
+        self.verify_recapcha.return_value = True
+        res = self.client.post(
+            reverse("dff2020:signup"),
+            data={
+                "name": "A",
+                "email": "abcd@gmail.com",
+                "password": "B",
+                "agree": True,
+                "g-recaptcha-response": "sdfhgjjsdf",
+            },
+        )
+        self.assertEqual(res.status_code, 302)
+        self.assertEqual(User.objects.filter(username="abcd@gmail.com").count(), 1)
+
+    def test_new_account_create_after_allowed_date(self):
         "New account creation not allowed after END_USER_CREATION_DATE"
         self.verify_recapcha.return_value = True
         res = self.client.post(

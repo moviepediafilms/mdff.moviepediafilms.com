@@ -3,6 +3,7 @@
 {% load dff2020_extras %}
 
 {%block head%}
+{{block.super}}
 <link rel="stylesheet" href="{% static '/dff2020/css/shortlist_details.css' %}" />
 {%endblock%}
 
@@ -30,33 +31,34 @@
 
             <div class="col-md-3 col-sm-12 text-center mt-5">
                 <span class="min-chart mt-0 mb-3" id="chart-jury" data-percent="{{jury_rating}}">
-                    <span class="percent text-muted font-weight-bold"></span>
+                    <span class="percent text-muted font-weight-bold">
+                        {%if not user_voted%}
+                        <i class="fas fa-lock"></i>
+                        {%endif%}
+                    </span>
                 </span>
-                <p class="text-success font-weight-bold"><i class="fas fa-gavel"></i> JURY
-                    {%if not user_voted%}
-                    <br /><small class="text-muted">Rate to see actual ratings</small>
-                    {%endif%}
-                </p>
+                <p class="text-success font-weight-bold"><i class="fas fa-gavel"></i> JURY</p>
 
             </div>
             <div class="col-md-3 col-sm-12 text-center mt-5">
                 <span class="min-chart mt-0 mb-3" id="chart-audience" data-percent="{{audience_rating}}">
-                    <span class="percent text-muted font-weight-bold"></span>
+                    <span class="percent text-muted font-weight-bold">
+                        {%if not user_voted%}
+                        <i class="fas fa-lock"></i>
+                        {%endif%}
+                    </span>
                 </span>
-                <p class="font-weight-bold"><i class="fas fa-users"></i> AUDIENCE
-                    {%if not user_voted%}
-                    <br /><small class="text-muted">Rate to see actual ratings</small>
-                    {%endif%}
-                </p>
+                <p class="font-weight-bold"><i class="fas fa-users"></i> AUDIENCE</p>
             </div>
         </div>
 
-        {% if not user_voted %}
-        <div class="text-center my-4">
-            <button class="btn btn-sm text-dark font-weight-bold btn-warning">Rate this movie</button>
-
+        {% verbatim %}
+        <div class="text-center my-4" id="center-button-app">
+            <button class="btn btn-sm text-dark font-weight-bold btn-warning" @click="btn_action"
+                v-cloak>{{btn_txt}}</button>
+            <p class="text-muted mt-2" v-cloak>{{p_text}}</p>
         </div>
-        {% endif %}
+        {% endverbatim %}
 
         <h5 class="mt-5 mb-4 text-uppercase font-weight-bold">Audience Reviews</h5>
 
@@ -93,7 +95,7 @@
         <div class="card bg-light">
             <div class="card-body  py-4">
                 <h5 class="card-title text-center text-muted">
-                    <i class="fas fa-lock mb-3"></i>
+                    <i class="fas fa-lock mb-2"></i>
                     <br />
                     Rate the movie to unlock
                 </h5>
@@ -102,38 +104,167 @@
         {%endif %}
     </div>
 </div>
+
+<!-- Model login -->
+{%verbatim%}
+<div class="modal fade" id="model-login" tabindex=" -1" role="dialog" aria-labelledby="model-login" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content bg-light text-dark p-3" id="login-model-app">
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100">Sign in</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <i class="fas fa-sm fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form v-on:submit.prevent="signin">
+                    <div class="md-form mb-3">
+                        <input type="email" id="login-email" class="form-control validate" v-model:value="form.email"
+                            required>
+                        <label data-error="wrong" data-success="right" for="login-email">Your Email</label>
+                    </div>
+                    <div class="md-form">
+                        <input type="password" id="login-pass" class="form-control validate"
+                            v-model:value="form.password" required>
+                        <label data-error="wrong" data-success="right" for="login-pass">Your password</label>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-danger" v-cloak>{{form.error}}</p>
+                        <button type="submit" class="btn btn-warning btn-sm text-reset font-weight-bold">Sign
+                            in</button>
+                        <br />
+                        <p class="mt-3">Don't have account ? <a href="#" @click.prevent="open_signup">Sign up</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{%endverbatim%}
+
+<!-- Model signup -->
+{%verbatim%}
+<div class="modal fade" id="model-signup" tabindex=" -1" role="dialog" aria-labelledby="model-signup"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content bg-light text-dark p-3" id="signup-model-app">
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100">Sign up</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <i class="fas fa-sm fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form v-on:submit.prevent="signup">
+                    <div class="md-form mb-3">
+                        <input type="text" id="signup-name" class="form-control validate"
+                            v-model:value="form.name.value" required>
+                        <label data-error="wrong" data-success="right" for="signup-name">Your Name</label>
+                    </div>
+                    <div class="md-form mb-3">
+                        <input type="email" id="signup-email" class="form-control validate"
+                            v-model:value="form.email.value" required>
+                        <label data-error="wrong" data-success="right" for="signup-email">Your Email</label>
+                    </div>
+                    <div class="md-form">
+                        <input type="password" id="signup-pass" class="form-control validate" minlength="8"
+                            v-model:value="form.password.value" required>
+                        <label data-error="wrong" data-success="right" for="signup-pass">Your password</label>
+                    </div>
+                    <div class="md-form">
+                        <input type="password" id="signup-cnf-pass" class="form-control validate"
+                            v-bind:class="{ 'is-invalid' : form.cnf_password.error}"
+                            v-model:value="form.cnf_password.value" required>
+                        <label data-error="wrong" for="signup-cnf-pass">Confirm password</label>
+                        <small class="invalid-feedback" style="margin-top: -30px">
+                            {{form.cnf_password.error}}
+                        </small>
+                    </div>
+                    <div class="form-check text-left">
+                        <input type="checkbox" class="form-check-input " id="agree" name="agree" required>
+                        <label data-error="wrong" class="form-check-label text-dark text-sm" for="agree">I Agree to the
+                            <a href="/tos" target="_blank" class="text-dark font-weight-bold "><u>terms &
+                                    conditions</u></a> of the event</label>
+                    </div>
+                    <div class="text-center mt-3">
+                        <p class="text-danger" v-cloak>{{form.error}}</p>
+                        <button class="btn btn-warning btn-sm text-reset font-weight-bold" type="submit">Sign
+                            up</button>
+                        <p class="mt-3">Already have an account ? <a href="#" @click.prevent="open_signin">Sign in</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{%endverbatim%}
+<!-- Model quiz -->
+<div class="modal fade" id="model-quiz" tabindex="-1" role="dialog" aria-labelledby="model-quiz" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100 font-weight-bold">Sign in</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>model
+            <div class="modal-body mx-3">
+
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button class="btn btn-default">Next</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Model Rating -->
+{%verbatim%}
+<div class="modal fade" id="model-rating" tabindex="-1" role="dialog" aria-labelledby="model-rating" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content bg-light text-dark p-3" id="rating-model-app">
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100 font-weight-bold">Rate the movie</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body mx-3">
+                <form v-on:submit.prevent="rate">
+                    <input type="hidden" name="" value="" />
+                    <div class="md-form mb-5">
+                        <input v-model="form.rating" type="number" min="0" max="10" step="0.1" id="rating-rate"
+                            class="form-control validate">
+                        <label data-error="wrong" data-success="right" for="rating-rate">Movie Rating</label>
+                    </div>
+
+                    <div class="md-form mb-4">
+                        <textarea v-model="form.review" id="rating-review" class="md-textarea form-control"
+                            rows="5"></textarea>
+                        <label for="rating-review">Review (Optional)</label>
+                    </div>
+                    <div class="text-center mt-3">
+                        <p class="text-danger" v-cloak>{{form.error}}</p>
+                        <button class="btn btn-warning btn-sm text-reset font-weight-bold" type="submit"
+                            :class="{disabled: loading}">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{%endverbatim%}
 {%endblock%}
 
 {%block scripts%}
 <script src="{% static '/js/vendor/compiled-addons.min.js'%}"></script>
+<script src="https://unpkg.com/vue@2.6.11/dist/vue.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script>
-    var barColorJury = "#00C851";
-    var barColorAudience = "#ffc221";
-    {%if not user_voted %}
-    barColorJury = "#2F2F2F";
-    barColorAudience = "#2F2F2F";
-    {% endif %}
-    $(function () {
-        $('#chart-jury').easyPieChart({
-            barColor: barColorJury,
-            trackColor: "#212121",
-            scaleLength: 0,
-            lineWidth: 7,
-            lineCap: "round",
-            onStep: function (from, to, percent) {
-                $(this.el).find('.percent').text(Math.round(percent) / 10 + "/10");
-            }
-        });
-        $('#chart-audience').easyPieChart({
-            barColor: barColorAudience,
-            trackColor: "#212121",
-            scaleLength: 0,
-            lineWidth: 7,
-            lineCap: "round",
-            onStep: function (from, to, percent) {
-                $(this.el).find('.percent').text(Math.round(percent) / 10 + "/10");
-            }
-        });
-    });
+    var csrf = "{{csrf}}"
+    var locked = "{{user_voted}}" === "False"
+    var logged_in = "{{user.is_authenticated}}" === "True"
 </script>
+<script src="{% static '/dff2020/js/shortlist_details.js'%}"></script>
 {%endblock%}

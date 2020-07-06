@@ -77,7 +77,7 @@ class Logout(View):
         return redirect("dff2020:login")
 
 
-class Login(View):
+class LoginMixin:
     def post(self, request):
         username = request.POST.get("email")
         password = request.POST.get("password")
@@ -86,14 +86,24 @@ class Login(View):
             if user is not None:
                 logger.debug("user authenticated")
                 login(request, user)
-                # if Order.objects.filter(owner=user).exists():
-                #     return redirect("dff2020:submissions")
-                return redirect("dff2020:submissions")
+                return True, "User authenticated"
             else:
                 error = "Invalid email and password combination"
         else:
             error = "username or password cannot be empty"
-        return redirect(reverse("dff2020:login") + f"?error={error}")
+        return False, error
+
+
+class Login(LoginMixin, View):
+    def post(self, request):
+        success, message = super().post(request)
+        if success:
+            user_has_orders = Order.objects.filter(owner=self.request.user).exists()
+            name = "submissions" if user_has_orders else "registration"
+            url = reverse(f"dff2020:{name}")
+        else:
+            url = reverse("dff2020:login") + f"?error={message}"
+        return redirect(url)
 
     def get(self, request):
         if not request.user.is_anonymous:
@@ -105,7 +115,9 @@ class Login(View):
         return render(request, "dff2020/login.html", dict(error=error, message=message))
 
 
-class SignUp(View):
+class SignUpMixin:
+    recapcha_enabled = True
+
     def post(self, request):
         name = request.POST.get("name", "").strip()
         email = request.POST.get("email", "").strip()
@@ -117,7 +129,7 @@ class SignUp(View):
         logger.debug(f"{email} {password} {agree} {recapcha}")
         if not all([agree, name, email, password]):
             error = "Blank values are not allowed!"
-        elif not verify_recapcha(request, recapcha):
+        elif self.recapcha_enabled and not verify_recapcha(request, recapcha):
             error = "Invalid captcha!"
         elif User.objects.filter(email=email).exists():
             error = "This email is already registered!"
@@ -130,8 +142,16 @@ class SignUp(View):
             user.save()
             message = "Congratulations!! Your account is created please login!"
             send_welcome_email(user)
-            return redirect(reverse("dff2020:login") + f"?message={message}")
-        return redirect(reverse("dff2020:signup") + f"?error={error}")
+            return True, message, user
+        return False, error, None
+
+
+class SignUpView(SignUpMixin, View):
+    def post(self, request):
+        success, message, user = super().post(request)
+        param = "message" if success else "error"
+        name = "login" if success else "signup"
+        return redirect(reverse(f"dff2020:{name}") + f"?{param}={message}")
 
     def get(self, request):
         if not request.user.is_anonymous:
@@ -554,6 +574,7 @@ class DetailShortlistView(TemplateView):
     def get_context_data(self, **kwargs):
         dummy_rating = 100
         context = super().get_context_data(**kwargs)
+        context["csrf"] = csrf.get_token(self.request)
         movie = Shortlist.objects.order_by("-added_on").first()
         if movie:
             context["movie"] = movie
@@ -583,3 +604,72 @@ class DetailShortlistView(TemplateView):
             ]
 
         return context
+
+
+class LoginApiView(LoginMixin, View):
+    def post(self, request):
+        success, message = super().post(request)
+        data = {"success": success}
+        if success:
+            data["csrf"] = csrf.get_token(self.request)
+        else:
+            data["error"] = message
+        return JsonResponse(data)
+
+
+class SignupApiView(SignUpMixin, View):
+    recapcha_enabled = False
+
+    def post(self, request):
+        success, message, user = super().post(request)
+        data = {"success": success}
+        if success:
+            login(request, user)
+            data["csrf"] = csrf.get_token(self.request)
+        else:
+            data["error"] = message
+        return JsonResponse(data)
+
+
+class RateApiView(LoginRequiredMixin, View):
+    def post(self, request):
+        rating = request.POST.get("rating")
+        review = request.POST.get("review")
+        if review:
+            review = review[:2000]
+        error = None
+        message = None
+        try:
+            rating = float(rating)
+            if rating < 0 or rating > 10:
+                raise Exception("Rating can only be between 0, 10")
+        except TypeError as ex:
+            logger.exception(ex)
+            error = "rating is not integer"
+        except Exception as ex:
+            logger.exception(ex)
+            error = str(ex)
+        else:
+            try:
+                shortlist = Shortlist.objects.order_by("-added_on").first()
+                if not shortlist:
+                    raise Exception("No movie open for user rating!")
+
+                user_rating = UserRating.objects.filter(
+                    shortlist=shortlist, user=request.user
+                ).first()
+                if user_rating:
+                    raise Exception("You have already rated this movie")
+                UserRating.objects.create(
+                    shortlist=shortlist, user=request.user, rating=rating, review=review
+                )
+                message = "You have successfully submited your rating"
+            except Exception as ex:
+                logger.warning(ex)
+                error = str(ex)
+
+        return JsonResponse(
+            {"success": False, "error": error}
+            if error
+            else {"success": True, "message": message}
+        )

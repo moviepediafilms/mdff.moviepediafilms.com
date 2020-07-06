@@ -1,13 +1,16 @@
 from django.urls import path
-from django.views.generic import TemplateView, ListView
+from django.views.generic import TemplateView
 from . import views
 
 app_name = "dff2020"
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="dff2020/home.html"), name="home"),
-    path("signup", views.SignUp.as_view(), name="signup"),
+    path("signup", views.SignUpView.as_view(), name="signup"),
     path("login", views.Login.as_view(), name="login"),
+    path("api/login", views.LoginApiView.as_view(), name="api-login"),
+    path("api/signup/quick", views.SignupApiView.as_view(), name="api-signup-login"),
+    path("api/rate", views.RateApiView.as_view(), name="api-rate"),
     path("forgot-password", views.ForgotPasswordView.as_view(), name="forgot_password"),
     path("reset/<uid>/<token>", views.PasswordReset.as_view(), name="password-reset",),
     path(
