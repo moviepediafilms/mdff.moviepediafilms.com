@@ -141,14 +141,14 @@ var steps = new Vue({
                 name: "Late Registrations & Submissions Closed",
                 desc: "No Submissions and/or registrations will be accepted after 10th July 11:59 PM",
                 date: "July 10th",
-                activate_on: moment('Jul 10 2020', "MMM DD YYYY", "Asia/Kolkata")
+                activate_on: moment('Jul 11 2020', "MMM DD YYYY", "Asia/Kolkata")
             },
             {
                 id: 6,
                 name: "Screening of top 10 Films",
                 desc: "Top 10 entries hand-picked by our jury of judges will be screened across platforms of Moviepedia",
                 date: "July 24th - August 1st",
-                activate_on: moment('Jul 10 2020', "MMM DD YYYY", "Asia/Kolkata")
+                activate_on: moment('Jul 11 2020', "MMM DD YYYY", "Asia/Kolkata")
             },
             {
                 id: 7,
