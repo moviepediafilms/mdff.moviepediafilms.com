@@ -225,6 +225,11 @@ class ForgotPasswordView(TemplateView):
         return redirect(reverse("dff2020:forgot_password") + f"?msg={message}")
 
 
+class RegistrationOver(View):
+    def get(self, request):
+        return redirect(reverse("dff2020:home"))
+
+
 class Registration(LoginRequiredMixin, View):
     def get(self, request):
         if self.has_unpaid_first_order(request):
@@ -366,9 +371,7 @@ class Registration(LoginRequiredMixin, View):
                             error = f"Error creating your entry '{entry.get('name')}', Only english alphabets and symbols (UTF-8 charset) are allowed"
                         else:
                             response["success"] = True
-                            response[
-                                "message"
-                            ] = "Your order is created !"
+                            response["message"] = "Your order is created !"
         return JsonResponse(
             response if not error else {"success": False, "error": error}
         )

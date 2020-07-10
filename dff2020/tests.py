@@ -16,7 +16,8 @@ class LoggedInTestCase(TestCase):
         return super().tearDown()
 
 
-class RegistrationTestCase(LoggedInTestCase):
+# feature disabled/inactive
+class RegistrationTestCase:
     def set_late_user(self, is_late):
         june_30 = datetime.strptime("2020-07-01T00:00:01+05:30", "%Y-%m-%dT%H:%M:%S%z")
         june_29 = datetime.strptime("2020-06-30T00:00:01+05:30", "%Y-%m-%dT%H:%M:%S%z")
@@ -113,14 +114,6 @@ class RegistrationTestCase(LoggedInTestCase):
         self.assertEquals(orders[1].amount, 29900)
 
 
-class SubmissionsTestCase(LoggedInTestCase):
-    def test_error_is_visible(self):
-        res = self.client.get(
-            reverse("dff2020:submissions") + "?error=this_is_an_error"
-        )
-        self.assertInHTML("this_is_an_error", res.content.decode())
-
-
 class SubmissionTestCase(LoggedInTestCase):
     def setUp(self):
         super().setUp()
@@ -134,6 +127,12 @@ class SubmissionTestCase(LoggedInTestCase):
     def tearDown(self):
         self.order.delete()
         return super().tearDown()
+
+    def test_error_is_visible(self):
+        res = self.client.get(
+            reverse("dff2020:submissions") + "?error=this_is_an_error"
+        )
+        self.assertInHTML("this_is_an_error", res.content.decode())
 
     def test_delete_button_visible_on_unpaid(self):
         res = self.client.get(reverse("dff2020:submissions"))
