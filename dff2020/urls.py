@@ -14,11 +14,7 @@ urlpatterns = [
         "order/delete/<order_id>", views.OrderDeleteView.as_view(), name="delete-order"
     ),
     path("logout", views.Logout.as_view(), name="logout"),
-    path(
-        "registration",
-        TemplateView.as_view(template_name="dff2020/registration_over.html"),
-        name="registration",
-    ),
+    path("registration", views.RegistrationOver.as_view(), name="registration",),
     path("verify_payment", views.VerifyPayment.as_view(), name="verify_payment"),
     path("submissions", views.SubmissionView.as_view(), name="submissions"),
     path("rules", views.RulesView.as_view(), name="rules"),

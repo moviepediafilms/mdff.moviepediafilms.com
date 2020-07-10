@@ -225,6 +225,11 @@ class ForgotPasswordView(TemplateView):
         return redirect(reverse("dff2020:forgot_password") + f"?msg={message}")
 
 
+class RegistrationOver(View):
+    def get(self, request):
+        return redirect(reverse("dff2020:home"))
+
+
 class Registration(LoginRequiredMixin, View):
     def get(self, request):
         if self.has_unpaid_first_order(request):
