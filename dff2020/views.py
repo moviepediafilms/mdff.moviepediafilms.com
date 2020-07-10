@@ -366,9 +366,7 @@ class Registration(LoginRequiredMixin, View):
                             error = f"Error creating your entry '{entry.get('name')}', Only english alphabets and symbols (UTF-8 charset) are allowed"
                         else:
                             response["success"] = True
-                            response[
-                                "message"
-                            ] = "Your order is created !"
+                            response["message"] = "Your order is created !"
         return JsonResponse(
             response if not error else {"success": False, "error": error}
         )
