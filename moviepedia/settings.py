@@ -41,12 +41,12 @@ LOGGING = {
     },
     "loggers": {
         "django": {
-            "handlers": ["console", "file"] if DEBUG else ["file"],
+            "handlers": ["console"] if DEBUG else ["file"],
             "level": "INFO",
             "propagate": True,
         },
         "app": {
-            "handlers": ["console", "file"] if DEBUG else ["file"],
+            "handlers": ["console"] if DEBUG else ["file"],
             "level": "DEBUG",
             "propagate": False,
         },
