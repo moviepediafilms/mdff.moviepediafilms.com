@@ -14,8 +14,8 @@ import os
 import sys
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG") == "True"
-PRODUCTION = os.getenv("PRODUCTION") == "True"
+DEBUG = os.getenv("DEBUG") == "true"
+PRODUCTION = os.getenv("PRODUCTION") == "true"
 
 LOGGING = {
     "version": 1,
@@ -134,7 +134,7 @@ DATABASES = {
     }
 }
 
-if os.getenv("IN_TEST") == "True":
+if os.getenv("IN_TEST") == "true":
     DATABASES["default"] = {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": "testdb",
