@@ -134,9 +134,11 @@ class SubmissionTestCase(LoggedInTestCase):
         )
         self.assertInHTML("this_is_an_error", res.content.decode())
 
-    def test_delete_button_visible_on_unpaid(self):
+    def test_delete_button_hidden_on_unpaid(self):
         res = self.client.get(reverse("dff2020:submissions"))
-        self.assertContains(res, reverse("dff2020:delete-order", args=(self.order.id,)))
+        self.assertNotContains(
+            res, reverse("dff2020:delete-order", args=(self.order.id,))
+        )
 
     def test_delete_button_hidden_on_paid(self):
         self.order.rzp_payment_id = "pay_XXX"

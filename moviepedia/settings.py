@@ -14,8 +14,8 @@ import os
 import sys
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG") == "True"
-PRODUCTION = os.getenv("PRODUCTION") == "True"
+DEBUG = os.getenv("DEBUG") == "true"
+PRODUCTION = os.getenv("PRODUCTION") == "true"
 
 LOGGING = {
     "version": 1,
@@ -35,18 +35,18 @@ LOGGING = {
             "class": "logging.handlers.RotatingFileHandler",
             "maxBytes": 1024 * 1024 * 5,
             "backupCount": 5,
-            "filename": "/var/log/moviepedia/moviepedia.log",
+            "filename": os.getenv("LOG_PATH"),
             "formatter": "simple_format",
         },
     },
     "loggers": {
         "django": {
-            "handlers": ["console", "file"] if DEBUG else ["file"],
+            "handlers": ["console"] if DEBUG else ["file"],
             "level": "INFO",
             "propagate": True,
         },
         "app": {
-            "handlers": ["console", "file"] if DEBUG else ["file"],
+            "handlers": ["console"] if DEBUG else ["file"],
             "level": "DEBUG",
             "propagate": False,
         },
@@ -134,7 +134,7 @@ DATABASES = {
     }
 }
 
-if os.getenv("IN_TEST") == "True":
+if os.getenv("IN_TEST") == "true":
     DATABASES["default"] = {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": "testdb",
