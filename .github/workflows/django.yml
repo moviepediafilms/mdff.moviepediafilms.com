@@ -28,3 +28,7 @@ jobs:
     - name: Run Tests
       run: |
         pipenv run python manage.py test
+      env:
+        SECRET_KEY: testingsecretkey
+        IN_TEST: True
+        DEBUG: False
