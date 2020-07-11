@@ -35,7 +35,7 @@ LOGGING = {
             "class": "logging.handlers.RotatingFileHandler",
             "maxBytes": 1024 * 1024 * 5,
             "backupCount": 5,
-            "filename": "/var/log/moviepedia/moviepedia.log",
+            "filename": os.getenv("LOG_PATH"),
             "formatter": "simple_format",
         },
     },

@@ -32,3 +32,4 @@ jobs:
         SECRET_KEY: testingsecretkey
         IN_TEST: True
         DEBUG: False
+        LOG_PATH: moviepedia.log
