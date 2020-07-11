@@ -11,7 +11,8 @@ from .models import (
     UserRating,
     Question,
     Option,
-    QuizEntry,
+    QuizResponse,
+    UserQuizAttempt,
 )
 
 
@@ -127,6 +128,11 @@ class OptionAdmin(admin.ModelAdmin):
     list_display = ["question", "text", "is_correct"]
 
 
-@admin.register(QuizEntry)
-class QuizEntryAdmin(admin.ModelAdmin):
-    list_display = []
+@admin.register(QuizResponse)
+class QuizResponseAdmin(admin.ModelAdmin):
+    list_display = ["quiz_attempt", "question", "selected_option"]
+
+
+@admin.register(UserQuizAttempt)
+class UserQuizAttemptAdmin(admin.ModelAdmin):
+    list_display = ["user", "shortlist", "start_time"]

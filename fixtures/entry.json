@@ -1,0 +1,14 @@
+[
+    {
+        "model": "dff2020.entry",
+        "pk": 1,
+        "fields": {
+            "name": "Piper",
+            "director": "Disney",
+            "link": "https://www.youtube.com/embed/lkQTe0Wdo2k",
+            "synopsis": "A hungry sandpiper hatchling ventures from her nest for the first time to dig for food by the shoreline. The only problem is that the food is buried beneath the sand where scary waves roll up onto the shore.",
+            "runtime": 2,
+            "order": 1
+        }
+    }
+]

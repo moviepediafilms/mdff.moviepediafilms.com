@@ -1,0 +1,83 @@
+[
+    {
+        "model": "dff2020.option",
+        "pk": 1,
+        "fields": {
+            "question": 1,
+            "text": "It is a baby bird",
+            "is_correct": true
+        }
+    },
+    {
+        "model": "dff2020.option",
+        "pk": 2,
+        "fields": {
+            "question": 1,
+            "text": "Shivam Sharma",
+            "is_correct": false
+        }
+    },
+    {
+        "model": "dff2020.option",
+        "pk": 3,
+        "fields": {
+            "question": 1,
+            "text": "MS Dhoni",
+            "is_correct": false
+        }
+    },
+    {
+        "model": "dff2020.option",
+        "pk": 4,
+        "fields": {
+            "question": 2,
+            "text": "It is a baby bird",
+            "is_correct": true
+        }
+    },
+    {
+        "model": "dff2020.option",
+        "pk": 5,
+        "fields": {
+            "question": 2,
+            "text": "Shivam Sharma",
+            "is_correct": false
+        }
+    },
+    {
+        "model": "dff2020.option",
+        "pk": 6,
+        "fields": {
+            "question": 2,
+            "text": "MS Dhoni",
+            "is_correct": false
+        }
+    },
+    {
+        "model": "dff2020.option",
+        "pk": 7,
+        "fields": {
+            "question": 3,
+            "text": "It is a baby bird",
+            "is_correct": true
+        }
+    },
+    {
+        "model": "dff2020.option",
+        "pk": 8,
+        "fields": {
+            "question": 3,
+            "text": "Shivam Sharma",
+            "is_correct": false
+        }
+    },
+    {
+        "model": "dff2020.option",
+        "pk": 9,
+        "fields": {
+            "question": 3,
+            "text": "MS Dhoni",
+            "is_correct": false
+        }
+    }
+]

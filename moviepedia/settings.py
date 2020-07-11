@@ -207,3 +207,5 @@ END_USER_CREATION_DATE = ""
 
 
 GOOGLE_ANALYTICS = os.getenv("GOOGLE_ANALYTICS")
+
+FIXTURE_DIRS = (os.path.join(BASE_DIR, "fixtures/",),)

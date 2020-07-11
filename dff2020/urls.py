@@ -11,6 +11,16 @@ urlpatterns = [
     path("api/login", views.LoginApiView.as_view(), name="api-login"),
     path("api/signup/quick", views.SignupApiView.as_view(), name="api-signup-login"),
     path("api/rate", views.RateApiView.as_view(), name="api-rate"),
+    path(
+        "api/quiz/start/<int:shortlist_id>",
+        views.StartQuizView.as_view(),
+        name="api-quiz-start",
+    ),
+    path(
+        "api/quiz/<int:shortlist_id>/<int:question_id>/<int:answer>",
+        views.SaveQuizResponseView.as_view(),
+        name="api-quiz-question",
+    ),
     path("forgot-password", views.ForgotPasswordView.as_view(), name="forgot_password"),
     path("reset/<uid>/<token>", views.PasswordReset.as_view(), name="password-reset",),
     path(

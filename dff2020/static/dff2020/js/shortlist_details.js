@@ -132,13 +132,18 @@ var button_app = new Vue({
     el: '#center-button-app',
     data: {
         logged_in: logged_in,
-        rated_movie: !locked
+        rated_movie: !locked,
+        quiz_over: quiz_over,
     },
     methods: {
         btn_action() {
             if (this.logged_in) {
-                if (this.rated_movie)
-                    $('#model-quiz').modal('show')
+                if (this.rated_movie) {
+                    if (this.quiz_over) {
+                        // movie to leaderboard page
+                    } else
+                        $('#model-quiz').modal('show')
+                }
                 else
                     $('#model-rating').modal('show')
             }
@@ -150,11 +155,16 @@ var button_app = new Vue({
         btn_txt() {
             if (!this.rated_movie)
                 return "Rate this movie"
-            return "Take a quiz"
+            if (this.quiz_over)
+                return "Leader Board"
+            else
+                return "Take a quiz"
         },
         p_text() {
             if (!this.rated_movie)
-                return "Rate to unlock jury, audence ratings and claim your prize"
+                return "Rate to Unlock Scores and Claim Your Prize"
+            if (this.quiz_over)
+                return "Check leaderboard for your position"
             return "Take a quiz about this movie and claim your prize"
         }
     },
@@ -196,5 +206,93 @@ var rating_app = new Vue({
                 this.loading = false;
             })
         },
+    }
+})
+
+var quiz_app = new Vue({
+    el: '#quiz-model-app',
+    data: {
+        quiz_start_text: "Click Start to start the quiz, you will have 1 minute to answer 3 questions about the movie",
+        quiz_started: false,
+        quiz_start_time: null,
+        question: {},
+        question_count: 0,
+        secs_left: -1,
+        error: "",
+        selected_option: undefined,
+    },
+    watch: {
+        quiz_ended() {
+            if (this.quiz_ended)
+                setTimeout(() => {
+                    window.location.reload()
+                }, 2000)
+        }
+    },
+    computed: {
+        quiz_ended() {
+            return this.quiz_started && (this.secs_left <= 0 || this.question_count == 3)
+        },
+        save_btn_txt() {
+            if (this.question_count == 2)
+                return "Submit"
+            else
+                return "Next"
+        },
+        title() {
+            if (!this.quiz_started)
+                return "Quiz"
+            else if (this.quiz_ended)
+                return "Quiz Complete"
+            else
+                return "00:" + String(this.secs_left).padStart(2, '0')
+        }
+    },
+    methods: {
+        start_quiz() {
+            var vm = this;
+            axios.get('/api/quiz/start/' + shortlist_id)
+                .then(response => {
+                    console.log(response)
+                    if (response.data.success) {
+                        vm.question = response.data.question
+                        vm.question_count = response.data.question_count
+                        vm.quiz_started = true
+                        vm.secs_left = parseInt((moment(response.data.start_time).add(1, "minutes") - moment()) / 1000)
+                        vm.timer()
+                    } else {
+                        vm.error = response.data.error
+                    }
+                })
+                .catch(error => {
+                    console.log(error)
+                    vm.error = "Error occured"
+                })
+        },
+        submit_question() {
+            var vm = this
+            axios.get(`/api/quiz/${shortlist_id}/${this.question.id}/${this.selected_option}`)
+                .then(response => {
+                    console.log(response)
+                    if (response.data.success) {
+                        vm.question = response.data.question
+                        vm.question_count = response.data.question_count
+                    }
+                    else {
+                        vm.error = response.data.error
+                    }
+                }).catch(error => {
+                    console.log(error)
+                    vm.error = "Error occured"
+                })
+        },
+        timer() {
+            if (this.secs_left > 0) {
+                setTimeout(() => {
+                    this.secs_left -= 1
+                    this.timer()
+                }, 1000)
+            }
+        }
     }
 })

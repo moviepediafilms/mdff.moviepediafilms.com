@@ -2,17 +2,18 @@ from django.test import TestCase
 from django.shortcuts import reverse
 from django.contrib.auth.models import User
 from datetime import datetime
-from dff2020.models import Order
+from dff2020.models import Order, Question
 from unittest import mock
 
 
 class LoggedInTestCase(TestCase):
+    fixtures = ["user.json"]
+
     def setUp(self):
-        self.user = User.objects.create_user(username="test", password="password")
-        assert self.client.login(username="test", password="password")
+        assert self.client.login(username="test", password="testuser123")
+        self.user = User.objects.get(pk=1)
 
     def tearDown(self):
-        self.user.delete()
         return super().tearDown()
 
 
@@ -219,3 +220,39 @@ class SignupTestCase(TestCase):
         )
         self.assertEqual(res.status_code, 302)
         self.assertEqual(User.objects.filter(username="abcd@gmail.com").count(), 1)
+
+
+class StartQuizViewTestCase(LoggedInTestCase):
+    fixtures = [
+        "user.json",
+        "order.json",
+        "entry.json",
+        "shortlist.json",
+        "question.json",
+        "option.json",
+    ]
+
+    def test_start_quiz_for_invalid_shortlist(self):
+        res = self.client.get(reverse("dff2020:api-quiz-start", args=(2,)))
+        self.assertEqual(res.status_code, 200)
+        self.assertEquals(res.json()["success"], False)
+        self.assertEquals(res.json()["error"], "Invalid shortlist")
+
+    def test_start_quiz_with_insufficient_questions(self):
+        Question.objects.first().delete()
+        res = self.client.get(reverse("dff2020:api-quiz-start", args=(1,)))
+        self.assertEqual(res.status_code, 200)
+        self.assertEquals(res.json()["success"], False)
+        self.assertEquals(
+            res.json()["error"],
+            "Sufficient questions are not ready, please try again after some time!",
+        )
+
+    def test_start_quiz_with_sufficient_questions(self):
+        res = self.client.get(reverse("dff2020:api-quiz-start", args=(1,)))
+        self.assertEqual(res.status_code, 200)
+        self.assertEquals(res.json()["success"], True)
+        self.assertIn("new", res.json())
+        self.assertIn("start_time", res.json())
+        self.assertIn("question", res.json())
+        self.assertIsNotNone(res.json()["question"])

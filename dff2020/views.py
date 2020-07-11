@@ -5,6 +5,8 @@ import hashlib
 from collections import defaultdict
 import requests
 import razorpay
+import random
+from datetime import datetime, timedelta, timezone
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
@@ -23,8 +25,19 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.templatetags.static import static
 
-from .constants import LATE_REGISTRATION_START_DATE
-from .models import Order, Entry, Faq, Rule, Shortlist, UserRating
+from .constants import LATE_REGISTRATION_START_DATE, QUESTION_TO_ASK
+from .models import (
+    Order,
+    Entry,
+    Faq,
+    Rule,
+    Shortlist,
+    UserRating,
+    UserQuizAttempt,
+    QuizResponse,
+    Question,
+    Option,
+)
 from .email import (
     send_password_reset_email,
     send_welcome_email,
@@ -38,6 +51,8 @@ logger = logging.getLogger("app.dff2020")
 rzp_client = razorpay.Client(
     auth=(settings.RAZORPAY_API_KEY, settings.RAZORPAY_API_SECRET)
 )
+
+random.seed(0)
 
 
 def get_ip(request):
@@ -584,24 +599,41 @@ class DetailShortlistView(TemplateView):
             )
             context["user_voted"] = user_voted
 
-            context["jury_rating"] = (
-                movie.jury_rating * 10 if user_voted else dummy_rating
+            context["jury_rating"] = "{:.2f}".format(
+                (movie.jury_rating * 10 if user_voted else dummy_rating)
             )
-            context["audience_rating"] = (
-                (sum(r.rating for r in user_ratings) / len(user_ratings)) * 10
-                if user_voted
-                else dummy_rating
+            context["audience_rating"] = "{:.2f}".format(
+                (
+                    (sum(r.rating for r in user_ratings) / len(user_ratings)) * 10
+                    if user_voted
+                    else dummy_rating
+                )
             )
-            context["ratings"] = [
+            context["reviews"] = [
                 dict(
                     profile_pic=get_gravatar(rating.user),
                     user_full_name=rating.user.get_full_name(),
-                    stars=range(int(rating.rating)),
-                    half_star=int(rating.rating) != rating.rating,
-                    review=rating.review,
+                    rating="{:.1f}/10".format(rating.rating),
+                    content=rating.review,
                 )
                 for rating in user_ratings
+                if rating.review
             ]
+            if self.request.user.is_authenticated:
+                quiz_attempt = UserQuizAttempt.objects.filter(
+                    shortlist=movie, user=self.request.user
+                ).first()
+                if quiz_attempt:
+                    now = datetime.now(timezone.utc)
+                    quiz_over_at = quiz_attempt.start_time + timedelta(seconds=60)
+                    logger.debug(now.isoformat())
+                    logger.debug(quiz_over_at.isoformat())
+                    context["quiz_over"] = (
+                        now >= quiz_over_at
+                        or quiz_attempt.quizresponse_set.count() == QUESTION_TO_ASK
+                    )
+            else:
+                context["quiz_over"] = False
 
         return context
 
@@ -666,7 +698,7 @@ class RateApiView(LoginRequiredMixin, View):
                     shortlist=shortlist, user=request.user, rating=rating, review=review
                 )
                 message = "You have successfully submited your rating"
-                
+
             except Exception as ex:
                 logger.warning(ex)
                 error = str(ex)
@@ -676,3 +708,133 @@ class RateApiView(LoginRequiredMixin, View):
             if error
             else {"success": True, "message": message, "reload": reload}
         )
+
+
+def _get_next_question(attempt):
+    answered_questions = [
+        entry.question
+        for entry in QuizResponse.objects.filter(quiz_attempt=attempt).all()
+    ]
+    if len(answered_questions) < QUESTION_TO_ASK:
+        remaining_questions = (
+            Question.objects.filter(shortlist=attempt.shortlist,)
+            .exclude(id__in=[q.id for q in answered_questions],)
+            .all()
+        )
+        if not remaining_questions:
+            return False, "No remainig questions found"
+        else:
+            question = random.choice(remaining_questions)
+            options = Option.objects.filter(question=question).all()
+            question_dict = {
+                "id": question.id,
+                "content": question.text,
+                "options": [
+                    {"id": option.id, "content": option.text} for option in options
+                ],
+            }
+            return True, question_dict
+    return False, "Already answered all questions"
+
+
+class StartQuizView(LoginRequiredMixin, View):
+    def get(self, request, shortlist_id):
+        response = {}
+        error = None
+        try:
+            shortlist = Shortlist.objects.get(pk=shortlist_id)
+        except Shortlist.DoesNotExist as ex:
+            logger.exception(ex)
+            error = "Invalid shortlist"
+        else:
+            try:
+                response["new"] = False
+                attempt = UserQuizAttempt.objects.get(
+                    shortlist=shortlist, user=request.user
+                )
+            except UserQuizAttempt.DoesNotExist as ex:
+                logger.warning(str(ex))
+                # check min 3 questions should be there
+                questions_count = Question.objects.filter(shortlist=shortlist).count()
+                logger.info(f"found {questions_count} questions")
+                if questions_count < QUESTION_TO_ASK:
+                    error = "Sufficient questions are not ready, please try again after some time!"
+
+                if not error:
+                    attempt = UserQuizAttempt.objects.create(
+                        user=request.user, shortlist=shortlist
+                    )
+                    response["new"] = True
+
+        if not error:
+            response["start_time"] = attempt.start_time
+
+            success, result = _get_next_question(attempt)
+            response["question_count"] = attempt.quizresponse_set.count()
+            logger.debug(f"{success} {result}")
+            if success:
+                response["question"] = result
+            else:
+                error = result
+        if error:
+            response["success"] = False
+            response["error"] = error
+        else:
+            response["success"] = True
+
+        return JsonResponse(response)
+
+
+class SaveQuizResponseView(LoginRequiredMixin, View):
+    def get(self, request, shortlist_id, question_id, answer):
+        res_body = {}
+        error = None
+        try:
+            shortlist = Shortlist.objects.get(pk=int(shortlist_id))
+            question = Question.objects.get(pk=int(question_id))
+            option = Option.objects.get(question=question, pk=int(answer))
+        except Shortlist.DoesNotExists:
+            error = "Invalid Shortlist"
+        except Question.DoesNotExists:
+            error = "Invalid Question"
+        except Option.DoesNotExists:
+            error = "Invalid Option"
+        else:
+            try:
+                attempt = UserQuizAttempt.objects.get(
+                    shortlist=shortlist, user=request.user
+                )
+            except UserQuizAttempt.DoesNotExists:
+                error = "Answer attempted before starting the quiz"
+            else:
+                now = datetime.now(timezone.utc)
+                quiz_over_at = attempt.start_time + timedelta(seconds=60)
+                if now >= quiz_over_at:
+                    error = "Quiz time is up!"
+                else:
+                    try:
+                        QuizResponse.objects.create(
+                            quiz_attempt=attempt,
+                            question=question,
+                            selected_option=option,
+                        )
+                    except Exception as ex:
+                        logger.exception(ex)
+                        error = str(ex)
+                    else:
+                        question_count = attempt.quizresponse_set.count()
+                        res_body["question_count"] = question_count
+                        if question_count >= QUESTION_TO_ASK:
+                            success, value = True, {}
+                        else:
+                            success, value = _get_next_question(attempt)
+                        if success:
+                            res_body["question"] = value
+                        else:
+                            error = value
+        if error:
+            res_body["success"] = False
+            res_body["error"] = error
+        else:
+            res_body["success"] = True
+        return JsonResponse(res_body)

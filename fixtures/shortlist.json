@@ -1,0 +1,12 @@
+[
+    {
+        "model": "dff2020.shortlist",
+        "pk": 1,
+        "fields": {
+            "entry": 1,
+            "review": "I enjoyed this video thoroughly, it was insightful and well put together. Keep working, keep improving. The visuals and audio have continued to improve also \u263a",
+            "jury_rating": 8.0,
+            "added_on": "2020-07-04T08:23:55.715Z"
+        }
+    }
+]

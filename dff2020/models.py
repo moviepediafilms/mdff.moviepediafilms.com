@@ -67,6 +67,8 @@ class UserRating(models.Model):
     rating = models.FloatField(validators=[MaxValueValidator(10), MinValueValidator(0)])
     review = models.CharField(max_length=2000)
     added_on = models.DateTimeField(auto_now=True)
+    lat = models.CharField(max_length=100, null=True, blank=True)
+    long = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
         return f"{self.shortlist.entry}: {self.rating} ({self.user.username})"
@@ -92,13 +94,28 @@ class Option(models.Model):
         return f"{self.question.text}: {self.text}"
 
 
-class QuizEntry(models.Model):
+class UserQuizAttempt(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    start_time = models.DateTimeField(auto_now=True)
+    shortlist = models.ForeignKey(Shortlist, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = [["shortlist", "user"]]
+
+    def __str__(self):
+        return f"{self.user.username}: {self.shortlist.id}"
+
+
+class QuizResponse(models.Model):
+    quiz_attempt = models.ForeignKey(UserQuizAttempt, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     selected_option = models.ForeignKey(Option, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
-        return f"{self.user.username}: {self.question.text}"
+        return (
+            f"{self.quiz_attempt.id}: {self.question.id} => {self.selected_option.id}"
+        )
 
     class Meta:
-        verbose_name_plural = "Quiz Entries"
+        verbose_name_plural = "Quiz Response"
+        unique_together = [["quiz_attempt", "question"]]

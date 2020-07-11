@@ -55,8 +55,8 @@
         {% verbatim %}
         <div class="text-center my-4" id="center-button-app">
             <button class="btn btn-sm text-dark font-weight-bold btn-warning" @click="btn_action"
-                v-cloak>{{btn_txt}}</button>
-            <p class="text-muted mt-2" v-cloak>{{p_text}}</p>
+                v-cloak>{{btn_txt}}</button><br/>
+            <small class="text-muted mt-2" v-cloak>{{p_text}}</small>
         </div>
         {% endverbatim %}
 
@@ -65,28 +65,23 @@
 
         {% if user_voted %}
         <div class="card-columns">
-            {% for rating in ratings%}
+            {% for review in reviews%}
             <div class="card bg-dark">
                 <div class="card-header">
                     <div class="row">
 
-                        <img class="d-inline-block mr-3 rounded-circle" height="40px" src="{{rating.profile_pic}}"
-                            alt="{{rating.get_full_name}}">
+                        <img class="d-inline-block mr-3 rounded-circle" height="40px" src="{{review.profile_pic}}"
+                            alt="{{review.get_full_name}}">
 
                         <small class="text-light">
-                            {{rating.user_full_name}}<br />
-                            {% for i in rating.stars %}
-                            <i class="fas fa-xs fa-star light-text"> </i>
-                            {%endfor%}
-                            {% if rating.half_star%}
-                            <i class="fas fa-xs fa-star-half light-text"> </i>
-                            {%endif%}
+                            {{review.user_full_name}}<br />
+                            {{review.rating}}
                         </small>
 
                     </div>
                 </div>
                 <div class="card-body">
-                    <p class="card-text">{{rating.review}}</p>
+                    <p class="card-text">{{review.content}}</p>
                 </div>
             </div>
             {% endfor %}
@@ -97,7 +92,7 @@
                 <h5 class="card-title text-center text-muted">
                     <i class="fas fa-lock mb-2"></i>
                     <br />
-                    Rate the movie to unlock
+                    <small>Rate to Unlock Audience Reviews</small>
                 </h5>
             </div>
         </div>
@@ -200,24 +195,42 @@
 </div>
 {%endverbatim%}
 <!-- Model quiz -->
-<div class="modal fade" id="model-quiz" tabindex="-1" role="dialog" aria-labelledby="model-quiz" aria-hidden="true">
+{%verbatim%}
+<div class="modal fade" id="model-quiz" tabindex="-1" role="dialog" aria-labelledby="model-quiz" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
+
+        <div class="modal-content bg-light text-dark p-3" id="quiz-model-app">
             <div class="modal-header text-center">
-                <h4 class="modal-title w-100 font-weight-bold">Sign in</h4>
+                <h4 class="modal-title w-100 font-weight-bold" :class="{'text-danger': secs_left > 0 && secs_left<=10}">{{title}}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-            </div>model
-            <div class="modal-body mx-3">
-
             </div>
-            <div class="modal-footer d-flex justify-content-center">
-                <button class="btn btn-default">Next</button>
+            <div class="modal-body mx-3 text-center">
+                <div v-if="!quiz_started">
+                    <p>{{quiz_start_text}}</p>
+                    <button class=" mt-3 btn btn-warning btn-sm text-reset font-weight-bold" @click.prevent="start_quiz">Start</button>
+                </div>
+                <!-- Material unchecked -->
+                <div class="text-left" v-if="quiz_started && !quiz_ended">
+                    <form @submit.prevent="submit_question">
+                        <p>{{question.content}}</p>
+                        <div class="form-check" v-for="option in question.options">
+                            <input type="radio" class="form-check-input" :id="'option-' + option.id" name="answer" :value="option.id" v-model="selected_option">
+                            <label class="form-check-label" :for="'option-' + option.id">{{option.content}}</label>
+                        </div>
+                        <button class=" mt-3 btn btn-warning btn-sm text-reset font-weight-bold" type="submit">{{save_btn_txt}}</button>
+                    </form>
+                </div>
+                <div v-if="quiz_ended">
+                    <p>Quiz complete, check leaderboard for scores</p>
+                </div>
+                <small class="text-danger">{{error}}</small>
             </div>
         </div>
     </div>
 </div>
+{%endverbatim%}
 
 <!-- Model Rating -->
 {%verbatim%}
@@ -261,10 +274,13 @@
 <script src="{% static '/js/vendor/compiled-addons.min.js'%}"></script>
 <script src="https://unpkg.com/vue@2.6.11/dist/vue.min.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script>
     var csrf = "{{csrf}}"
     var locked = "{{user_voted}}" === "False"
     var logged_in = "{{user.is_authenticated}}" === "True"
+    var shortlist_id = {{movie.id}}
+    var quiz_over = "{{quiz_over}}" === "True"
 </script>
 <script src="{% static '/dff2020/js/shortlist_details.js'%}"></script>
 {%endblock%}

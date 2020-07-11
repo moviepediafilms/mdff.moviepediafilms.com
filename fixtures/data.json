@@ -1,0 +1,683 @@
+[
+    {
+        "model": "sessions.session",
+        "pk": "67v0i09fc9orx0mqhrbnx25j7fy0v5sj",
+        "fields": {
+            "session_data": "YTdmNjM1OGQ3N2Q2NTI2ODM4MmMxZjQwZDBkMDMxOGY5NGY0MzkyNjp7Il9hdXRoX3VzZXJfaWQiOiIxIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiI4OGU2M2M4MWY0ZGVkNTExODEzZWZlMzAwYjFkNThhN2QyMjJjMGExIn0=",
+            "expire_date": "2020-07-20T17:54:56.152Z"
+        }
+    },
+    {
+        "model": "sessions.session",
+        "pk": "78zmvletv85nkgl3x0tfpx9txe9qfzho",
+        "fields": {
+            "session_data": "Y2I5ZTVjYTFjNzEyZjZiOTA2MTE2NDM5Mzg4YTBiOTE5ZGMyMDdkNjp7Il9hdXRoX3VzZXJfaWQiOiIyIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiJjNDU2Y2U2YmU4OGY3NDVkZTJiOTlkYmRlMGI5ZGZhMDVmOTc4M2JjIn0=",
+            "expire_date": "2020-07-20T17:55:07.648Z"
+        }
+    },
+    {
+        "model": "sessions.session",
+        "pk": "8f8egq94vxppus28i90pw1q4kniui2oq",
+        "fields": {
+            "session_data": "YTdmNjM1OGQ3N2Q2NTI2ODM4MmMxZjQwZDBkMDMxOGY5NGY0MzkyNjp7Il9hdXRoX3VzZXJfaWQiOiIxIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiI4OGU2M2M4MWY0ZGVkNTExODEzZWZlMzAwYjFkNThhN2QyMjJjMGExIn0=",
+            "expire_date": "2020-07-24T05:28:50.870Z"
+        }
+    },
+    {
+        "model": "sessions.session",
+        "pk": "9o0kblb3rxyh4jpt927p9wbc0tucp30p",
+        "fields": {
+            "session_data": "NTVmYjc2ODgzZjY4ODQ2NDk3Y2ZjOWIwZmU4MGYyNDdiNDZiNDRiZjp7Il9hdXRoX3VzZXJfaWQiOiIxIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiIzODk2NzBkOTEyODU1MDVhYWU5YzU4MDk4ZTRkMGVhMGY4MmU1NmQ3In0=",
+            "expire_date": "2020-07-25T12:42:33.390Z"
+        }
+    },
+    {
+        "model": "sessions.session",
+        "pk": "abr7qzfpefgfemftrgtkf85c1w2v3yz6",
+        "fields": {
+            "session_data": "YTdmNjM1OGQ3N2Q2NTI2ODM4MmMxZjQwZDBkMDMxOGY5NGY0MzkyNjp7Il9hdXRoX3VzZXJfaWQiOiIxIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiI4OGU2M2M4MWY0ZGVkNTExODEzZWZlMzAwYjFkNThhN2QyMjJjMGExIn0=",
+            "expire_date": "2020-07-24T14:31:37.902Z"
+        }
+    },
+    {
+        "model": "dff2020.entry",
+        "pk": 1,
+        "fields": {
+            "name": "Piper",
+            "director": "Disney",
+            "link": "https://www.youtube.com/embed/lkQTe0Wdo2k",
+            "synopsis": "A hungry sandpiper hatchling ventures from her nest for the first time to dig for food by the shoreline. The only problem is that the food is buried beneath the sand where scary waves roll up onto the shore.",
+            "runtime": 2,
+            "order": 1
+        }
+    },
+    {
+        "model": "dff2020.shortlist",
+        "pk": 1,
+        "fields": {
+            "entry": 1,
+            "review": "I enjoyed this video thoroughly, it was insightful and well put together. Keep working, keep improving. The visuals and audio have continued to improve also \u263a",
+            "jury_rating": 8.0,
+            "added_on": "2020-07-04T08:23:55.715Z"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 1,
+        "fields": {
+            "name": "Can add log entry",
+            "content_type": 1,
+            "codename": "add_logentry"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 2,
+        "fields": {
+            "name": "Can change log entry",
+            "content_type": 1,
+            "codename": "change_logentry"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 3,
+        "fields": {
+            "name": "Can delete log entry",
+            "content_type": 1,
+            "codename": "delete_logentry"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 4,
+        "fields": {
+            "name": "Can view log entry",
+            "content_type": 1,
+            "codename": "view_logentry"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 5,
+        "fields": {
+            "name": "Can add permission",
+            "content_type": 2,
+            "codename": "add_permission"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 6,
+        "fields": {
+            "name": "Can change permission",
+            "content_type": 2,
+            "codename": "change_permission"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 7,
+        "fields": {
+            "name": "Can delete permission",
+            "content_type": 2,
+            "codename": "delete_permission"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 8,
+        "fields": {
+            "name": "Can view permission",
+            "content_type": 2,
+            "codename": "view_permission"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 9,
+        "fields": {
+            "name": "Can add group",
+            "content_type": 3,
+            "codename": "add_group"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 10,
+        "fields": {
+            "name": "Can change group",
+            "content_type": 3,
+            "codename": "change_group"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 11,
+        "fields": {
+            "name": "Can delete group",
+            "content_type": 3,
+            "codename": "delete_group"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 12,
+        "fields": {
+            "name": "Can view group",
+            "content_type": 3,
+            "codename": "view_group"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 13,
+        "fields": {
+            "name": "Can add user",
+            "content_type": 4,
+            "codename": "add_user"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 14,
+        "fields": {
+            "name": "Can change user",
+            "content_type": 4,
+            "codename": "change_user"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 15,
+        "fields": {
+            "name": "Can delete user",
+            "content_type": 4,
+            "codename": "delete_user"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 16,
+        "fields": {
+            "name": "Can view user",
+            "content_type": 4,
+            "codename": "view_user"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 17,
+        "fields": {
+            "name": "Can add content type",
+            "content_type": 5,
+            "codename": "add_contenttype"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 18,
+        "fields": {
+            "name": "Can change content type",
+            "content_type": 5,
+            "codename": "change_contenttype"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 19,
+        "fields": {
+            "name": "Can delete content type",
+            "content_type": 5,
+            "codename": "delete_contenttype"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 20,
+        "fields": {
+            "name": "Can view content type",
+            "content_type": 5,
+            "codename": "view_contenttype"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 21,
+        "fields": {
+            "name": "Can add session",
+            "content_type": 6,
+            "codename": "add_session"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 22,
+        "fields": {
+            "name": "Can change session",
+            "content_type": 6,
+            "codename": "change_session"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 23,
+        "fields": {
+            "name": "Can delete session",
+            "content_type": 6,
+            "codename": "delete_session"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 24,
+        "fields": {
+            "name": "Can view session",
+            "content_type": 6,
+            "codename": "view_session"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 25,
+        "fields": {
+            "name": "Can add order",
+            "content_type": 7,
+            "codename": "add_order"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 26,
+        "fields": {
+            "name": "Can change order",
+            "content_type": 7,
+            "codename": "change_order"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 27,
+        "fields": {
+            "name": "Can delete order",
+            "content_type": 7,
+            "codename": "delete_order"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 28,
+        "fields": {
+            "name": "Can view order",
+            "content_type": 7,
+            "codename": "view_order"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 29,
+        "fields": {
+            "name": "Can add entry",
+            "content_type": 8,
+            "codename": "add_entry"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 30,
+        "fields": {
+            "name": "Can change entry",
+            "content_type": 8,
+            "codename": "change_entry"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 31,
+        "fields": {
+            "name": "Can delete entry",
+            "content_type": 8,
+            "codename": "delete_entry"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 32,
+        "fields": {
+            "name": "Can view entry",
+            "content_type": 8,
+            "codename": "view_entry"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 33,
+        "fields": {
+            "name": "Can add faq",
+            "content_type": 9,
+            "codename": "add_faq"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 34,
+        "fields": {
+            "name": "Can change faq",
+            "content_type": 9,
+            "codename": "change_faq"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 35,
+        "fields": {
+            "name": "Can delete faq",
+            "content_type": 9,
+            "codename": "delete_faq"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 36,
+        "fields": {
+            "name": "Can view faq",
+            "content_type": 9,
+            "codename": "view_faq"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 37,
+        "fields": {
+            "name": "Can add rule",
+            "content_type": 10,
+            "codename": "add_rule"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 38,
+        "fields": {
+            "name": "Can change rule",
+            "content_type": 10,
+            "codename": "change_rule"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 39,
+        "fields": {
+            "name": "Can delete rule",
+            "content_type": 10,
+            "codename": "delete_rule"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 40,
+        "fields": {
+            "name": "Can view rule",
+            "content_type": 10,
+            "codename": "view_rule"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 41,
+        "fields": {
+            "name": "Can add option",
+            "content_type": 11,
+            "codename": "add_option"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 42,
+        "fields": {
+            "name": "Can change option",
+            "content_type": 11,
+            "codename": "change_option"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 43,
+        "fields": {
+            "name": "Can delete option",
+            "content_type": 11,
+            "codename": "delete_option"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 44,
+        "fields": {
+            "name": "Can view option",
+            "content_type": 11,
+            "codename": "view_option"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 45,
+        "fields": {
+            "name": "Can add question",
+            "content_type": 12,
+            "codename": "add_question"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 46,
+        "fields": {
+            "name": "Can change question",
+            "content_type": 12,
+            "codename": "change_question"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 47,
+        "fields": {
+            "name": "Can delete question",
+            "content_type": 12,
+            "codename": "delete_question"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 48,
+        "fields": {
+            "name": "Can view question",
+            "content_type": 12,
+            "codename": "view_question"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 49,
+        "fields": {
+            "name": "Can add shortlist",
+            "content_type": 13,
+            "codename": "add_shortlist"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 50,
+        "fields": {
+            "name": "Can change shortlist",
+            "content_type": 13,
+            "codename": "change_shortlist"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 51,
+        "fields": {
+            "name": "Can delete shortlist",
+            "content_type": 13,
+            "codename": "delete_shortlist"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 52,
+        "fields": {
+            "name": "Can view shortlist",
+            "content_type": 13,
+            "codename": "view_shortlist"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 53,
+        "fields": {
+            "name": "Can add user quiz attempt",
+            "content_type": 14,
+            "codename": "add_userquizattempt"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 54,
+        "fields": {
+            "name": "Can change user quiz attempt",
+            "content_type": 14,
+            "codename": "change_userquizattempt"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 55,
+        "fields": {
+            "name": "Can delete user quiz attempt",
+            "content_type": 14,
+            "codename": "delete_userquizattempt"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 56,
+        "fields": {
+            "name": "Can view user quiz attempt",
+            "content_type": 14,
+            "codename": "view_userquizattempt"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 57,
+        "fields": {
+            "name": "Can add quiz entry",
+            "content_type": 15,
+            "codename": "add_quizentry"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 58,
+        "fields": {
+            "name": "Can change quiz entry",
+            "content_type": 15,
+            "codename": "change_quizentry"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 59,
+        "fields": {
+            "name": "Can delete quiz entry",
+            "content_type": 15,
+            "codename": "delete_quizentry"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 60,
+        "fields": {
+            "name": "Can view quiz entry",
+            "content_type": 15,
+            "codename": "view_quizentry"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 61,
+        "fields": {
+            "name": "Can add user rating",
+            "content_type": 16,
+            "codename": "add_userrating"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 62,
+        "fields": {
+            "name": "Can change user rating",
+            "content_type": 16,
+            "codename": "change_userrating"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 63,
+        "fields": {
+            "name": "Can delete user rating",
+            "content_type": 16,
+            "codename": "delete_userrating"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 64,
+        "fields": {
+            "name": "Can view user rating",
+            "content_type": 16,
+            "codename": "view_userrating"
+        }
+    },
+    {
+        "model": "auth.user",
+        "pk": 1,
+        "fields": {
+            "password": "pbkdf2_sha256$180000$zXt1M9wu6txF$bSMRfTgfkpCP4xq8f9kWq/NI4t8CNdg+bstgzsOPkYA=",
+            "last_login": "2020-07-11T12:42:33.386Z",
+            "is_superuser": true,
+            "username": "admin",
+            "first_name": "",
+            "last_name": "",
+            "email": "zkhan1093@gmail.com",
+            "is_staff": true,
+            "is_active": true,
+            "date_joined": "2020-07-11T12:41:38.826Z",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "dff2020.order",
+        "pk": 1,
+        "fields": {
+            "rzp_order_id": "order_123486345sd",
+            "rzp_payment_id": "pay_1234u86787345",
+            "receipt_number": "receipt_234865845",
+            "amount": 29900,
+            "created_at": "2020-07-04T08:23:55.715Z",
+            "owner": 1
+        }
+    },
+    {
+        "model": "dff2020.userrating",
+        "pk": 1,
+        "fields": {
+            "shortlist": 1,
+            "user": 1,
+            "rating": 3.4,
+            "review": "This is a very nice movie ",
+            "added_on": "2020-07-11T12:43:51.506Z",
+            "lat": null,
+            "long": null
+        }
+    }
+]
