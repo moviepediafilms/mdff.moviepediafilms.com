@@ -87,9 +87,9 @@ class Login(View):
             if user is not None:
                 logger.debug("user authenticated")
                 login(request, user)
-                if Order.objects.filter(owner=user).exists():
-                    return redirect("dff2020:submissions")
-                return redirect("dff2020:registration")
+                # if Order.objects.filter(owner=user).exists():
+                #     return redirect("dff2020:submissions")
+                return redirect("dff2020:submissions")
             else:
                 error = "Invalid email and password combination"
         else:
@@ -98,9 +98,9 @@ class Login(View):
 
     def get(self, request):
         if not request.user.is_anonymous:
-            if Order.objects.filter(owner=request.user).exists():
-                return redirect("dff2020:submissions")
-            return redirect("dff2020:registration")
+            # if Order.objects.filter(owner=request.user).exists():
+            #     return redirect("dff2020:submissions")
+            return redirect("dff2020:submissions")
         error = request.GET.get("error") or ""
         message = request.GET.get("message") or ""
         return render(request, "dff2020/login.html", dict(error=error, message=message))
