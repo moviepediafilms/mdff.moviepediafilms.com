@@ -50,12 +50,13 @@ class Rule(models.Model):
 
 
 class Shortlist(models.Model):
-    entry = models.ForeignKey(Entry, on_delete=models.CASCADE)
+    entry = models.OneToOneField(Entry, on_delete=models.CASCADE)
     review = models.CharField(max_length=2000)
     jury_rating = models.FloatField(
         validators=[MaxValueValidator(10), MinValueValidator(0)]
     )
-    added_on = models.DateTimeField(auto_now=True)
+    publish_on = models.DateField()
+    is_jury_rating_locked = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{str(self.entry)}: {self.jury_rating}"
@@ -109,6 +110,7 @@ class UserQuizAttempt(models.Model):
 class QuizResponse(models.Model):
     quiz_attempt = models.ForeignKey(UserQuizAttempt, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    submit_at = models.DateTimeField(auto_now=True)
     selected_option = models.ForeignKey(Option, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):

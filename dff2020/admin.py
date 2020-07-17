@@ -110,7 +110,13 @@ class EntryAdmin(admin.ModelAdmin):
 
 @admin.register(Shortlist)
 class ShortlistAdmin(admin.ModelAdmin):
-    list_display = ["entry", "jury_rating", "review", "added_on"]
+    list_display = [
+        "entry",
+        "jury_rating",
+        "review",
+        "publish_on",
+        "is_jury_rating_locked",
+    ]
 
 
 @admin.register(UserRating)

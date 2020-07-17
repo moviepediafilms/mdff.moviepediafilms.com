@@ -153,12 +153,10 @@ var button_app = new Vue({
     },
     computed: {
         btn_txt() {
-            if (!this.rated_movie)
-                return "Rate this movie"
             if (this.quiz_over)
                 return "Leader Board"
             else
-                return "Take a quiz"
+                return "Take a Quiz"
         },
         p_text() {
             if (!this.rated_movie)
@@ -176,8 +174,25 @@ var rating_app = new Vue({
         loading: false,
         form: {
             error: '',
-            rating: "",
+            rating: 0,
             review: "",
+        }
+    },
+    computed: {
+        rating_text() {
+            return {
+                0: "Very Nice 0",
+                1: "Very Nice 1",
+                2: "Very Nice 2",
+                3: "Very Nice 3",
+                4: "Very Nice 4",
+                5: "Very Nice 5",
+                6: "Very Nice 6",
+                7: "Very Nice 7",
+                8: "Very Nice 8",
+                9: "Very Nice 9",
+                10: "Very Nice 10",
+            }[this.form.rating]
         }
     },
     methods: {
@@ -188,7 +203,7 @@ var rating_app = new Vue({
             var app = this
             data.append('review', this.form.review)
             data.append('rating', this.form.rating)
-            axios.post('/api/rate', data, { headers: { "X-CSRFToken": csrf } }).then(response => {
+            axios.post(`/api/rate/${shortlist_id}`, data, { headers: { "X-CSRFToken": csrf } }).then(response => {
                 console.log(response)
                 if (response.data.success) {
                     window.location.reload();
@@ -212,14 +227,15 @@ var rating_app = new Vue({
 var quiz_app = new Vue({
     el: '#quiz-model-app',
     data: {
-        quiz_start_text: "Click Start to start the quiz, you will have 1 minute to answer 3 questions about the movie",
         quiz_started: false,
         quiz_start_time: null,
         question: {},
         question_count: 0,
         secs_left: -1,
         error: "",
-        selected_option: undefined,
+        selected_option: {},
+        correct_option_was: null,
+        sending: false,
     },
     watch: {
         quiz_ended() {
@@ -233,19 +249,20 @@ var quiz_app = new Vue({
         quiz_ended() {
             return this.quiz_started && (this.secs_left <= 0 || this.question_count == 3)
         },
-        save_btn_txt() {
-            if (this.question_count == 2)
-                return "Submit"
-            else
-                return "Next"
-        },
         title() {
             if (!this.quiz_started)
                 return "Quiz"
             else if (this.quiz_ended)
                 return "Quiz Complete"
-            else
-                return "00:" + String(this.secs_left).padStart(2, '0')
+            else {
+                var hours = parseInt(this.secs_left / 3600)
+                var minutes = parseInt((this.secs_left - hours * 3600) / 60)
+                var secs = this.secs_left - hours * 3600 - minutes * 60
+                if (hours)
+                    return String(hours).padStart(2, 0) + ":" + String(minutes).padStart(2, 0) + ":" + String(secs).padStart(2, '0')
+                else
+                    return String(minutes).padStart(2, 0) + ":" + String(secs).padStart(2, '0')
+            }
         }
     },
     methods: {
@@ -258,7 +275,7 @@ var quiz_app = new Vue({
                         vm.question = response.data.question
                         vm.question_count = response.data.question_count
                         vm.quiz_started = true
-                        vm.secs_left = parseInt((moment(response.data.start_time).add(1, "minutes") - moment()) / 1000)
+                        vm.secs_left = parseInt((moment(response.data.start_time).add(response.data.quiz_time_limit, "seconds") - moment()) / 1000)
                         vm.timer()
                     } else {
                         vm.error = response.data.error
@@ -269,14 +286,23 @@ var quiz_app = new Vue({
                     vm.error = "Error occured"
                 })
         },
-        submit_question() {
+        submit_question(option) {
             var vm = this
-            axios.get(`/api/quiz/${shortlist_id}/${this.question.id}/${this.selected_option}`)
+            vm.selected_option = option
+            vm.sending = true
+            axios.get(`/api/quiz/${shortlist_id}/${this.question.id}/${option.id}`)
                 .then(response => {
                     console.log(response)
+                    vm.sending = false;
                     if (response.data.success) {
-                        vm.question = response.data.question
-                        vm.question_count = response.data.question_count
+                        if (response.data.previous_correct_answer) {
+                            option.was_correct = true
+                        }
+                        setTimeout(() => {
+                            vm.selected_option = {}
+                            vm.question = response.data.question;
+                            vm.question_count = response.data.question_count;
+                        }, 1000)
                     }
                     else {
                         vm.error = response.data.error

@@ -10,7 +10,7 @@ urlpatterns = [
     path("login", views.Login.as_view(), name="login"),
     path("api/login", views.LoginApiView.as_view(), name="api-login"),
     path("api/signup/quick", views.SignupApiView.as_view(), name="api-signup-login"),
-    path("api/rate", views.RateApiView.as_view(), name="api-rate"),
+    path("api/rate/<int:shortlist_id>", views.RateApiView.as_view(), name="api-rate"),
     path(
         "api/quiz/start/<int:shortlist_id>",
         views.StartQuizView.as_view(),
@@ -50,7 +50,9 @@ urlpatterns = [
     path("tos/", TemplateView.as_view(template_name="dff2020/tos.html"), name="tos"),
     path("judges/", views.JudgesView.as_view(), name="judges"),
     path(
-        "shortlist/today", views.DetailShortlistView.as_view(), name="shortlist-today"
+        "shortlist/<int:shortlist_id>",
+        views.DetailShortlistView.as_view(),
+        name="shortlist-detail",
     ),
-    path("shortlist", views.ShortlistView.as_view(), name="shortlists"),
+    path("shortlist/all", views.ShortlistView.as_view(), name="shortlists"),
 ]
