@@ -593,6 +593,7 @@ class ShortlistView(TemplateView):
             ) * 10
         return {
             "id": shortlist.id,
+            "thumbnail": shortlist.thumbnail,
             "link": shortlist.entry.link,
             "user_has_voted": user_has_voted,
             "name": shortlist.entry.name,

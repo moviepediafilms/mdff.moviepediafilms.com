@@ -105,7 +105,7 @@ class EntryAdmin(admin.ModelAdmin):
     list_filter = [RuntimeListFilter, "order"]
 
     def synopsis_short(self, obj):
-        return obj.synopsis[:50]
+        return obj.synopsis and obj.synopsis[:50]
 
 
 @admin.register(Shortlist)

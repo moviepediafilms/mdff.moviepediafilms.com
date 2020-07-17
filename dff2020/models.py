@@ -55,6 +55,7 @@ class Shortlist(models.Model):
     jury_rating = models.FloatField(
         validators=[MaxValueValidator(10), MinValueValidator(0)]
     )
+    thumbnail = models.CharField(max_length=500)
     publish_on = models.DateField()
     is_jury_rating_locked = models.BooleanField(default=False)
 
