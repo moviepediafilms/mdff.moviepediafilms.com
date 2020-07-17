@@ -8,6 +8,7 @@ import razorpay
 import random
 from datetime import datetime, timedelta, timezone
 
+from django.db import IntegrityError
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.tokens import default_token_generator
@@ -863,22 +864,28 @@ class SaveQuizResponseView(LoginRequiredMixin, View):
                     shortlist=shortlist, user=request.user
                 )
             except UserQuizAttempt.DoesNotExists:
-                error = "Answer attempted before starting the quiz"
+                error = "Start the quiz before answering the question!"
             else:
                 now = datetime.now(timezone.utc)
                 quiz_over_at = attempt.start_time + timedelta(seconds=QUIZ_TIME_LIMIT)
                 if now >= quiz_over_at:
                     error = "Quiz time is up!"
+                elif attempt.quizresponse_set.count() >= QUESTION_TO_ASK:
+                    error = f"You have already answered {QUESTION_TO_ASK} questions!"
                 else:
                     try:
+                        logging.info(f"Quiz response:{request.user.username}:{attempt.id}:{question.id}:{option.id}")
                         QuizResponse.objects.create(
                             quiz_attempt=attempt,
                             question=question,
                             selected_option=option,
                         )
+                    except IntegrityError as ex:
+                        logger.exception(ex)
+                        error = "We have already saved your response for this question"
                     except Exception as ex:
                         logger.exception(ex)
-                        error = str(ex)
+                        error = "An error occured while saving your response, refresh the page and try again!"
                     else:
                         res_body["previous_correct_answer"] = option.is_correct
                         question_count = attempt.quizresponse_set.count()

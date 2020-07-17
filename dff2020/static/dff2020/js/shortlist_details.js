@@ -141,11 +141,13 @@ var button_app = new Vue({
                 if (this.rated_movie) {
                     if (this.quiz_over) {
                         // movie to leaderboard page
-                    } else
+                    } else {
                         $('#model-quiz').modal('show')
+                    }
                 }
-                else
+                else {
                     $('#model-rating').modal('show')
+                }
             }
             else
                 $('#model-login').modal('show')
@@ -174,28 +176,35 @@ var rating_app = new Vue({
         loading: false,
         form: {
             error: '',
-            rating: 0,
+            rating: 5,
             review: "",
         }
     },
     computed: {
         rating_text() {
             return {
-                0: "Very Nice 0",
-                1: "Very Nice 1",
-                2: "Very Nice 2",
-                3: "Very Nice 3",
-                4: "Very Nice 4",
-                5: "Very Nice 5",
-                6: "Very Nice 6",
-                7: "Very Nice 7",
-                8: "Very Nice 8",
-                9: "Very Nice 9",
-                10: "Very Nice 10",
+                0: "Dead boring",
+                1: "Boring",
+                2: "Boring",
+                3: "Below Average",
+                4: "Below Average",
+                5: "Average",
+                6: "Good",
+                7: "Very Good",
+                8: "Very Good",
+                9: "Excellent",
+                10: "Excellent",
             }[this.form.rating]
         }
     },
     methods: {
+        show_quiz() {
+            $('#model-rating').modal('hide')
+            $('#model-quiz').modal('show')
+            $('#model-quiz').on('hidden.bs.modal', function () {
+                window.location.reload();
+            });
+        },
         rate() {
             this.loading = true;
             this.form.error = ""
@@ -206,7 +215,7 @@ var rating_app = new Vue({
             axios.post(`/api/rate/${shortlist_id}`, data, { headers: { "X-CSRFToken": csrf } }).then(response => {
                 console.log(response)
                 if (response.data.success) {
-                    window.location.reload();
+                    app.show_quiz()
                 } else {
                     app.form.error = response.data.error
                     this.loading = false;
