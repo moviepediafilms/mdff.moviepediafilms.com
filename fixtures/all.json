@@ -145,7 +145,7 @@
         "pk": 1,
         "fields": {
             "question": 1,
-            "text": "It is a baby bird",
+            "text": "a baby bird",
             "is_correct": true
         }
     },
@@ -154,7 +154,7 @@
         "pk": 2,
         "fields": {
             "question": 1,
-            "text": "Shivam Sharma",
+            "text": "a Cat",
             "is_correct": false
         }
     },
@@ -163,7 +163,7 @@
         "pk": 3,
         "fields": {
             "question": 1,
-            "text": "MS Dhoni",
+            "text": "Dog",
             "is_correct": false
         }
     },
@@ -172,7 +172,7 @@
         "pk": 4,
         "fields": {
             "question": 2,
-            "text": "It is a baby bird",
+            "text": "Mother bird",
             "is_correct": true
         }
     },
@@ -181,7 +181,7 @@
         "pk": 5,
         "fields": {
             "question": 2,
-            "text": "Shivam Sharma",
+            "text": "A monkey",
             "is_correct": false
         }
     },
@@ -190,7 +190,7 @@
         "pk": 6,
         "fields": {
             "question": 2,
-            "text": "MS Dhoni",
+            "text": "A donkey",
             "is_correct": false
         }
     },
@@ -199,7 +199,7 @@
         "pk": 7,
         "fields": {
             "question": 3,
-            "text": "It is a baby bird",
+            "text": "2004",
             "is_correct": true
         }
     },
@@ -208,7 +208,7 @@
         "pk": 8,
         "fields": {
             "question": 3,
-            "text": "Shivam Sharma",
+            "text": "1999",
             "is_correct": false
         }
     },
@@ -217,7 +217,7 @@
         "pk": 9,
         "fields": {
             "question": 3,
-            "text": "MS Dhoni",
+            "text": "2020",
             "is_correct": false
         }
     }
