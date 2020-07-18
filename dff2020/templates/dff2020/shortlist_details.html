@@ -220,15 +220,17 @@
                 </div>
                 <!-- Material unchecked -->
                 <div class="text-center" v-if="quiz_started && !quiz_ended">
-                        <p class="font-weight-bolder">{{question.content}}</p>
-                        <div class="list-group options">
-                            <a @click.prevent="submit_question(option)" 
+                        <p class="font-weight-bolder question">{{question.content}}</p>
+                        <div class="list-group options" v-if="question.id">
+                            <a @click.prevent="submit_question(option)"
                                class="list-group-item list-group-item-action"
                                :class="{correct: !sending && selected_option.id == option.id && option.was_correct,
                                         selected: sending && selected_option.id == option.id,
                                         incorrect: !sending && selected_option.id == option.id && !option.was_correct,
                                         disabled: !!selected_option.id}"
-                               v-for="option in question.options">
+                               v-for="option in question.options"
+                               :key="option.id"
+                               >
                                 {{option.content}}
                             </a>
                         </div>
