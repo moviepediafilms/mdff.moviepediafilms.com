@@ -6,7 +6,7 @@
 {{block.super}}
 <style> 
 @font-face {
-  src: url("{% static '/dff2020/fonts/JoyPixels-SBIX.woff' %}");
+  src: url("{% static '/dff2020/fonts/JoyPixels.woff' %}");
   font-family: JoyPixels;
 }
 </style>
@@ -16,7 +16,8 @@
 {%block left%}
 <div class="container p-5">
     <div class="text-left ">
-        <a class="img-fluid" href="{%url 'dff2020:home'%}"><img src="{% static 'dff2020/img/icon.png'%}"
+    {% comment %} added emoji just for the font to load {% endcomment %}
+        <a class="img-fluid emoji" href="{%url 'dff2020:home'%}"><img src="{% static 'dff2020/img/icon.png'%}"
                 height="150px" /></a>
     </div>
     <div class=" text-warning mt-5 font-weight-bold text-uppercase">MDFF-2020 Shortlist</div>
@@ -248,7 +249,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content bg-light text-dark p-3" id="rating-model-app">
             <div class="modal-header text-center">
-                <h4 class="modal-title w-100 font-weight-bold">Rate the movie</h4>
+                <h4 class="modal-title w-100 font-weight-bold">Rate and Review</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>

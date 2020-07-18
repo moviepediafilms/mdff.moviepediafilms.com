@@ -36,11 +36,11 @@
     /* border-bottom: 1px solid rgba(0, 0, 0, 0.125); */
 }
 .options a:hover:not(.disabled) {
-    background-color: #f7cd23;
+    background-color: transparent;
     /* border: none; */
     /* border-bottom: 1px solid rgba(0, 0, 0, 0.125); */
 }
 .emoji {
-    font-family: JoyPixels !important;
+    font-family: "JoyPixels";
     font-size: 100px;
 }

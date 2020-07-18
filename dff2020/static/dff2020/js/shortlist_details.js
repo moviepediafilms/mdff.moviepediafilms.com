@@ -262,7 +262,7 @@ var quiz_app = new Vue({
             if (!this.quiz_started)
                 return "Quiz"
             else if (this.quiz_ended)
-                return "Quiz Complete"
+                return "Quiz Completed"
             else {
                 var hours = parseInt(this.secs_left / 3600)
                 var minutes = parseInt((this.secs_left - hours * 3600) / 60)
@@ -301,7 +301,6 @@ var quiz_app = new Vue({
             vm.sending = true
             axios.get(`/api/quiz/${shortlist_id}/${this.question.id}/${option.id}`)
                 .then(response => {
-                    console.log(response)
                     vm.sending = false;
                     if (response.data.success) {
                         if (response.data.previous_correct_answer) {
