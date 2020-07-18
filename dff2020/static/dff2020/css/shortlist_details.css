@@ -40,3 +40,7 @@
     /* border: none; */
     /* border-bottom: 1px solid rgba(0, 0, 0, 0.125); */
 }
+.emoji {
+    font-family: JoyPixels !important;
+    font-size: 100px;
+}

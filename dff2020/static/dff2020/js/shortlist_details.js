@@ -158,13 +158,13 @@ var button_app = new Vue({
             if (this.quiz_over)
                 return "Leader Board"
             else
-                return "Take a Quiz"
+                return "Take The Quiz"
         },
         p_text() {
             if (!this.rated_movie)
                 return "Rate to Unlock Scores and Claim Your Prize"
             if (this.quiz_over)
-                return "Check leaderboard for your position"
+                return "Check leaderboard to view your score"
             return "Take a quiz about this movie and claim your prize"
         }
     },
@@ -183,17 +183,17 @@ var rating_app = new Vue({
     computed: {
         rating_text() {
             return {
-                0: "Dead boring",
-                1: "Boring",
-                2: "Boring",
-                3: "Below Average",
-                4: "Below Average",
-                5: "Average",
-                6: "Good",
-                7: "Very Good",
-                8: "Very Good",
-                9: "Excellent",
-                10: "Excellent",
+                0: "😫",
+                1: "😖",
+                2: "🥱",
+                3: "😕",
+                4: "😐",
+                5: "🙂",
+                6: "😊",
+                7: "😀",
+                8: "🤩",
+                9: "😍",
+                10: "🤯",
             }[this.form.rating]
         }
     },

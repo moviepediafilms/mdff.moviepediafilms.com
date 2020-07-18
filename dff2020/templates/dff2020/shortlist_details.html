@@ -4,6 +4,12 @@
 
 {%block head%}
 {{block.super}}
+<style> 
+@font-face {
+  src: url("{% static '/dff2020/fonts/JoyPixels-SBIX.woff' %}");
+  font-family: JoyPixels;
+}
+</style>
 <link rel="stylesheet" href="{% static '/dff2020/css/shortlist_details.css' %}" />
 {%endblock%}
 
@@ -208,7 +214,7 @@
             </div>
             <div class="modal-body mx-3 text-center">
                 <div v-if="!quiz_started">
-                    <p>Click Start to start the quiz, you will have 90 seconds to answer 3 questions about the movie</p>
+                    <p>Click Start to proceed with the quiz. You'll be asked 3 questions on this film and you'll have 90 seconds to answer them all.</p>
                     <button class=" mt-3 btn btn-warning btn-sm text-reset font-weight-bold" @click.prevent="start_quiz">Start</button>
                 </div>
                 <!-- Material unchecked -->
@@ -227,7 +233,7 @@
                         </div>
                 </div>
                 <div v-if="quiz_ended">
-                    <p>Quiz complete, check leaderboard for scores</p>
+                    <p>Answers submitted successfully.<br/>Check leaderboard to view your score.</p>
                 </div>
                 <small class="text-danger">{{error}}</small>
             </div>
@@ -250,6 +256,7 @@
             <div class="modal-body mx-3">
                 <form v-on:submit.prevent="rate">
                     <input type="hidden" name="" value="" />
+                    <div class="text-center font-weight-bolder emoji mt-2">{{rating_text}}</div>
                     <div class="d-flex justify-content-center">
                         <span class="font-weight-bold mr-2 mt-1"><i class="fas fa-thumbs-down" aria-hidden="true"></i></span>
                         <div class="range-field w-100">
@@ -257,8 +264,6 @@
                         </div>
                         <span class="font-weight-bold ml-2 mt-1"><i class="fas fa-thumbs-up" aria-hidden="true"></i></span>
                     </div>
-                    <div class="text-center font-weight-bolder">{{rating_text}}</div>
-
                     <div class="md-form mb-4" >
                         <textarea v-model="form.review" id="rating-review" class="md-textarea form-control" :class="{'is-invalid': form.review.trim().length > 0 && form.review.trim().length < 50}" counter rows="3"></textarea>
                         <label for="rating-review">Review (Optional)</label>

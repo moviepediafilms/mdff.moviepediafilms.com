@@ -589,11 +589,10 @@ class ShortlistView(TemplateView):
         user_has_voted = any(rating.user == request.user for rating in user_ratings)
         audience_rating = 0
         if user_ratings:
-            audience_rating = (
-                sum(r.rating for r in user_ratings) / len(user_ratings)
-            ) * 10
+            audience_rating = sum(r.rating for r in user_ratings) / len(user_ratings)
         return {
             "id": shortlist.id,
+            "publish_on": shortlist.publish_on.isoformat(),
             "thumbnail": shortlist.thumbnail,
             "link": shortlist.entry.link,
             "user_has_voted": user_has_voted,
@@ -874,7 +873,9 @@ class SaveQuizResponseView(LoginRequiredMixin, View):
                     error = f"You have already answered {QUESTION_TO_ASK} questions!"
                 else:
                     try:
-                        logging.info(f"Quiz response:{request.user.username}:{attempt.id}:{question.id}:{option.id}")
+                        logging.info(
+                            f"Quiz response:{request.user.username}:{attempt.id}:{question.id}:{option.id}"
+                        )
                         QuizResponse.objects.create(
                             quiz_attempt=attempt,
                             question=question,

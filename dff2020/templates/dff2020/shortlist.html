@@ -26,19 +26,25 @@
                         <h5 class="mt-0 font-weight-bold text-dark">{{movie.name}}</h5>
                         <p class="text-dark">{{movie.review|truncatewords:20}}</p>
                         <div class="row mx-3">
-                            <div class="col-lg text-dark d-flex align-items-center justify-content-center p-2">
+                            <div class="col-lg text-dark d-flex align-items-center justify-content-lg-start justify-content-center p-2">
                                 {% if movie.user_has_voted %}
-                                    <i class="fas fa-gavel mr-1"></i> {{movie.jury_rating}}/10
-                                    <i class="ml-3 fas fa-users mr-1"></i> {{movie.audience_rating}}/10
+                                    <span class="text-success font-weight-bolder text-center">
+                                        <i class="fas fa-gavel mr-1"></i> {{movie.jury_rating}}
+                                    </span>
+                                    <span class="text-warning font-weight-bolder text-center">
+                                        <i class="ml-3 fas fa-users mr-1 text-warning"></i> {{movie.audience_rating}}
+                                    </span>
                                 {%else%}
                                     <div><i class="fas fa-lock mr-1"></i> Rate to unlock</div>
                                 {% endif %}
                             </div>
-                            <div class="col-lg text-right d-flex align-items-center justify-content-center  p-2">
-                                <div class="font-weight-bold text-dark text-monospace">12:59:00</div>
+                            <div class="col-lg text-right d-flex align-items-center justify-content-lg-center justify-content-center p-2">
+                                <div class="font-weight-bold text-dark text-monospace timer" data-publishedon="{{movie.publish_on}}" id="timer_{{movie.id}}">
+
+                                </div>
                             </div>
-                            <div class="col-lg text-right d-flex justify-content-center  p-2">
-                                <a href="{% url 'dff2020:shortlist-detail' shortlist_id=movie.id %}" class="btn btn-warning btn-sm text-dark font-weight-bold">Take a Quiz</a>
+                            <div class="col-lg text-right d-flex justify-content-lg-end  justify-content-center p-2">
+                                <a href="{% url 'dff2020:shortlist-detail' shortlist_id=movie.id %}" class="btn btn-warning btn-sm text-dark font-weight-bold">Take The Quiz</a>
                             </div>
                         </div>
                     </div>
@@ -64,11 +70,11 @@
                         <h5 class="mt-0 text-warning font-weight-bold">{{movie.name}}</h5>
                         <p class="text-light">{{movie.review|truncatewords:20}}</p>
                         <div class="row mx-3">
-                            <div class="col-md text-warning d-flex align-items-center justify-content-center  p-2">
+                            <div class="col-md text-warning d-flex align-items-center justify-content-lg-start justify-content-center p-2">
                                 <i class="fas fa-gavel mr-1"></i> {{movie.jury_rating}}/10
                                 <i class="ml-3 fas fa-users mr-1"></i> {{movie.audience_rating}}/10<br/>
                             </div>
-                            <div class="col-md d-flex align-items-center justify-content-center  p-2">
+                            <div class="col-md d-flex align-items-center justify-content-lg-end justify-content-center p-2">
                                 <a href="{% url 'dff2020:shortlist-detail' shortlist_id=movie.id %}" class="btn btn-warning btn-sm text-dark font-weight-bold">Results</a>
                             </div>
                         </div>
@@ -88,5 +94,27 @@
 
 {% block scripts%}
 <script src="{% static '/js/vendor/compiled-addons.min.js'%}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.31/moment-timezone-with-data.min.js"></script>
 <script src="{% static '/dff2020/js/shortlists.js'%}"></script>
+<script>
+    var set_time = function() {
+        $(".timer").each((i, item)=>{
+            item = $(item)
+            var now = moment()
+            var timer_end = moment(item.data('publishedon')).add(24, "hours");
+            if(now < timer_end){
+                    var seconds = (timer_end - now)/1000
+                    if (seconds == 0)
+                        window.location.reload()
+                    var hours = String(parseInt(seconds/3600))
+                    var minutes = String(parseInt((seconds - hours*3600) / 60))
+                    var seconds = String(parseInt(seconds - minutes*60 - hours*3600))
+                    item.html(hours.padStart(2, '0') + ':' + minutes.padStart(2, '0')+ ':' + seconds.padStart(2, '0'))
+            }
+        })
+        setTimeout(set_time, 1000)
+    };
+    $(document).ready(set_time)
+</script>
 {%endblock%}
