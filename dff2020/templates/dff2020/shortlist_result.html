@@ -1,0 +1,52 @@
+{% extends 'dff2020/base_single_panel.html' %}
+{% load static %}
+
+{%block head%}
+{{block.super}}
+<link rel="stylesheet" href="{% static '/dff2020/css/shortlist_result.css' %}" />
+{%endblock%}
+
+{%block left%}
+<div class="container p-5 text-center">
+     <div>
+        <a class="img-fluid" href="{%url 'dff2020:home'%}"><img src="{% static 'dff2020/img/icon.png'%}"
+                height="150px" /></a>
+    </div>
+    {%verbatim%}
+    <div id="result-app">
+        <div class=" text-warning text-center mt-5 font-weight-bold text-uppercase">Leaderboard</div>
+        <div class="text-danger mt-3" v-cloak>{{error}}</div>
+        <div v-if="attempts.length">
+            <div v-for="attempt in attempts" class="text-warning" >
+                <div class="d-inline-flex justify-content-center attempt p-3">
+                    <div class="d-inline-block">
+                        <img :src="attempt.profile_pic" width="50px" class="img-fluid z-depth-1 rounded-circle avatar warning" :alt="attempt.name"/>
+                    </div>
+                    <div class="ml-4 d-inline-block text-left" style="width:200px;">
+                        <div class="font-weight-bolder">{{attempt.name}}</div>
+                        <small class="text-muted"><i class="fa fa-bullseye"></i> {{attempt.score}}/{{attempt.asked}}</small>
+                        <small class="text-muted ml-2"><i class="fa fa-hourglass-half"></i> {{get_time_str(attempt.total_time)}}</small>
+                    </div>
+                    <div class="align-content-center">
+                        <span class="fa-stack fa-lg">
+                            <i class="fa fa-trophy fa-stack-2x first"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-muted" v-else>Take the quiz and claim your position here</div>
+    </div>
+    {%endverbatim%}
+
+</div>
+{%endblock%}
+
+{% block scripts%}
+<script>
+    var shortlist_id = {{shortlist_id}}
+</script>
+<script src="https://unpkg.com/vue@2.6.11/dist/vue.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="{% static 'dff2020/js/shortlist_result.js'%}"></script>
+{%endblock%}

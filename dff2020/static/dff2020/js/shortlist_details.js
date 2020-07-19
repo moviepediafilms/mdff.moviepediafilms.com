@@ -141,6 +141,7 @@ var button_app = new Vue({
                 if (this.rated_movie) {
                     if (this.quiz_over) {
                         // movie to leaderboard page
+                        window.location.replace(`/shortlist/${shortlist_id}/result`);
                     } else {
                         $('#model-quiz').modal('show')
                     }
@@ -156,7 +157,7 @@ var button_app = new Vue({
     computed: {
         btn_txt() {
             if (this.quiz_over)
-                return "Leader Board"
+                return "Leaderboard"
             else
                 return "Take The Quiz"
         },

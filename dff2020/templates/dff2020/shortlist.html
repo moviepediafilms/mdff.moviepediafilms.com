@@ -32,7 +32,7 @@
                                         <i class="fas fa-gavel mr-1"></i> {{movie.jury_rating}}
                                     </span>
                                     <span class="text-warning font-weight-bolder text-center">
-                                        <i class="ml-3 fas fa-users mr-1 text-warning"></i> {{movie.audience_rating}}
+                                        <i class="ml-4 fas fa-users mr-1 text-warning"></i> {{movie.audience_rating}}
                                     </span>
                                 {%else%}
                                     <div><i class="fas fa-lock mr-1"></i> Rate to unlock</div>
@@ -75,7 +75,7 @@
                                 <i class="ml-3 fas fa-users mr-1"></i> {{movie.audience_rating}}/10<br/>
                             </div>
                             <div class="col-md d-flex align-items-center justify-content-lg-end justify-content-center p-2">
-                                <a href="{% url 'dff2020:shortlist-detail' shortlist_id=movie.id %}" class="btn btn-warning btn-sm text-dark font-weight-bold">Results</a>
+                                <a href="{% url 'dff2020:shortlist-result' shortlist_id=movie.id %}" class="btn btn-warning btn-sm text-dark font-weight-bold">Results</a>
                             </div>
                         </div>
                     </div>

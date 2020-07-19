@@ -86,7 +86,13 @@ def verify_recapcha(request, recapcha_response):
         return False
 
 
-def _is_shortlist_open(shortlist):
+def _is_shortlist_published(shortlist):
+    ist_today = (datetime.now() + timedelta(hours=5, minutes=30)).date()
+    logger.debug(f"{shortlist.publish_on} <= {ist_today}")
+    return shortlist.publish_on <= ist_today
+
+
+def _is_shortlist_active(shortlist):
     ist_today = (datetime.now() + timedelta(hours=5, minutes=30)).date()
     logger.debug(f"{shortlist.publish_on} <= {ist_today}")
     return shortlist.publish_on == ist_today
@@ -628,32 +634,35 @@ class DetailShortlistView(TemplateView):
             logger.exception(ex)
             return redirect("dff2020:shortlists")
         else:
-            if not _is_shortlist_open(movie):
+            if not _is_shortlist_published(movie):
                 return redirect("dff2020:shortlists")
-
+        is_active = _is_shortlist_active(movie)
         dummy_rating = 100
         context = self.get_context_data(**kwargs)
         context["csrf"] = csrf.get_token(self.request)
         context["movie"] = movie
         user_ratings = movie.userrating_set.all()
-        user_voted = any(rating.user == self.request.user for rating in user_ratings)
+        user_voted = not is_active or any(
+            rating.user == self.request.user for rating in user_ratings
+        )
         context["user_voted"] = user_voted
 
-        context["jury_rating"] = "{:.2f}".format(
-            (movie.jury_rating * 10 if user_voted else dummy_rating)
+        context["jury_rating"] = "{:.2f}".format(movie.jury_rating * 10)
+        audience_rating = (
+            sum(r.rating for r in user_ratings) / len(user_ratings)
+            if len(user_ratings)
+            else 0
         )
-        context["audience_rating"] = "{:.2f}".format(
-            (
-                (sum(r.rating for r in user_ratings) / len(user_ratings)) * 10
-                if user_voted
-                else dummy_rating
-            )
-        )
+        context["audience_rating"] = "{:.2f}".format(audience_rating * 10)
+        if not user_voted:
+            context["jury_rating"] = "{:.2f}".format(dummy_rating)
+            context["audience_rating"] = "{:.2f}".format(dummy_rating)
+
         context["reviews"] = [
             dict(
                 profile_pic=get_gravatar(rating.user),
                 user_full_name=rating.user.get_full_name(),
-                rating="{:.1f}/10".format(rating.rating),
+                rating="{:.0f}/10".format(rating.rating),
                 content=rating.review,
             )
             for rating in user_ratings
@@ -671,13 +680,85 @@ class DetailShortlistView(TemplateView):
                 logger.debug(now.isoformat())
                 logger.debug(quiz_over_at.isoformat())
                 context["quiz_over"] = (
-                    now >= quiz_over_at
+                    not is_active
+                    or now >= quiz_over_at
                     or quiz_attempt.quizresponse_set.count() == QUESTION_TO_ASK
                 )
-        else:
-            context["quiz_over"] = False
+        if "quiz_over" not in context:
+            context["quiz_over"] = not is_active
 
         return self.render_to_response(context)
+
+
+def _serialize_attempt(attempt):
+    responses = attempt.quizresponse_set.all()
+    if len(responses) > 3:
+        # we have a problem
+        pass
+    response_score = sum(res.selected_option.is_correct for res in responses)
+    time_start = attempt.start_time
+    time_end = attempt.start_time + timedelta(seconds=QUIZ_TIME_LIMIT)
+    if len(responses) == QUESTION_TO_ASK:
+        time_end = max(res.submit_at for res in responses)
+    logger.debug(f"{time_start} {time_end}")
+    time_taken = time_end - time_start
+    logger.debug(f"time_score {time_taken.seconds} + {time_taken.microseconds}")
+    res = {
+        "id": attempt.id,
+        "profile_pic": get_gravatar(attempt.user),
+        "name": attempt.user.get_full_name(),
+        "start_time": attempt.start_time,
+        "total_time": float(f"{time_taken.seconds}.{time_taken.microseconds}"),
+        "score": response_score,
+        "correct": response_score,
+        "asked": QUESTION_TO_ASK,
+    }
+    return res
+
+
+def _get_user_attempts_by_rank(shortlist):
+    return list(
+        sorted(
+            [
+                _serialize_attempt(attempt)
+                for attempt in UserQuizAttempt.objects.filter(shortlist=shortlist).all()
+            ],
+            key=lambda item: item.get("score") / item.get("total_time", 1),
+            reverse=True,
+        )
+    )
+
+
+class ResultShortlistApiView(View):
+    def get(self, request, shortlist_id):
+        data = {}
+        error = None
+        message = None
+        try:
+            shortlist = Shortlist.objects.get(pk=shortlist_id)
+        except Shortlist.DoesNotExist as ex:
+            logger.exception(ex)
+            error = "No such shortlist"
+        else:
+            if not _is_shortlist_published(shortlist):
+                error = "Shortlist not yet published"
+
+        if not error:
+            data["attempts"] = _get_user_attempts_by_rank(shortlist)
+
+        data["success"] = not error
+        data["error"] = error
+        data["message"] = message
+        return JsonResponse(data)
+
+
+class ResultShortlistView(TemplateView):
+    template_name = "dff2020/shortlist_result.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["shortlist_id"] = kwargs.get("shortlist_id")
+        return context
 
 
 class LoginApiView(LoginMixin, View):
@@ -732,8 +813,8 @@ class RateApiView(LoginRequiredMixin, View):
                 logging.exception(ex)
                 error = "Invalid shortlist"
             else:
-                if not _is_shortlist_open(shortlist):
-                    error = "Shortlist not yet open for rating"
+                if not _is_shortlist_active(shortlist):
+                    error = "Shortlist not open for rating"
                 else:
                     user_rating = UserRating.objects.filter(
                         shortlist=shortlist, user=request.user
@@ -793,7 +874,7 @@ class StartQuizView(LoginRequiredMixin, View):
         error = None
         try:
             shortlist = Shortlist.objects.get(pk=shortlist_id)
-            if not _is_shortlist_open(shortlist):
+            if not _is_shortlist_active(shortlist):
                 raise Exception("Shortlist is not open for quiz")
             if not UserRating.objects.filter(
                 shortlist=shortlist, user=request.user

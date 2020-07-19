@@ -20,7 +20,7 @@
         <a class="img-fluid emoji" href="{%url 'dff2020:home'%}"><img src="{% static 'dff2020/img/icon.png'%}"
                 height="150px" /></a>
     </div>
-    <div class=" text-warning mt-5 font-weight-bold text-uppercase">MDFF-2020 Shortlist</div>
+    <div class=" text-warning mt-5 font-weight-bold text-uppercase"> <a class=" text-warning" href="{%url 'dff2020:shortlists'%}">MDFF-2020 Shortlist</a></div>
     <div class="text-warning mt-4">
 
         <div class="embed-responsive embed-responsive-16by9">
@@ -67,32 +67,33 @@
         </div>
         {% endverbatim %}
 
-        <h5 class="mt-5 mb-4 text-uppercase font-weight-bold">Audience Reviews</h5>
-
-
+        {% if reviews|length > 0 %}
+            <h5 class="mt-5 mb-4 text-uppercase font-weight-bold">Audience Reviews</h5>
+        {%endif%}
+        
         {% if user_voted %}
-        <div class="card-columns">
-            {% for review in reviews%}
-            <div class="card bg-dark">
-                <div class="card-header">
-                    <div class="row">
+            <div class="card-columns">
+                {% for review in reviews%}
+                <div class="card bg-dark">
+                    <div class="card-header">
+                        <div class="row">
 
-                        <img class="d-inline-block mr-3 rounded-circle" height="40px" src="{{review.profile_pic}}"
-                            alt="{{review.get_full_name}}">
+                            <img class="d-inline-block mr-3 rounded-circle" height="40px" src="{{review.profile_pic}}"
+                                alt="{{review.get_full_name}}">
 
-                        <small class="text-light">
-                            {{review.user_full_name}}<br />
-                            {{review.rating}}
-                        </small>
+                            <small class="text-light">
+                                <span class="">{{review.user_full_name}}</span><br />
+                                <span class="text-muted font-weight-bolder">{{review.rating}}</span>
+                            </small>
 
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">{{review.content}}</p>
                     </div>
                 </div>
-                <div class="card-body">
-                    <p class="card-text">{{review.content}}</p>
-                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
-        </div>
         {%else%}
         <div class="card bg-light">
             <div class="card-body  py-4">

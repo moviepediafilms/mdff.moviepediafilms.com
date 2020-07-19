@@ -1,0 +1,11 @@
+.attempt {
+    background-color: transparent;
+    margin-bottom: 8px;
+    border-radius: 10px !important;
+    border: 0px solid #f7cd23;
+}
+.attempt:hover {
+    background-color: #f7cd23;
+    color: #343434;
+    /* border-color: transparent !important; */
+}
