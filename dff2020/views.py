@@ -707,11 +707,11 @@ def _serialize_attempt(attempt):
         "id": attempt.id,
         "profile_pic": get_gravatar(attempt.user),
         "name": attempt.user.get_full_name(),
-        "start_time": attempt.start_time,
+        "start_time": attempt.user.get_full_name().title(),
         "total_time": float(f"{time_taken.seconds}.{time_taken.microseconds}"),
         "score": response_score,
         "correct": response_score,
-        "asked": QUESTION_TO_ASK,
+        "asked": [True] * response_score + [False] * (QUESTION_TO_ASK - response_score),
     }
     return res
 

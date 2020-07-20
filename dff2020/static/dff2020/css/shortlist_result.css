@@ -9,3 +9,11 @@
     color: #343434;
     /* border-color: transparent !important; */
 }
+.w-responsive {
+    width: 60%;
+}
+@media (max-width: 740px) {
+    .w-responsive {
+        width: 100%;
+    }
+}
