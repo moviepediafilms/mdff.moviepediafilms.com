@@ -70,15 +70,28 @@ var signin = new Vue({
 var signup = new Vue({
     el: '#signup-model-app',
     data: {
+        select_initialized: false,
         form: {
             error: "",
+            gender: { value: "", error: "" },
+            location: { value: "", error: "" },
             name: { value: "", error: "" },
             email: { value: "", error: "" },
             password: { value: "", error: "" },
-            cnf_password: { value: "", error: "" }
+            cnf_password: { value: "", error: "" },
         }
     },
+    mounted() {
+        var vm = this
+        $('#model-signup').on('shown.bs.modal', function (e) {
+            if (!vm.select_initialized) {
+                $('.mdb-select:not(.initialized)').materialSelect();
+                vm.select_initialized = true
+            }
+        })
+    },
     computed: {
+
     },
     methods: {
         open_signin() {

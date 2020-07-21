@@ -3,6 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from django import forms
 
 from .models import (
+    Profile,
     Faq,
     Rule,
     Entry,
@@ -85,6 +86,11 @@ class RuleModelForm(forms.ModelForm):
     class Meta:
         model = Rule
         fields = "__all__"
+
+
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ["user", "gender", "location", "contact"]
 
 
 @admin.register(Faq)

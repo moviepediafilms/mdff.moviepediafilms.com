@@ -28,6 +28,7 @@ from django.templatetags.static import static
 
 from .constants import LATE_REGISTRATION_START_DATE, QUESTION_TO_ASK, QUIZ_TIME_LIMIT
 from .models import (
+    Profile,
     Order,
     Entry,
     Faq,
@@ -146,16 +147,28 @@ class Login(LoginMixin, View):
 class SignUpMixin:
     recapcha_enabled = True
 
+    def _get_avatar(self, gender):
+        possibilities = {
+            "M": [f"male{i}.png" for i in range(1, 5)],
+            "F": [f"female{i}.png" for i in range(1, 5)],
+            "O": ["neutral.png"],
+        }.get(gender)
+        return random.choice(possibilities)
+
     def post(self, request):
         name = request.POST.get("name", "").strip()
         email = request.POST.get("email", "").strip()
         password = request.POST.get("password", "").strip()
         agree = request.POST.get("agree", "").strip()
+        gender = request.POST.get("gender")
+        location = request.POST.get("location")
 
         recapcha = request.POST.get("g-recaptcha-response", "")
 
         logger.debug(f"{email} {password} {agree} {recapcha}")
-        if not all([agree, name, email, password]):
+        if gender and gender not in "MFO":
+            error = "Invalid gender value"
+        elif not all([agree, name, email, password]):
             error = "Blank values are not allowed!"
         elif self.recapcha_enabled and not verify_recapcha(request, recapcha):
             error = "Invalid captcha!"
@@ -168,6 +181,14 @@ class SignUpMixin:
             if len(name) > 1:
                 user.last_name = name[1]
             user.save()
+            if gender:
+                gender = gender.strip()
+                location = location and location.strip()
+                avatar = self._get_avatar(gender)
+                profile = Profile.objects.create(
+                    user=user, gender=gender, avatar=avatar, location=location
+                )
+                profile.save()
             message = "Congratulations!! Your account is created please login!"
             send_welcome_email(user)
             return True, message, user

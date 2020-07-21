@@ -110,7 +110,7 @@
 
 <!-- Model login -->
 {%verbatim%}
-<div class="modal fade" id="model-login" tabindex=" -1" role="dialog" aria-labelledby="model-login" aria-hidden="true">
+<div class="modal fade" id="model-login" tabindex="-1" role="dialog" aria-labelledby="model-login" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content bg-light text-dark p-3" id="login-model-app">
             <div class="modal-header text-center">
@@ -147,56 +147,82 @@
 
 <!-- Model signup -->
 {%verbatim%}
-<div class="modal fade" id="model-signup" tabindex=" -1" role="dialog" aria-labelledby="model-signup"
+<div class="modal fade" id="model-signup" tabindex="-1" role="dialog" aria-labelledby="model-signup-label"
     aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content bg-light text-dark p-3" id="signup-model-app">
-            <div class="modal-header text-center">
-                <h4 class="modal-title w-100">Sign up</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <i class="fas fa-sm fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form v-on:submit.prevent="signup">
-                    <div class="md-form mb-3">
-                        <input type="text" id="signup-name" class="form-control validate"
-                            v-model:value="form.name.value" required>
-                        <label data-error="wrong" data-success="right" for="signup-name">Your Name</label>
-                    </div>
-                    <div class="md-form mb-3">
-                        <input type="email" id="signup-email" class="form-control validate"
-                            v-model:value="form.email.value" required>
-                        <label data-error="wrong" data-success="right" for="signup-email">Your Email</label>
-                    </div>
-                    <div class="md-form">
-                        <input type="password" id="signup-pass" class="form-control validate" minlength="8"
-                            v-model:value="form.password.value" required>
-                        <label data-error="wrong" data-success="right" for="signup-pass">Your password</label>
-                    </div>
-                    <div class="md-form">
-                        <input type="password" id="signup-cnf-pass" class="form-control validate"
-                            v-bind:class="{ 'is-invalid' : form.cnf_password.error}"
-                            v-model:value="form.cnf_password.value" required>
-                        <label data-error="wrong" for="signup-cnf-pass">Confirm password</label>
-                        <small class="invalid-feedback" style="margin-top: -30px">
-                            {{form.cnf_password.error}}
-                        </small>
-                    </div>
-                    <div class="form-check text-left">
-                        <input type="checkbox" class="form-check-input " id="agree" name="agree" required>
-                        <label data-error="wrong" class="form-check-label text-dark text-sm" for="agree">I Agree to the
-                            <a href="/tos" target="_blank" class="text-dark font-weight-bold "><u>terms &
-                                    conditions</u></a> of the event</label>
-                    </div>
-                    <div class="text-center mt-3">
-                        <p class="text-danger" v-cloak>{{form.error}}</p>
-                        <button class="btn btn-warning btn-sm text-reset font-weight-bold" type="submit">Sign
-                            up</button>
-                        <p class="mt-3">Already have an account ? <a href="#" @click.prevent="open_signin">Sign in</a>
-                        </p>
-                    </div>
-                </form>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class=" bg-light text-dark p-3" id="signup-model-app">
+                <div class="modal-header text-center">
+                    <h4 class="modal-title w-100" id="model-signup-label">Sign up</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i class="fas fa-sm fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form v-on:submit.prevent="signup">
+                        <div class="md-form mb-3">
+                            <input type="text" id="signup-name" class="form-control validate"
+                                v-model:value="form.name.value" required>
+                            <label data-error="wrong" data-success="right" for="signup-name">Your Name</label>
+                        </div>
+                        <div class="md-form mb-3">
+                            <input type="email" id="signup-email" class="form-control validate"
+                                v-model:value="form.email.value" required>
+                            <label data-error="wrong" data-success="right" for="signup-email">Your Email</label>
+                        </div>
+                        <div class="form-row">
+                            <div class="col">
+                                <div class="md-form m-0">
+                                    <input type="password" id="signup-pass" class="form-control validate" minlength="8"
+                                        v-model:value="form.password.value" required>
+                                    <label data-error="wrong" data-success="right" for="signup-pass">Your password</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="md-form m-0">
+                                    <input type="password" id="signup-cnf-pass" class="form-control validate"
+                                        v-bind:class="{ 'is-invalid' : form.cnf_password.error}"
+                                        v-model:value="form.cnf_password.value" required>
+                                    <label data-error="wrong" for="signup-cnf-pass">Confirm password</label>
+                                    <small class="invalid-feedback" style="margin-top: -30px">
+                                        {{form.cnf_password.error}}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row mt-0">
+                            <div class="col">
+                                <div class="md-form m-0">
+                                    <select class="mdb-select" name="gender" v-model:value="form.gender.value" required>
+                                        <option value="" disabled>Gender</option>
+                                        <option value="M">Male</option>
+                                        <option value="F">Female</option>
+                                        <option value="O">Others</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="md-form m-0">
+                                    <input type="text" id="signup-city" class="form-control validate" v-model:value="form.location.value" required/>
+                                    <label data-error="wrong" data-success="right" for="signup-city">City</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-check text-left mt-0">
+                            <input type="checkbox" class="form-check-input " id="agree" name="agree" required>
+                            <label data-error="wrong" class="form-check-label text-dark text-sm" for="agree">I Agree to the
+                                <a href="/tos" target="_blank" class="text-dark font-weight-bold "><u>terms &
+                                        conditions</u></a> of the event</label>
+                        </div>
+                        <div class="text-center mt-3">
+                            <p class="text-danger" v-cloak>{{form.error}}</p>
+                            <button class="btn btn-warning btn-sm text-reset font-weight-bold" type="submit">Sign
+                                up</button>
+                            <p class="mt-3">Already have an account ? <a href="#" @click.prevent="open_signin">Sign in</a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

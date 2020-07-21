@@ -7,13 +7,14 @@ register = template.Library()
 
 @register.filter
 def get_gravatar(user):
-    default_avatar = {
-        "M": "avatar/male.png",
-        "F": "avatar/female.png",
-        None: "avatar/neutral.png",
-    }.get(getattr(user, "profile", None) and user.profile.gender)
-    avatar = user.profile.avatar or default_avatar
-    default_link = f"https://moviepediafilms.com/static/dff2020/img/{avatar}"
+    if not user:
+        return
+    gender = getattr(user, "profile", None) and user.profile.gender
+    avatar = {"M": "male.png", "F": "female.png", "O": "neutral.png"}.get(gender)
+    profile = getattr(user, "profile", None)
+    if profile:
+        avatar = user.profile.avatar
+    default_link = f"https://moviepediafilms.com/static/dff2020/img/avatar/{avatar}"
     gravatar_url = (
         "https://www.gravatar.com/avatar/"
         + hashlib.md5(user.email.lower().encode()).hexdigest()
