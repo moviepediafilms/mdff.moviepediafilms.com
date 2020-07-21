@@ -2,6 +2,21 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 
+GENDER_CHOICES = (
+    ("M", "Male"),
+    ("F", "Female"),
+    ("O", "Others"),
+)
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    avatar = models.CharField(max_length=50)
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
+    age = models.IntegerField(null=True, blank=True)
+    contact = models.CharField(max_length=15, null=True, blank=True)
+    location = models.CharField(max_length=50, null=True, blank=True)
+
 
 class Order(models.Model):
     rzp_order_id = models.CharField(max_length=100, unique=True, blank=False)

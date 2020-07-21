@@ -24,11 +24,11 @@
                     </div>
                     <div class="d-flex flex-grow-1">
                         <div class="w-100 ml-2 mr-1 align-self-center text-left">
-                            <div class="font-weight-normal">{{ attempt.name|truncatecharss }}</div>
+                            <div class="font-weight-normal" v-cloak>{{ attempt.name }}</div>
                             <small class="text-muted">Bangalore</small>
                         </div>
                         <div class="mx-1 flex-shrink-1 text-right align-self-center">
-                            <div class="d-inline-block d-block-sm"><span class="ml-2 "><i class="fa fa-clock text-warning"></i> {{get_time_str(attempt.total_time)}}</span></div>
+                            <div class="d-inline-block d-block-sm"  v-cloak><span class="ml-2 "><i class="fa fa-clock text-warning"></i> {{get_time_str(attempt.total_time)}}</span></div>
                             <div class="d-inline-block d-block-sm">
                                 <span class="ml-2 d-block-sm">
                                     <span v-for="i in attempt.asked" :class="{'text-success': i, 'text-danger': !i}" class="mr-1">

@@ -706,8 +706,9 @@ def _serialize_attempt(attempt):
     res = {
         "id": attempt.id,
         "profile_pic": get_gravatar(attempt.user),
-        "name": attempt.user.get_full_name(),
-        "start_time": attempt.user.get_full_name().title(),
+        "name": attempt.user.get_full_name().title(),
+        "location": attempt.user.profile.location,
+        "gender": attempt.user.profile.gender,
         "total_time": float(f"{time_taken.seconds}.{time_taken.microseconds}"),
         "score": response_score,
         "correct": response_score,
