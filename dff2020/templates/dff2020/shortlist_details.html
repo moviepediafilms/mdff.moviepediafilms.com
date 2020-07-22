@@ -29,15 +29,15 @@
                 src="{{movie.entry.link}}" allowfullscreen></iframe>
         </div>
 
-        <div class="row">
+        <div class="row" id="lock-key-app">
             <div class="col-md-6 col-sm-12 mt-5">
                 <h2><i class="fas fa-film"></i> {{movie.entry.name}}</h2>
                 <h4 class="text-muted"><small>by </small> {{movie.entry.director}}</h4>
                 <p class="text-muted"><i class="fas fa-quote-left"></i> {{movie.entry.synopsis}}</p>
             </div>
 
-            <div class="col-6 col-lg-3 text-center mt-5">
-                <span class="min-chart mt-0 mb-3" id="chart-jury" data-percent="{{jury_rating}}">
+            <div class="col-6 col-md-3 text-center mt-5">
+                <span class="min-chart mt-0 mb-3" id="chart-jury" data-percent="{{jury_rating}}" @click.prevent="call_btn_action">
                     <span class="percent text-muted font-weight-bold">
                         {%if not user_voted%}
                         <i class="fas fa-key text-success" ></i>
@@ -46,9 +46,9 @@
                 </span>
                 <p class="text-success font-weight-bold"><i class="fas fa-gavel"></i> JURY</p>
             </div>
-            <div class="col-6 col-lg-3 text-center mt-5">
-                <span class="min-chart mt-0 mb-3" id="chart-audience" data-percent="{{audience_rating}}">
-                    <span class="percent text-muted font-weight-bold">
+            <div class="col-6 col-md-3 text-center mt-5">
+                <span class="min-chart mt-0 mb-3" id="chart-audience" data-percent="{{audience_rating}}" @click.prevent="call_btn_action">
+                    <span class="percent text-muted font-weight-bold" >
                         {%if not user_voted%}
                         <i class="fas fa-key text-warning" ></i>
                         {%endif%}

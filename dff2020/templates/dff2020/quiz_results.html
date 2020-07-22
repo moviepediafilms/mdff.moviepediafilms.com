@@ -20,19 +20,19 @@
             <div v-for="user in winners" v-cloak>
                 <div class="d-flex user px-3 text-dark" 
                     :class="{'bg-white': !user.is_viewer, 'bg-warning': user.is_viewer}">
-                    <div class="align-self-center py-3">
+                    <div class="align-self-center">
                         <img :src="user.profile_pic" width="50px" class="z-depth-1 rounded-circle avatar" :class="{'bg-warning': !user.is_viewer, 'bg-white': user.is_viewer,}" :alt="user.name"/>
                     </div>  
-                    <div class="flex-grow-1 flex-row-reverse pt-3">
+                    <div class="flex-grow-1 flex-row-reverse pt-4">
                         <div class="d-flex">
                             <div class="d-flex flex-grow-1">
-                                <div class="w-100 ml-2 mr-1 align-self-center text-left">
+                                <div class="w-100 ml-2 align-self-center text-left">
                                     <div class="font-weight-normal" v-cloak>{{ user.name }}</div>
                                     <small class="text-muted" v-cloak>{{user.location}}</small></br>
                                 </div>
                             </div>
-                            <div class="align-self-center ml-2">
-                                <span class="mr-1"><i class="fas fa-film"></i> {{get_time_str(user.movie_secs)}}</span>
+                            <div class="align-self-center ml-1">
+                                <span><i class="fas fa-film"></i> {{get_time_str(user.movie_secs)}}</span>
                             </div>
                             <div class="align-self-center ml-2">
                                 <span class="fa-md">

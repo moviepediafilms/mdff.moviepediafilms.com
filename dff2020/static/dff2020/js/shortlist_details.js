@@ -346,3 +346,12 @@ var quiz_app = new Vue({
         }
     }
 })
+
+var lock_key_app = new Vue({
+    el: '#lock-key-app',
+    methods: {
+        call_btn_action() {
+            button_app.btn_action()
+        }
+    }
+})
