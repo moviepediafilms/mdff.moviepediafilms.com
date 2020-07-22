@@ -4,7 +4,7 @@
         "pk": 1,
         "fields": {
             "entry": 1,
-            "review": "I enjoyed this video thoroughly, it was insightful and well put together. Keep working, keep improving. The visuals and audio have continued to improve also \u263a",
+            "review": "I enjoyed this video thoroughly, it was insightful and well put together. Keep working, keep improving. The visuals and audio have continued to improve also",
             "jury_rating": 6.0,
             "publish_on": "2020-07-14",
             "is_jury_rating_locked": false
@@ -15,7 +15,7 @@
         "pk": 2,
         "fields": {
             "entry": 2,
-            "review": "I enjoyed this video thoroughly, it was insightful and well put together. Keep working, keep improving. The visuals and audio have continued to improve also \u263a",
+            "review": "I enjoyed this video thoroughly, it was insightful and well put together. Keep working, keep improving. The visuals and audio have continued to improve also",
             "jury_rating": 7.0,
             "publish_on": "2020-07-15",
             "is_jury_rating_locked": false
@@ -26,7 +26,7 @@
         "pk": 3,
         "fields": {
             "entry": 3,
-            "review": "I enjoyed this video thoroughly, it was insightful and well put together. Keep working, keep improving. The visuals and audio have continued to improve also \u263a",
+            "review": "I enjoyed this video thoroughly, it was insightful and well put together. Keep working, keep improving. The visuals and audio have continued to improve also",
             "jury_rating": 8.0,
             "publish_on": "2020-07-16",
             "is_jury_rating_locked": false
