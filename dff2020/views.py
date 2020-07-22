@@ -724,12 +724,13 @@ def _serialize_attempt(attempt):
     logger.debug(f"{time_start} {time_end}")
     time_taken = time_end - time_start
     logger.debug(f"time_score {time_taken.seconds} + {time_taken.microseconds}")
+    profile = getattr(attempt.user, "profile", None)
     res = {
         "id": attempt.id,
         "profile_pic": get_gravatar(attempt.user),
         "name": attempt.user.get_full_name().title(),
-        "location": attempt.user.profile.location,
-        "gender": attempt.user.profile.gender,
+        "location": profile and profile.location,
+        "gender": profile and profile.gender,
         "total_time": float(f"{time_taken.seconds}.{time_taken.microseconds}"),
         "score": response_score,
         "correct": response_score,

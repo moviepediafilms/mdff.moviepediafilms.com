@@ -121,6 +121,8 @@ var signup = new Vue({
                 data.append('email', this.form.email.value)
                 data.append('password', this.form.password.value)
                 data.append('cnf_password', this.form.cnf_password.value)
+                data.append('gender', this.form.gender.value)
+                data.append('location', this.form.location.value)
                 data.append('agree', true)
                 axios.post('/api/signup/quick', data, { headers: { "X-CSRFToken": csrf } }).then(response => {
                     console.log(response)
