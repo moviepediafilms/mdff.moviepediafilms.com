@@ -16,6 +16,8 @@ def get_gravatar(user):
     if profile:
         avatar = user.profile.avatar
     default_link = f"{settings.GRAVTAR_BASE_URL}/dff2020/img/avatar/{avatar}"
+    if settings.SKIP_GRAVATAR:
+        return default_link
     gravatar_url = (
         "https://www.gravatar.com/avatar/"
         + hashlib.md5(user.email.lower().encode()).hexdigest()

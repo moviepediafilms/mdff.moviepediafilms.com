@@ -211,3 +211,4 @@ GOOGLE_ANALYTICS = os.getenv("GOOGLE_ANALYTICS")
 FIXTURE_DIRS = (os.path.join(BASE_DIR, "fixtures/",),)
 
 GRAVTAR_BASE_URL = os.getenv("GRAVTAR_BASE_URL")
+SKIP_GRAVATAR = os.getenv("SKIP_GRAVATAR") == "true"
