@@ -711,7 +711,7 @@ class DetailShortlistView(TemplateView):
         return self.render_to_response(context)
 
 
-def _serialize_attempt(attempt):
+def _serialize_attempt(request, attempt):
     responses = attempt.quizresponse_set.all()
     if len(responses) > 3:
         # we have a problem
@@ -724,6 +724,7 @@ def _serialize_attempt(attempt):
     logger.debug(f"{time_start} {time_end}")
     time_taken = time_end - time_start
     logger.debug(f"time_score {time_taken.seconds} + {time_taken.microseconds}")
+    time_taken = float(f"{time_taken.seconds}.{time_taken.microseconds}")
     profile = getattr(attempt.user, "profile", None)
     res = {
         "id": attempt.id,
@@ -731,22 +732,24 @@ def _serialize_attempt(attempt):
         "name": attempt.user.get_full_name().title(),
         "location": profile and profile.location,
         "gender": profile and profile.gender,
-        "total_time": float(f"{time_taken.seconds}.{time_taken.microseconds}"),
+        "total_time": time_taken,
+        "total_time_left": QUIZ_TIME_LIMIT - time_taken,
         "score": response_score,
         "correct": response_score,
         "asked": [True] * response_score + [False] * (QUESTION_TO_ASK - response_score),
+        "is_viewer": attempt.user == request.user,
     }
     return res
 
 
-def _get_user_attempts_by_rank(shortlist):
+def _get_user_attempts_by_rank(request, shortlist):
     return list(
         sorted(
             [
-                _serialize_attempt(attempt)
+                _serialize_attempt(request, attempt)
                 for attempt in UserQuizAttempt.objects.filter(shortlist=shortlist).all()
             ],
-            key=lambda item: item.get("score") / item.get("total_time", 1),
+            key=lambda item: (item.get("score"), item.get("total_time_left")),
             reverse=True,
         )
     )
@@ -767,7 +770,7 @@ class ResultShortlistApiView(View):
                 error = "Shortlist not yet published"
 
         if not error:
-            data["attempts"] = _get_user_attempts_by_rank(shortlist)
+            data["attempts"] = _get_user_attempts_by_rank(request, shortlist)
 
         data["success"] = not error
         data["error"] = error
