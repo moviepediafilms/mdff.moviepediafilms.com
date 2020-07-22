@@ -21,7 +21,7 @@ def get_gravatar(user):
         + hashlib.md5(user.email.lower().encode()).hexdigest()
         + "?"
     )
-    gravatar_url += urlencode({"d": default_link, "s": str(70)})
+    gravatar_url += urlencode({"d": default_link})
     return gravatar_url
 
 
