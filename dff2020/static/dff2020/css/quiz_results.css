@@ -17,3 +17,9 @@
         width: 100%;
     }
 }
+.winner-name{
+    font-size: 0.9em;
+}
+.score-bar{
+    margin: -6px 0 0 0 !important;
+}

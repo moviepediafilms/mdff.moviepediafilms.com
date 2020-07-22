@@ -27,7 +27,7 @@
                         <div class="d-flex">
                             <div class="d-flex flex-grow-1">
                                 <div class="w-100 ml-2 align-self-center text-left">
-                                    <div class="font-weight-normal" v-cloak>{{ user.name }}</div>
+                                    <div class="font-weight-normal winner-name" v-cloak>{{ user.name }} Singh Pandey</div>
                                     <small class="text-muted" v-cloak>{{user.location}}</small></br>
                                 </div>
                             </div>
@@ -35,12 +35,10 @@
                                 <span><i class="fas fa-film"></i> {{get_time_str(user.movie_secs)}}</span>
                             </div>
                             <div class="align-self-center ml-2">
-                                <span class="fa-md">
-                                    <span><i class="fas fa-rupee-sign"></i> <span class="font-weight-bolder">{{user.amount}}</span></span>
-                                </span>
+                                <span><i class="fas fa-rupee-sign"></i> {{user.amount}}</span>
                             </div>
                         </div>
-                        <div class="m-0 pb-1">
+                        <div class="pb-2 score-bar">
                             <small v-cloak>
                                 <span v-for="score in user.scores" >
                                     <i class="fas fa-bullseye mr-1" :class="{'text-danger': score==0, 'text-primary': score==2 || score==1, 'text-success': score==3}"></i>
