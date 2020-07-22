@@ -17,7 +17,7 @@
         <div class=" text-warning text-center mt-5 font-weight-bold text-uppercase">Leaderboard</div>
         <div class="text-danger mt-3" v-cloak>{{error}}</div>
         <div v-if="attempts.length" class="w-responsive mx-auto">
-            <div v-for="attempt in attempts" v-cloak>
+            <div v-for="(attempt, index) in attempts" v-cloak>
                 <div class="d-flex attempt p-3 text-dark" 
                     :class="{'bg-white': !attempt.is_viewer, 'bg-warning': attempt.is_viewer}">
                     <div class="align-self-center">
@@ -40,8 +40,13 @@
                         </div>
                     </div>
                     <div class="align-self-center">
-                        <span class="fa-stack fa-lg">
-                            <i class="fa fa-trophy fa-stack-1x first"></i>
+                        <span class="fa-stack fa-lg" v-if="index < 5">
+                            <i class="fa fa-trophy fa-stack-1x"></i>
+                        </span>
+                        <span v-else>
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-hashtag" ></i><span class="font-weight-bold">{{index+1}}</span>
+                            </span>
                         </span>
                     </div>
                 </div>
