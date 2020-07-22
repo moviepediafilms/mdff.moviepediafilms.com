@@ -2,7 +2,7 @@
 {% load static %}
 
 {%block left%}
-<div class="container p-5">
+<div class="container py-5 px-4">
     <div class="text-left ">
         <a class="img-fluid" href="{%url 'dff2020:home'%}"><img src="{% static 'dff2020/img/icon.png'%}" height="150px" /></a>
     </div>
@@ -35,7 +35,7 @@
                                         <i class="ml-4 fas fa-users mr-1 text-warning"></i> {{movie.audience_rating}}
                                     </span>
                                 {%else%}
-                                    <div><i class="fas fa-lock mr-1"></i> Rate to unlock</div>
+                                    <div><i class="fas fa-lock mr-1"></i> Rate To Unlock Scores</div>
                                 {% endif %}
                             </div>
                             <div class="col-lg text-right d-flex align-items-center justify-content-lg-center justify-content-center p-2">

@@ -27,7 +27,12 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.templatetags.static import static
 
-from .constants import LATE_REGISTRATION_START_DATE, QUESTION_TO_ASK, QUIZ_TIME_LIMIT
+from .constants import (
+    LATE_REGISTRATION_START_DATE,
+    QUESTION_TO_ASK,
+    QUIZ_TIME_LIMIT,
+    QUIZ_PRIZE_AMOUNT,
+)
 from .models import (
     Profile,
     Order,
@@ -649,7 +654,9 @@ class DetailShortlistTodayView(View):
     def get(self, request):
         ist_today = (datetime.now() + timedelta(hours=5, minutes=30)).date()
         shortlist = Shortlist.objects.filter(publish_on=ist_today).first()
-        return redirect("dff2020:shortlist-detail", shortlist_id=shortlist.id)
+        if shortlist:
+            return redirect("dff2020:shortlist-detail", shortlist_id=shortlist.id)
+        return redirect("dff2020:shortlists")
 
 
 class DetailShortlistView(TemplateView):
@@ -1033,9 +1040,6 @@ class QuizResultsView(TemplateView):
     template_name = "dff2020/quiz_results.html"
 
 
-QUIZ_PRIZE_AMOUNT = [137.5, 112.5, 100, 75, 75]
-
-
 class QuizResultsApiView(View):
     def _group_by_users(self, attempts):
         winning_users = []
@@ -1074,44 +1078,5 @@ class QuizResultsApiView(View):
                 attempt["amount"] = amount
             top_attempts_all_quiz.extend(top_attempts)
         winners = self._group_by_users(top_attempts_all_quiz)
-        data = {
-            "success": True,
-            "winners": winners
-            # [
-            #     {
-            #         "name": "Rahul Sharma",
-            #         "quiz": [0, 2, 3, 1, 2, 3, 2, 3, 0, 1],
-            #         "movie_secs": 693 * 7,
-            #         "amount": 625,
-            #         "location": "Panjab",
-            #         "profile_pic": "/static/dff2020/img/avatar/male1.png",
-            #     },
-            #     {
-            #         "name": "Rohit Kumar",
-            #         "quiz": [3, 2, 3, 1, 2],
-            #         "movie_secs": 120 * 3,
-            #         "amount": 590,
-            #         "profile_pic": "/static/dff2020/img/avatar/male2.png",
-            #         "location": "Kolkata",
-            #     },
-            #     {
-            #         "name": "Pramod Gupta",
-            #         "quiz": [3, 2, 3, 1, 2],
-            #         "is_viewer": True,
-            #         "amount": 490,
-            #         "movie_secs": 120 * 5,
-            #         "profile_pic": "/static/dff2020/img/avatar/male3.png",
-            #         "location": "Lucknow",
-            #     },
-            #     {
-            #         "name": "Shivam Sharma",
-            #         "correct_answers": 9,
-            #         "location": "Haryana",
-            #         "questions_count": 15,
-            #         "movie_secs": 120 * 4,
-            #         "amount": 440,
-            #         "profile_pic": "/static/dff2020/img/avatar/male4.png",
-            #     },
-            # ],
-        }
+        data = {"success": True, "winners": winners}
         return JsonResponse(data)

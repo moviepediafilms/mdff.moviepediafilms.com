@@ -18,12 +18,12 @@
         <div class="text-danger mt-3" v-cloak>{{error}}</div>
         <div v-if="winners.length" class="w-responsive mx-auto">
             <div v-for="user in winners" v-cloak>
-                <div class="d-flex user p-3 text-dark" 
+                <div class="d-flex user px-3 text-dark" 
                     :class="{'bg-white': !user.is_viewer, 'bg-warning': user.is_viewer}">
-                    <div class="align-self-center">
+                    <div class="align-self-center py-3">
                         <img :src="user.profile_pic" width="50px" class="z-depth-1 rounded-circle avatar" :class="{'bg-warning': !user.is_viewer, 'bg-white': user.is_viewer,}" :alt="user.name"/>
                     </div>  
-                    <div class="flex-grow-1 flex-row-reverse">
+                    <div class="flex-grow-1 flex-row-reverse pt-3">
                         <div class="d-flex">
                             <div class="d-flex flex-grow-1">
                                 <div class="w-100 ml-2 mr-1 align-self-center text-left">
@@ -35,20 +35,19 @@
                                 <span class="mr-1"><i class="fas fa-film"></i> {{get_time_str(user.movie_secs)}}</span>
                             </div>
                             <div class="align-self-center ml-2">
-                                <span class="fa-lg">
+                                <span class="fa-md">
                                     <span><i class="fas fa-rupee-sign"></i> <span class="font-weight-bolder">{{user.amount}}</span></span>
                                 </span>
                             </div>
                         </div>
-                        <div>
+                        <div class="m-0 pb-1">
                             <small v-cloak>
-                                <span v-for="score in user.scores">
+                                <span v-for="score in user.scores" >
                                     <i class="fas fa-bullseye mr-1" :class="{'text-danger': score==0, 'text-primary': score==2 || score==1, 'text-success': score==3}"></i>
                                 </span>
                             </small>
                         </div>
                     </div>
-                    
                 </div>
             </div>
         </div>

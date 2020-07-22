@@ -14,7 +14,7 @@
 {%endblock%}
 
 {%block left%}
-<div class="container p-5">
+<div class="container py-5 px-4">
     <div class="text-left ">
     {% comment %} added emoji just for the font to load {% endcomment %}
         <a class="img-fluid emoji" href="{%url 'dff2020:home'%}"><img src="{% static 'dff2020/img/icon.png'%}"
@@ -36,22 +36,21 @@
                 <p class="text-muted"><i class="fas fa-quote-left"></i> {{movie.entry.synopsis}}</p>
             </div>
 
-            <div class="col-md-3 col-sm-12 text-center mt-5">
+            <div class="col-6 col-lg-3 text-center mt-5">
                 <span class="min-chart mt-0 mb-3" id="chart-jury" data-percent="{{jury_rating}}">
                     <span class="percent text-muted font-weight-bold">
                         {%if not user_voted%}
-                        <i class="fas fa-lock"></i>
+                        <i class="fas fa-key text-success" ></i>
                         {%endif%}
                     </span>
                 </span>
                 <p class="text-success font-weight-bold"><i class="fas fa-gavel"></i> JURY</p>
-
             </div>
-            <div class="col-md-3 col-sm-12 text-center mt-5">
+            <div class="col-6 col-lg-3 text-center mt-5">
                 <span class="min-chart mt-0 mb-3" id="chart-audience" data-percent="{{audience_rating}}">
                     <span class="percent text-muted font-weight-bold">
                         {%if not user_voted%}
-                        <i class="fas fa-lock"></i>
+                        <i class="fas fa-key text-warning" ></i>
                         {%endif%}
                     </span>
                 </span>
