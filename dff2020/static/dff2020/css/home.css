@@ -19,6 +19,12 @@ body, html {
         font-size: 0.8rem;
     }
 }
+
+.links .link{
+    flex-grow: 1;
+    flex-basis: 0;
+}
+
     
 @include media-breakpoint-up(md) {
     #sign_text {
