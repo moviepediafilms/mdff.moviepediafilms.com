@@ -54,6 +54,11 @@ urlpatterns = [
         views.DetailShortlistView.as_view(),
         name="shortlist-detail",
     ),
+    path(
+        "shortlist/today",
+        views.DetailShortlistTodayView.as_view(),
+        name="shortlist-today",
+    ),
     path("shortlist/all", views.ShortlistView.as_view(), name="shortlists"),
     path(
         "shortlist/<int:shortlist_id>/result",
@@ -64,5 +69,9 @@ urlpatterns = [
         "api/shortlist/<int:shortlist_id>/result",
         views.ResultShortlistApiView.as_view(),
         name="api-shortlist-result",
+    ),
+    path("quiz/results", views.QuizResultsView.as_view(), name="quiz-results",),
+    path(
+        "api/quiz/results", views.QuizResultsApiView.as_view(), name="api-quiz-results",
     ),
 ]

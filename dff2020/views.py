@@ -7,6 +7,7 @@ import requests
 import razorpay
 import random
 from datetime import datetime, timedelta, timezone
+from functools import partial
 
 from django.db import IntegrityError
 from django.shortcuts import render, redirect, get_object_or_404
@@ -644,6 +645,13 @@ class ShortlistView(TemplateView):
         return context
 
 
+class DetailShortlistTodayView(View):
+    def get(self, request):
+        ist_today = (datetime.now() + timedelta(hours=5, minutes=30)).date()
+        shortlist = Shortlist.objects.filter(publish_on=ist_today).first()
+        return redirect("dff2020:shortlist-detail", shortlist_id=shortlist.id)
+
+
 class DetailShortlistView(TemplateView):
     template_name = "dff2020/shortlist_details.html"
 
@@ -711,7 +719,7 @@ class DetailShortlistView(TemplateView):
         return self.render_to_response(context)
 
 
-def _serialize_attempt(request, attempt):
+def _serialize_attempt_for_quiz_leaderboard(request, attempt):
     responses = attempt.quizresponse_set.all()
     if len(responses) > 3:
         # we have a problem
@@ -728,6 +736,8 @@ def _serialize_attempt(request, attempt):
     profile = getattr(attempt.user, "profile", None)
     res = {
         "id": attempt.id,
+        "user_id": attempt.user.id,
+        "movie_mins": attempt.shortlist.entry.runtime,
         "profile_pic": get_gravatar(attempt.user),
         "name": attempt.user.get_full_name().title(),
         "location": profile and profile.location,
@@ -742,14 +752,14 @@ def _serialize_attempt(request, attempt):
     return res
 
 
-def _get_user_attempts_by_rank(request, shortlist):
+def _get_attempts(shortlist, serializer_fn, sorter_fn):
     return list(
         sorted(
             [
-                _serialize_attempt(request, attempt)
+                serializer_fn(attempt)
                 for attempt in UserQuizAttempt.objects.filter(shortlist=shortlist).all()
             ],
-            key=lambda item: (item.get("score"), item.get("total_time_left")),
+            key=sorter_fn,
             reverse=True,
         )
     )
@@ -770,7 +780,12 @@ class ResultShortlistApiView(View):
                 error = "Shortlist not yet published"
 
         if not error:
-            data["attempts"] = _get_user_attempts_by_rank(request, shortlist)
+            sorted_attempts = _get_attempts(
+                shortlist,
+                partial(_serialize_attempt_for_quiz_leaderboard, request),
+                lambda item: (item.get("score"), item.get("total_time_left")),
+            )
+            data["attempts"] = sorted_attempts
 
         data["success"] = not error
         data["error"] = error
@@ -1012,3 +1027,91 @@ class SaveQuizResponseView(LoginRequiredMixin, View):
         else:
             res_body["success"] = True
         return JsonResponse(res_body)
+
+
+class QuizResultsView(TemplateView):
+    template_name = "dff2020/quiz_results.html"
+
+
+QUIZ_PRIZE_AMOUNT = [137.5, 112.5, 100, 75, 75]
+
+
+class QuizResultsApiView(View):
+    def _group_by_users(self, attempts):
+        winning_users = []
+        users_attempts_map = defaultdict(list)
+        for attempt in attempts:
+            users_attempts_map[attempt.get("user_id")].append(attempt)
+        for user_id, attempts in users_attempts_map.items():
+            if attempts:
+                user_attempt_summary = attempts[0].copy()
+                user_attempt_summary.pop("movie_mins")
+                user_attempt_summary.pop("score")
+                movie_secs = 0
+                amount = 0
+                scores = []
+                for attempt in attempts:
+                    movie_secs += attempt.get("movie_mins", 0) * 60
+                    amount += attempt.get("amount", 0)
+                    scores.append(attempt.get("score", 0))
+                user_attempt_summary["amount"] = amount
+                user_attempt_summary["movie_secs"] = movie_secs
+                user_attempt_summary["scores"] = scores
+                winning_users.append(user_attempt_summary)
+        return winning_users
+
+    def get(self, request):
+        ist_today = (datetime.now() + timedelta(hours=5, minutes=30)).date()
+        top_attempts_all_quiz = []
+        shortlists = Shortlist.objects.filter(publish_on__lte=ist_today).all()
+        for shortlist in shortlists:
+            top_attempts = _get_attempts(
+                shortlist,
+                partial(_serialize_attempt_for_quiz_leaderboard, request),
+                lambda item: (item.get("score"), item.get("total_time_left")),
+            )[:5]
+            for attempt, amount in zip(top_attempts, QUIZ_PRIZE_AMOUNT):
+                attempt["amount"] = amount
+            top_attempts_all_quiz.extend(top_attempts)
+        winners = self._group_by_users(top_attempts_all_quiz)
+        data = {
+            "success": True,
+            "winners": winners
+            # [
+            #     {
+            #         "name": "Rahul Sharma",
+            #         "quiz": [0, 2, 3, 1, 2, 3, 2, 3, 0, 1],
+            #         "movie_secs": 693 * 7,
+            #         "amount": 625,
+            #         "location": "Panjab",
+            #         "profile_pic": "/static/dff2020/img/avatar/male1.png",
+            #     },
+            #     {
+            #         "name": "Rohit Kumar",
+            #         "quiz": [3, 2, 3, 1, 2],
+            #         "movie_secs": 120 * 3,
+            #         "amount": 590,
+            #         "profile_pic": "/static/dff2020/img/avatar/male2.png",
+            #         "location": "Kolkata",
+            #     },
+            #     {
+            #         "name": "Pramod Gupta",
+            #         "quiz": [3, 2, 3, 1, 2],
+            #         "is_viewer": True,
+            #         "amount": 490,
+            #         "movie_secs": 120 * 5,
+            #         "profile_pic": "/static/dff2020/img/avatar/male3.png",
+            #         "location": "Lucknow",
+            #     },
+            #     {
+            #         "name": "Shivam Sharma",
+            #         "correct_answers": 9,
+            #         "location": "Haryana",
+            #         "questions_count": 15,
+            #         "movie_secs": 120 * 4,
+            #         "amount": 440,
+            #         "profile_pic": "/static/dff2020/img/avatar/male4.png",
+            #     },
+            # ],
+        }
+        return JsonResponse(data)
