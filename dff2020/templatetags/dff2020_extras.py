@@ -1,4 +1,5 @@
 from django import template
+from django.conf import settings
 import hashlib
 from urllib.parse import urlencode
 
@@ -14,7 +15,7 @@ def get_gravatar(user):
     profile = getattr(user, "profile", None)
     if profile:
         avatar = user.profile.avatar
-    default_link = f"https://moviepediafilms.com/static/dff2020/img/avatar/{avatar}"
+    default_link = f"{settings.GRAVTAR_BASE_URL}/dff2020/img/avatar/{avatar}"
     gravatar_url = (
         "https://www.gravatar.com/avatar/"
         + hashlib.md5(user.email.lower().encode()).hexdigest()
