@@ -27,7 +27,7 @@ var app = new Vue({
             var secs = parseInt(secs - (mins * 60) - (hours * 3600))
             if (hours > 0)
                 return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
-            return `${String(mins).padStart(2, '0')}: ${String(secs).padStart(2, '0')}`
+            return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
         }
     }
 })
