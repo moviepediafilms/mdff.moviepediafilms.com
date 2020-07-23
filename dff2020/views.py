@@ -670,9 +670,10 @@ class DetailShortlistTodayView(View):
         ist_now = _get_ist_now()
         shortlist = (
             Shortlist.objects.filter(publish_at__lte=ist_now)
-            .order_by("publish_at")
+            .order_by("-publish_at")
             .first()
         )
+        logger.debug(f"{shortlist} {shortlist.publish_at}, {ist_now}")
         if shortlist:
             return redirect("dff2020:shortlist-detail", shortlist_id=shortlist.id)
         return redirect("dff2020:shortlists")
