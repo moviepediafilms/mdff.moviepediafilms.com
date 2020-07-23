@@ -1,0 +1,72 @@
+{% extends 'dff2020/base_single_panel.html' %}
+{% load static %}
+
+{%block head%}
+{{block.super}}
+<link rel="stylesheet" href="{% static '/dff2020/css/shortlist_result.css' %}" />
+{%endblock%}
+
+{%block left%}
+<div class="container py-5 px-0 text-center">
+     <div>
+        <a class="img-fluid" href="{%url 'dff2020:home'%}"><img src="{% static 'dff2020/img/icon.png'%}"
+                height="150px" /></a>
+    </div>
+    {%verbatim%}
+    <div id="result-app">
+        <div class=" text-warning text-center mt-5 font-weight-bold text-uppercase">Leaderboard</div>
+        <div class="text-danger mt-3" v-cloak>{{error}}</div>
+        <div v-if="attempts.length" class="w-responsive mx-auto">
+            <div v-for="(attempt, index) in attempts" v-cloak>
+                <div class="d-flex attempt p-3 text-dark" 
+                    :class="{'bg-white': !attempt.is_viewer, 'bg-warning': attempt.is_viewer}">
+                    <div class="align-self-center">
+                        <img :src="attempt.profile_pic" width="50px" class="z-depth-1 rounded-circle avatar" :class="{'bg-warning': !attempt.is_viewer, 'bg-white': attempt.is_viewer,}" :alt="attempt.name"/>
+                    </div>
+                    <div class="d-flex flex-grow-1">
+                        <div class="w-100 ml-2 mr-1 align-self-center text-left">
+                            <div class="font-weight-normal" v-cloak>{{ attempt.name }}</div>
+                            <small class="text-muted" v-cloak>{{attempt.location}}</small>
+                        </div>
+                        <div class="mx-1 flex-shrink-1 text-right align-self-center">
+                            <div class="d-inline-block d-block-sm"><span class="ml-2" v-cloak><i class="fa fa-clock " :class="{'text-dark': !attempt.is_viewer, 'text-warning': !attempt.is_viewer}"></i> {{get_time_str(attempt.total_time)}}</span></div>
+                            <div class="d-inline-block d-block-sm">
+                                <span class="ml-2 d-block-sm">
+                                    <span v-for="i in attempt.asked" :class="{'text-success': i, 'text-danger': !i}" class="mr-1">
+                                        <i class="fa fa-bullseye"></i>
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="align-self-center">
+                        <span class="fa-stack fa-lg" v-if="index < 5">
+                            <i class="fa fa-trophy fa-stack-1x"></i>
+                        </span>
+                        <span v-else>
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-hashtag" ></i><span class="font-weight-bold">{{index+1}}</span>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-muted" v-else>Take the quiz and claim your position here</div>
+    </div>
+    {%endverbatim%}
+    <div>
+        <a href="{% url 'dff2020:shortlists' %}" class="btn btn-sm text-dark font-weight-bold btn-warning">Shortlists</a>
+        <a href="{% url 'dff2020:quiz-results' %}" class="btn btn-sm text-dark font-weight-bold btn-warning">Check Earnings</a>
+    </div>
+</div>
+{%endblock%}
+
+{% block scripts%}
+<script>
+    var shortlist_id = {{shortlist_id}}
+</script>
+<script src="https://unpkg.com/vue@2.6.11/dist/vue.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="{% static 'dff2020/js/shortlist_result.js'%}"></script>
+{%endblock%}

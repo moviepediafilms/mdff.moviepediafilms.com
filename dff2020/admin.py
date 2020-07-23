@@ -2,7 +2,19 @@ from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from django import forms
 
-from .models import Faq, Rule, Entry, Order
+from .models import (
+    Profile,
+    Faq,
+    Rule,
+    Entry,
+    Order,
+    Shortlist,
+    UserRating,
+    Question,
+    Option,
+    QuizResponse,
+    UserQuizAttempt,
+)
 
 
 class RuntimeListFilter(admin.SimpleListFilter):
@@ -76,6 +88,11 @@ class RuleModelForm(forms.ModelForm):
         fields = "__all__"
 
 
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ["user", "gender", "location", "contact"]
+
+
 @admin.register(Faq)
 class FaqAdmin(admin.ModelAdmin):
     form = FaqModelForm
@@ -94,4 +111,40 @@ class EntryAdmin(admin.ModelAdmin):
     list_filter = [RuntimeListFilter, "order"]
 
     def synopsis_short(self, obj):
-        return obj.synopsis[:50]
+        return obj.synopsis and obj.synopsis[:50]
+
+
+@admin.register(Shortlist)
+class ShortlistAdmin(admin.ModelAdmin):
+    list_display = [
+        "entry",
+        "jury_rating",
+        "review",
+        "publish_at",
+        "is_jury_rating_locked",
+    ]
+
+
+@admin.register(UserRating)
+class UserRatingAdmin(admin.ModelAdmin):
+    list_display = ["shortlist", "user", "rating", "review", "added_on"]
+
+
+@admin.register(Question)
+class QuestionAdmin(admin.ModelAdmin):
+    list_display = ("shortlist", "text")
+
+
+@admin.register(Option)
+class OptionAdmin(admin.ModelAdmin):
+    list_display = ["question", "text", "is_correct"]
+
+
+@admin.register(QuizResponse)
+class QuizResponseAdmin(admin.ModelAdmin):
+    list_display = ["quiz_attempt", "question", "selected_option"]
+
+
+@admin.register(UserQuizAttempt)
+class UserQuizAttemptAdmin(admin.ModelAdmin):
+    list_display = ["user", "shortlist", "start_time"]

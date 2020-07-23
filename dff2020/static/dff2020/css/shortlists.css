@@ -1,0 +1,6 @@
+.percent::after {
+    content: "" !important;
+}
+.chart-container {
+    display: inline-block;
+}

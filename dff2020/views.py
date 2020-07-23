@@ -3,10 +3,13 @@ import json
 import logging
 import hashlib
 from collections import defaultdict
-from datetime import datetime
 import requests
 import razorpay
+import random
+from datetime import datetime, timedelta, timezone
+from functools import partial
 
+from django.db import IntegrityError
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.tokens import default_token_generator
@@ -24,21 +27,45 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.templatetags.static import static
 
-from .models import Order, Entry, Faq, Rule
+from .constants import (
+    LATE_REGISTRATION_START_DATE,
+    QUESTION_TO_ASK,
+    QUIZ_TIME_LIMIT,
+    QUIZ_PRIZE_AMOUNT,
+)
+from .models import (
+    Profile,
+    Order,
+    Entry,
+    Faq,
+    Rule,
+    Shortlist,
+    UserRating,
+    UserQuizAttempt,
+    QuizResponse,
+    Question,
+    Option,
+)
 from .email import (
     send_password_reset_email,
     send_welcome_email,
     send_film_registration_email,
 )
-
+from dff2020.templatetags.dff2020_extras import get_gravatar
 
 logger = logging.getLogger("app.dff2020")
 
-LATE_DATE = datetime.strptime("2020-07-01T00:00:00+05:30", "%Y-%m-%dT%H:%M:%S%z")
 
 rzp_client = razorpay.Client(
     auth=(settings.RAZORPAY_API_KEY, settings.RAZORPAY_API_SECRET)
 )
+
+random.seed(0)
+
+
+def _get_ist_now():
+    now = datetime.now().replace(tzinfo=timezone.utc)
+    return now
 
 
 def get_ip(request):
@@ -71,6 +98,23 @@ def verify_recapcha(request, recapcha_response):
         return False
 
 
+def _is_shortlist_published(shortlist):
+    ist_now = _get_ist_now()
+    logger.debug(f"{shortlist.publish_at} <= {ist_now}")
+    return shortlist.publish_at <= ist_now
+
+
+def _is_shortlist_active(shortlist):
+    ist_now = _get_ist_now()
+    a_day = timedelta(days=1)
+    logger.debug(
+        f"{shortlist} {shortlist.publish_at} {shortlist.publish_at + a_day} {ist_now}"
+    )
+    logger.debug(f"{shortlist.publish_at < ist_now}")
+    logger.debug(f"{ist_now < (shortlist.publish_at + a_day)}")
+    return shortlist.publish_at < ist_now and ist_now < (shortlist.publish_at + a_day)
+
+
 class Logout(View):
     def get(self, request):
         if not request.user.is_anonymous:
@@ -78,7 +122,7 @@ class Logout(View):
         return redirect("dff2020:login")
 
 
-class Login(View):
+class LoginMixin:
     def post(self, request):
         username = request.POST.get("email")
         password = request.POST.get("password")
@@ -87,14 +131,24 @@ class Login(View):
             if user is not None:
                 logger.debug("user authenticated")
                 login(request, user)
-                # if Order.objects.filter(owner=user).exists():
-                #     return redirect("dff2020:submissions")
-                return redirect("dff2020:submissions")
+                return True, "User authenticated"
             else:
                 error = "Invalid email and password combination"
         else:
             error = "username or password cannot be empty"
-        return redirect(reverse("dff2020:login") + f"?error={error}")
+        return False, error
+
+
+class Login(LoginMixin, View):
+    def post(self, request):
+        success, message = super().post(request)
+        if success:
+            user_has_orders = Order.objects.filter(owner=self.request.user).exists()
+            name = "submissions" if user_has_orders else "registration"
+            url = reverse(f"dff2020:{name}")
+        else:
+            url = reverse("dff2020:login") + f"?error={message}"
+        return redirect(url)
 
     def get(self, request):
         if not request.user.is_anonymous:
@@ -106,19 +160,33 @@ class Login(View):
         return render(request, "dff2020/login.html", dict(error=error, message=message))
 
 
-class SignUp(View):
+class SignUpMixin:
+    recapcha_enabled = True
+
+    def _get_avatar(self, gender):
+        possibilities = {
+            "M": [f"male{i}.png" for i in range(1, 5)],
+            "F": [f"female{i}.png" for i in range(1, 5)],
+            "O": ["neutral.png"],
+        }.get(gender)
+        return random.choice(possibilities)
+
     def post(self, request):
         name = request.POST.get("name", "").strip()
         email = request.POST.get("email", "").strip()
         password = request.POST.get("password", "").strip()
         agree = request.POST.get("agree", "").strip()
+        gender = request.POST.get("gender")
+        location = request.POST.get("location")
 
         recapcha = request.POST.get("g-recaptcha-response", "")
 
         logger.debug(f"{email} {password} {agree} {recapcha}")
-        if not all([agree, name, email, password]):
+        if gender and gender not in "MFO":
+            error = "Invalid gender value"
+        elif not all([agree, name, email, password]):
             error = "Blank values are not allowed!"
-        elif not verify_recapcha(request, recapcha):
+        elif self.recapcha_enabled and not verify_recapcha(request, recapcha):
             error = "Invalid captcha!"
         elif User.objects.filter(email=email).exists():
             error = "This email is already registered!"
@@ -129,10 +197,26 @@ class SignUp(View):
             if len(name) > 1:
                 user.last_name = name[1]
             user.save()
+            if gender:
+                gender = gender.strip()
+                location = location and location.strip()
+                avatar = self._get_avatar(gender)
+                profile = Profile.objects.create(
+                    user=user, gender=gender, avatar=avatar, location=location
+                )
+                profile.save()
             message = "Congratulations!! Your account is created please login!"
             send_welcome_email(user)
-            return redirect(reverse("dff2020:login") + f"?message={message}")
-        return redirect(reverse("dff2020:signup") + f"?error={error}")
+            return True, message, user
+        return False, error, None
+
+
+class SignUpView(SignUpMixin, View):
+    def post(self, request):
+        success, message, user = super().post(request)
+        param = "message" if success else "error"
+        name = "login" if success else "signup"
+        return redirect(reverse(f"dff2020:{name}") + f"?{param}={message}")
 
     def get(self, request):
         if not request.user.is_anonymous:
@@ -289,7 +373,7 @@ class Registration(LoginRequiredMixin, View):
         return (False, error) if error else (True, None)
 
     def has_unpaid_first_order(self, request):
-        if request.user.date_joined > LATE_DATE:
+        if request.user.date_joined > LATE_REGISTRATION_START_DATE:
             orders = Order.objects.filter(owner=request.user.id).all()
             return (
                 len(orders) > 0
@@ -303,7 +387,7 @@ class Registration(LoginRequiredMixin, View):
                 reverse("dff2020:submissions")
                 + "?error=Please complete existing order before submitting another movie!"
             )
-        late_user = request.user.date_joined > LATE_DATE
+        late_user = request.user.date_joined > LATE_REGISTRATION_START_DATE
         has_paid_orders = (
             Order.objects.filter(
                 owner=request.user.id, rzp_payment_id__isnull=False
@@ -538,3 +622,486 @@ class JudgesView(TemplateView):
             ),
         ]
         return context
+
+
+class ShortlistView(TemplateView):
+    template_name = "dff2020/shortlist.html"
+
+    def _serialize(self, request, shortlist):
+        user_ratings = shortlist.userrating_set.all()
+        user_has_voted = any(rating.user == request.user for rating in user_ratings)
+        audience_rating = 0
+        if user_ratings:
+            audience_rating = sum(r.rating for r in user_ratings) / len(user_ratings)
+        return {
+            "id": shortlist.id,
+            "publish_at": shortlist.publish_at.isoformat(),
+            "thumbnail": shortlist.thumbnail,
+            "link": shortlist.entry.link,
+            "user_has_voted": user_has_voted,
+            "name": shortlist.entry.name,
+            "review": shortlist.review,
+            "jury_rating": "{:.2f}".format(shortlist.jury_rating),
+            "audience_rating": "{:.2f}".format(audience_rating),
+            "is_jury_rating_locked": shortlist.is_jury_rating_locked,
+        }
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        ist_now = _get_ist_now()
+
+        locked_shortlists = []
+        unlocked_shortlists = []
+        published_shortlists = Shortlist.objects.filter(publish_at__lte=ist_now).all()
+        for shortlist in published_shortlists:
+            serialized_shortlist = self._serialize(self.request, shortlist)
+            if _is_shortlist_active(shortlist):
+                locked_shortlists.append(serialized_shortlist)
+            else:
+                unlocked_shortlists.append(serialized_shortlist)
+
+        context["locked_shortlists"] = locked_shortlists
+        context["unlocked_shortlists"] = unlocked_shortlists
+        return context
+
+
+class DetailShortlistTodayView(View):
+    def get(self, request):
+        ist_now = _get_ist_now()
+        shortlist = (
+            Shortlist.objects.filter(publish_at__lte=ist_now)
+            .order_by("-publish_at")
+            .first()
+        )
+        logger.debug(f"{shortlist} {shortlist.publish_at}, {ist_now}")
+        if shortlist:
+            return redirect("dff2020:shortlist-detail", shortlist_id=shortlist.id)
+        return redirect("dff2020:shortlists")
+
+
+class DetailShortlistView(TemplateView):
+    template_name = "dff2020/shortlist_details.html"
+
+    def get(self, request, *args, **kwargs):
+        shortlist_id = kwargs.get("shortlist_id")
+        try:
+            movie = Shortlist.objects.get(pk=shortlist_id)
+        except Shortlist.DoesNotExist as ex:
+            logger.exception(ex)
+            return redirect("dff2020:shortlists")
+        else:
+            if not _is_shortlist_published(movie):
+                return redirect("dff2020:shortlists")
+        is_active = _is_shortlist_active(movie)
+        dummy_rating = 100
+        context = self.get_context_data(**kwargs)
+        context["csrf"] = csrf.get_token(self.request)
+        context["movie"] = movie
+        user_ratings = movie.userrating_set.all()
+        user_voted = not is_active or any(
+            rating.user == self.request.user for rating in user_ratings
+        )
+        context["user_voted"] = user_voted
+
+        context["jury_rating"] = "{:.2f}".format(movie.jury_rating * 10)
+        audience_rating = (
+            sum(r.rating for r in user_ratings) / len(user_ratings)
+            if len(user_ratings)
+            else 0
+        )
+        context["audience_rating"] = "{:.2f}".format(audience_rating * 10)
+        if not user_voted:
+            context["jury_rating"] = "{:.2f}".format(dummy_rating)
+            context["audience_rating"] = "{:.2f}".format(dummy_rating)
+
+        context["reviews"] = [
+            dict(
+                profile_pic=get_gravatar(rating.user),
+                user_full_name=rating.user.get_full_name(),
+                rating="{:.0f}/10".format(rating.rating),
+                content=rating.review,
+            )
+            for rating in user_ratings
+            if rating.review
+        ]
+        if self.request.user.is_authenticated:
+            quiz_attempt = UserQuizAttempt.objects.filter(
+                shortlist=movie, user=self.request.user
+            ).first()
+            if quiz_attempt:
+                now = datetime.now(timezone.utc)
+                quiz_over_at = quiz_attempt.start_time + timedelta(
+                    seconds=QUIZ_TIME_LIMIT
+                )
+                logger.debug(now.isoformat())
+                logger.debug(quiz_over_at.isoformat())
+                context["quiz_over"] = (
+                    not is_active
+                    or now >= quiz_over_at
+                    or quiz_attempt.quizresponse_set.count() == QUESTION_TO_ASK
+                )
+        if "quiz_over" not in context:
+            context["quiz_over"] = not is_active
+
+        return self.render_to_response(context)
+
+
+def _serialize_attempt_for_quiz_leaderboard(request, attempt):
+    responses = attempt.quizresponse_set.all()
+    if len(responses) > 3:
+        # we have a problem
+        pass
+    response_score = sum(res.selected_option.is_correct for res in responses)
+    time_start = attempt.start_time
+    time_end = attempt.start_time + timedelta(seconds=QUIZ_TIME_LIMIT)
+    if len(responses) == QUESTION_TO_ASK:
+        time_end = max(res.submit_at for res in responses)
+    logger.debug(f"{time_start} {time_end}")
+    time_taken = time_end - time_start
+    logger.debug(f"time_score {time_taken.seconds} + {time_taken.microseconds}")
+    time_taken = float(f"{time_taken.seconds}.{time_taken.microseconds}")
+    profile = getattr(attempt.user, "profile", None)
+    res = {
+        "id": attempt.id,
+        "user_id": attempt.user.id,
+        "movie_mins": attempt.shortlist.entry.runtime,
+        "profile_pic": get_gravatar(attempt.user),
+        "name": attempt.user.get_full_name().title(),
+        "location": profile and profile.location,
+        "gender": profile and profile.gender,
+        "total_time": time_taken,
+        "total_time_left": QUIZ_TIME_LIMIT - time_taken,
+        "score": response_score,
+        "correct": response_score,
+        "asked": [True] * response_score + [False] * (QUESTION_TO_ASK - response_score),
+        "is_viewer": attempt.user == request.user,
+    }
+    return res
+
+
+def _get_attempts(shortlist, serializer_fn, sorter_fn):
+    return list(
+        sorted(
+            [
+                serializer_fn(attempt)
+                for attempt in UserQuizAttempt.objects.filter(shortlist=shortlist).all()
+            ],
+            key=sorter_fn,
+            reverse=True,
+        )
+    )
+
+
+class ResultShortlistApiView(View):
+    def get(self, request, shortlist_id):
+        data = {}
+        error = None
+        message = None
+        try:
+            shortlist = Shortlist.objects.get(pk=shortlist_id)
+        except Shortlist.DoesNotExist as ex:
+            logger.exception(ex)
+            error = "No such shortlist"
+        else:
+            if not _is_shortlist_published(shortlist):
+                error = "Shortlist not yet published"
+
+        if not error:
+            sorted_attempts = _get_attempts(
+                shortlist,
+                partial(_serialize_attempt_for_quiz_leaderboard, request),
+                lambda item: (item.get("score"), item.get("total_time_left")),
+            )
+            data["attempts"] = sorted_attempts
+
+        data["success"] = not error
+        data["error"] = error
+        data["message"] = message
+        return JsonResponse(data)
+
+
+class ResultShortlistView(TemplateView):
+    template_name = "dff2020/shortlist_result.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["shortlist_id"] = kwargs.get("shortlist_id")
+        return context
+
+
+class LoginApiView(LoginMixin, View):
+    def post(self, request):
+        success, message = super().post(request)
+        data = {"success": success}
+        if success:
+            data["csrf"] = csrf.get_token(self.request)
+        else:
+            data["error"] = message
+        return JsonResponse(data)
+
+
+class SignupApiView(SignUpMixin, View):
+    recapcha_enabled = False
+
+    def post(self, request):
+        success, message, user = super().post(request)
+        data = {"success": success}
+        if success:
+            login(request, user)
+            data["csrf"] = csrf.get_token(self.request)
+        else:
+            data["error"] = message
+        return JsonResponse(data)
+
+
+class RateApiView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        shortlist_id = kwargs.get("shortlist_id")
+        rating = request.POST.get("rating")
+        review = request.POST.get("review")
+        if review:
+            review = review[:2000]
+        error = None
+        message = None
+        reload = False
+        try:
+            rating = float(rating)
+            if rating < 0 or rating > 10:
+                raise Exception("Rating can only be between 0, 10")
+        except TypeError as ex:
+            logger.exception(ex)
+            error = "rating is not integer"
+        except Exception as ex:
+            logger.exception(ex)
+            error = str(ex)
+        else:
+            try:
+                shortlist = Shortlist.objects.get(pk=shortlist_id)
+            except Shortlist.DoesNotExist as ex:
+                logging.exception(ex)
+                error = "Invalid shortlist"
+            else:
+                if not _is_shortlist_active(shortlist):
+                    error = "Shortlist not open for rating"
+                else:
+                    user_rating = UserRating.objects.filter(
+                        shortlist=shortlist, user=request.user
+                    ).first()
+                    if user_rating:
+                        reload = True
+                        error = "You have already rated this movie"
+                    else:
+                        UserRating.objects.create(
+                            shortlist=shortlist,
+                            user=request.user,
+                            rating=rating,
+                            review=review,
+                        )
+                    message = "You have successfully submited your rating"
+
+        return JsonResponse(
+            {
+                "success": not bool(error),
+                "error": error,
+                "message": message,
+                "reload": reload,
+            }
+        )
+
+
+def _get_next_question(attempt):
+    answered_questions = [
+        entry.question
+        for entry in QuizResponse.objects.filter(quiz_attempt=attempt).all()
+    ]
+    if len(answered_questions) < QUESTION_TO_ASK:
+        remaining_questions = (
+            Question.objects.filter(shortlist=attempt.shortlist,)
+            .exclude(id__in=[q.id for q in answered_questions],)
+            .all()
+        )
+        if not remaining_questions:
+            return False, "No remainig questions found"
+        else:
+            question = random.choice(remaining_questions)
+            options = Option.objects.filter(question=question).all()
+            question_dict = {
+                "id": question.id,
+                "content": question.text,
+                "options": [
+                    {"id": option.id, "content": option.text} for option in options
+                ],
+            }
+            return True, question_dict
+    return False, "Already answered all questions"
+
+
+class StartQuizView(LoginRequiredMixin, View):
+    def get(self, request, shortlist_id):
+        response = {}
+        error = None
+        try:
+            shortlist = Shortlist.objects.get(pk=shortlist_id)
+            if not _is_shortlist_active(shortlist):
+                raise Exception("Shortlist is not open for quiz")
+            if request.user == shortlist.entry.order.owner:
+                raise Exception(
+                    "Can't proceed. Since you've made the film, there's absolutely nothing here you can't answer."
+                )
+            if not UserRating.objects.filter(
+                shortlist=shortlist, user=request.user
+            ).exists():
+                raise Exception("You should rate before you start taking quiz")
+
+        except Shortlist.DoesNotExist as ex:
+            logger.exception(ex)
+            error = "Invalid shortlist"
+        except Exception as ex:
+            error = str(ex)
+        else:
+            try:
+                response["new"] = False
+                attempt = UserQuizAttempt.objects.get(
+                    shortlist=shortlist, user=request.user
+                )
+            except UserQuizAttempt.DoesNotExist as ex:
+                logger.warning(str(ex))
+                # check min 3 questions should be there
+                questions_count = Question.objects.filter(shortlist=shortlist).count()
+                logger.info(f"found {questions_count} questions")
+                if questions_count < QUESTION_TO_ASK:
+                    error = "Sufficient questions are not ready, please try again after some time!"
+
+                if not error:
+                    attempt = UserQuizAttempt.objects.create(
+                        user=request.user, shortlist=shortlist
+                    )
+                    response["new"] = True
+
+        if not error:
+            response["start_time"] = attempt.start_time
+            response["quiz_time_limit"] = QUIZ_TIME_LIMIT
+            success, result = _get_next_question(attempt)
+            response["question_count"] = attempt.quizresponse_set.count()
+            logger.debug(f"{success} {result}")
+            if success:
+                response["question"] = result
+            else:
+                error = result
+        if error:
+            response["success"] = False
+            response["error"] = error
+        else:
+            response["success"] = True
+
+        return JsonResponse(response)
+
+
+class SaveQuizResponseView(LoginRequiredMixin, View):
+    def get(self, request, shortlist_id, question_id, answer):
+        res_body = {}
+        error = None
+        try:
+            shortlist = Shortlist.objects.get(pk=int(shortlist_id))
+            question = Question.objects.get(pk=int(question_id))
+            option = Option.objects.get(question=question, pk=int(answer))
+        except Shortlist.DoesNotExists:
+            error = "Invalid Shortlist"
+        except Question.DoesNotExists:
+            error = "Invalid Question"
+        except Option.DoesNotExists:
+            error = "Invalid Option"
+        else:
+            try:
+                attempt = UserQuizAttempt.objects.get(
+                    shortlist=shortlist, user=request.user
+                )
+            except UserQuizAttempt.DoesNotExists:
+                error = "Start the quiz before answering the question!"
+            else:
+                now = datetime.now(timezone.utc)
+                quiz_over_at = attempt.start_time + timedelta(seconds=QUIZ_TIME_LIMIT)
+                if now >= quiz_over_at:
+                    error = "Quiz time is up!"
+                elif attempt.quizresponse_set.count() >= QUESTION_TO_ASK:
+                    error = f"You have already answered {QUESTION_TO_ASK} questions!"
+                else:
+                    try:
+                        logging.info(
+                            f"Quiz response:{request.user.username}:{attempt.id}:{question.id}:{option.id}"
+                        )
+                        QuizResponse.objects.create(
+                            quiz_attempt=attempt,
+                            question=question,
+                            selected_option=option,
+                        )
+                    except IntegrityError as ex:
+                        logger.exception(ex)
+                        error = "We have already saved your response for this question"
+                    except Exception as ex:
+                        logger.exception(ex)
+                        error = "An error occured while saving your response, refresh the page and try again!"
+                    else:
+                        res_body["previous_correct_answer"] = option.is_correct
+                        question_count = attempt.quizresponse_set.count()
+                        res_body["question_count"] = question_count
+                        if question_count >= QUESTION_TO_ASK:
+                            success, value = True, {}
+                        else:
+                            success, value = _get_next_question(attempt)
+                        if success:
+                            res_body["question"] = value
+                        else:
+                            error = value
+        if error:
+            res_body["success"] = False
+            res_body["error"] = error
+        else:
+            res_body["success"] = True
+        return JsonResponse(res_body)
+
+
+class QuizResultsView(TemplateView):
+    template_name = "dff2020/quiz_results.html"
+
+
+class QuizResultsApiView(View):
+    def _group_by_users(self, attempts):
+        winning_users = []
+        users_attempts_map = defaultdict(list)
+        for attempt in attempts:
+            users_attempts_map[attempt.get("user_id")].append(attempt)
+        for user_id, attempts in users_attempts_map.items():
+            if attempts:
+                user_attempt_summary = attempts[0].copy()
+                user_attempt_summary.pop("movie_mins")
+                user_attempt_summary.pop("score")
+                movie_secs = 0
+                amount = 0
+                scores = []
+                for attempt in attempts:
+                    movie_secs += attempt.get("movie_mins", 0) * 60
+                    amount += attempt.get("amount", 0)
+                    scores.append(attempt.get("score", 0))
+                user_attempt_summary["amount"] = amount
+                user_attempt_summary["movie_secs"] = movie_secs
+                user_attempt_summary["scores"] = scores
+                winning_users.append(user_attempt_summary)
+        return winning_users
+
+    def get(self, request):
+        ist_now = _get_ist_now()
+        top_attempts_all_quiz = []
+        shortlists = Shortlist.objects.filter(publish_at__lte=ist_now).all()
+        for shortlist in shortlists:
+            top_attempts = _get_attempts(
+                shortlist,
+                partial(_serialize_attempt_for_quiz_leaderboard, request),
+                lambda item: (item.get("score"), item.get("total_time_left")),
+            )[:5]
+            for attempt, amount in zip(top_attempts, QUIZ_PRIZE_AMOUNT):
+                attempt["amount"] = amount
+            top_attempts_all_quiz.extend(top_attempts)
+        winners = self._group_by_users(top_attempts_all_quiz)
+        data = {"success": True, "winners": winners}
+        return JsonResponse(data)

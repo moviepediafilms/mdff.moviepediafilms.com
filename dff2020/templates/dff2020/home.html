@@ -10,15 +10,14 @@
 <h1 class="d-none">Moviepedia Digital Film Fest</h1>
 <div class="bg" style="display: flex; align-items: center; margin-bottom: -16px;">
     <div class="text-center" style="width:100%; margin-top: 200px">
-        <div class="py-2 bg-warning text-dark font-weight-bolder text-uppercase">Registrations Over</div>
-        <div class="mt-3">
-            <small><a href="{% url 'dff2020:login' %}" class="text-light mr-4 font-weight-bold">Login</a></small>
-            <small><a href="{% url 'dff2020:faq' %}" class="text-light mr-4 font-weight-bold">FAQ</a></small>
-            <small><a href="{% url 'dff2020:rules' %}" class="text-light mr-4 font-weight-bold">Rules &
-                    Regulations</a></small>
-            <small><a href="{% url 'dff2020:judges' %}" class="text-light font-weight-bold">Meet the Jury</a></small>
+        <a href="{% url 'dff2020:shortlists'%}" class="btn btn-warning text-dark btn-sm font-weight-bold">MDFF-2020 shortlist</a>
+        <div class="mt-3 d-flex justify-content-center">
+            <div class="d-flex links">
+            <small class="mx-1 link align-self-center"><a href="{% url 'dff2020:shortlist-today' %}" class="text-light font-weight-bold">Film of the Day:<br/> Watch & Earn</a></small>
+            <small class="mx-1 link align-self-center"><a href="{% url 'dff2020:quiz-results' %}" class="text-light font-weight-bold">Audience Leaderboard</a></small>
+            <small class="mx-1 link align-self-center"><a href="{% url 'dff2020:rules' %}" class="text-light font-weight-bold">Rules & Regulations</a></small>
+            </div>
         </div>
     </div>
-
 </div>
 {%endblock%}

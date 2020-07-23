@@ -1,0 +1,83 @@
+[
+    {
+        "model": "dff2020.option",
+        "pk": 1,
+        "fields": {
+            "question": 1,
+            "text": "a baby bird",
+            "is_correct": true
+        }
+    },
+    {
+        "model": "dff2020.option",
+        "pk": 2,
+        "fields": {
+            "question": 1,
+            "text": "a Cat",
+            "is_correct": false
+        }
+    },
+    {
+        "model": "dff2020.option",
+        "pk": 3,
+        "fields": {
+            "question": 1,
+            "text": "Dog",
+            "is_correct": false
+        }
+    },
+    {
+        "model": "dff2020.option",
+        "pk": 4,
+        "fields": {
+            "question": 2,
+            "text": "Mother bird",
+            "is_correct": true
+        }
+    },
+    {
+        "model": "dff2020.option",
+        "pk": 5,
+        "fields": {
+            "question": 2,
+            "text": "A monkey",
+            "is_correct": false
+        }
+    },
+    {
+        "model": "dff2020.option",
+        "pk": 6,
+        "fields": {
+            "question": 2,
+            "text": "A donkey",
+            "is_correct": false
+        }
+    },
+    {
+        "model": "dff2020.option",
+        "pk": 7,
+        "fields": {
+            "question": 3,
+            "text": "2004",
+            "is_correct": true
+        }
+    },
+    {
+        "model": "dff2020.option",
+        "pk": 8,
+        "fields": {
+            "question": 3,
+            "text": "1999",
+            "is_correct": false
+        }
+    },
+    {
+        "model": "dff2020.option",
+        "pk": 9,
+        "fields": {
+            "question": 3,
+            "text": "2020",
+            "is_correct": false
+        }
+    }
+]

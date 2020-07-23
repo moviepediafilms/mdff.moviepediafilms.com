@@ -1,0 +1,14 @@
+[
+    {
+        "model": "dff2020.order",
+        "pk": 1,
+        "fields": {
+            "rzp_order_id": "order_123486345sd",
+            "rzp_payment_id": "pay_1234u86787345",
+            "receipt_number": "receipt_234865845",
+            "amount": 29900,
+            "created_at": "2020-07-04T08:23:55.715Z",
+            "owner": 1
+        }
+    }
+]

@@ -1,0 +1,26 @@
+[
+    {
+        "model": "dff2020.question",
+        "pk": 1,
+        "fields": {
+            "shortlist": 1,
+            "text": "Who is the lead actor in the movie ?"
+        }
+    },
+    {
+        "model": "dff2020.question",
+        "pk": 2,
+        "fields": {
+            "shortlist": 1,
+            "text": "Who is the lead actress in the movie ?"
+        }
+    },
+    {
+        "model": "dff2020.question",
+        "pk": 3,
+        "fields": {
+            "shortlist": 1,
+            "text": "what is the year in the movie ?"
+        }
+    }
+]

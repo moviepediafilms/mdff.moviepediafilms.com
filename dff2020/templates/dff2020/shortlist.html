@@ -1,0 +1,120 @@
+{% extends 'dff2020/base_single_panel.html' %}
+{% load static %}
+
+{%block left%}
+<div class="container py-5 px-4">
+    <div class="text-left ">
+        <a class="img-fluid" href="{%url 'dff2020:home'%}"><img src="{% static 'dff2020/img/icon.png'%}" height="150px" /></a>
+    </div>
+    <div class=" text-warning mt-5 font-weight-bold text-uppercase">MDFF-2020 Shortlist</div>
+
+    {% for movie in locked_shortlists %}
+        <div class="row mt-3">
+            <div class="card card-body mb-3">
+                <div class="media d-block d-md-flex ">
+                    <div class="d-flex mb-md-0 mb-3 mx-auto justify-content-center align-self-center">
+                        <div class="view overlay">
+                            <img src="{{movie.thumbnail}}" style="width: 200px" class="img-thumbnail"/>
+                            <a href="{% url 'dff2020:shortlist-detail' shortlist_id=movie.id %}">
+                            <div class="mask rgba-black-strong text-center align-middle d-flex align-items-center justify-content-center">
+                                <i class="fas fa-play align-middle text-warning fa-3x"></i>
+                            </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="media-body align-self-center text-center text-md-left ml-md-3 ml-0 text-warning">
+                        <h5 class="mt-0 font-weight-bold text-dark">{{movie.name}}</h5>
+                        <p class="text-dark">{{movie.review|truncatewords:20}}</p>
+                        <div class="row mx-3">
+                            <div class="col-lg text-dark d-flex align-items-center justify-content-lg-start justify-content-center p-2">
+                                {% if movie.user_has_voted %}
+                                    <span class="text-success font-weight-bolder text-center">
+                                        <i class="fas fa-gavel mr-1"></i> {{movie.jury_rating}}
+                                    </span>
+                                    <span class="text-warning font-weight-bolder text-center">
+                                        <i class="ml-4 fas fa-users mr-1 text-warning"></i> {{movie.audience_rating}}
+                                    </span>
+                                {%else%}
+                                    <div><i class="fas fa-lock mr-1"></i> <small>Rate To Unlock Scores</small></div>
+                                {% endif %}
+                            </div>
+                            <div class="col-lg text-right d-flex align-items-center justify-content-lg-center justify-content-center p-2">
+                                <div class="font-weight-bold text-dark text-monospace timer" data-publishedon="{{movie.publish_at}}" id="timer_{{movie.id}}">
+
+                                </div>
+                            </div>
+                            <div class="col-lg text-right d-flex justify-content-lg-end  justify-content-center p-2">
+                                <a href="{% url 'dff2020:shortlist-detail' shortlist_id=movie.id %}" class="btn btn-warning btn-sm text-dark font-weight-bold">Take The Quiz</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {%endfor%}
+    {% for movie in unlocked_shortlists %}
+        <div class="row">
+            <div class="card card-body mb-3 bg-dark">
+                <div class="media d-block d-md-flex">
+                    <div class="d-flex mb-md-0 mb-3 mx-auto justify-content-center">
+                        <div class="view overlay">
+                            <img src="{{movie.thumbnail}}" style="width: 200px" class="img-thumbnail"/>
+                            <a href="{% url 'dff2020:shortlist-detail' shortlist_id=movie.id %}">
+                            <div class="mask rgba-black-strong text-center d-flex align-items-center justify-content-center">
+                                <i class="fas fa-play text-warning fa-3x"></i>
+                            </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="media-body align-self-center text-center text-md-left ml-md-3 ml-0 text-dark">
+                        <h5 class="mt-0 text-warning font-weight-bold">{{movie.name}}</h5>
+                        <p class="text-light">{{movie.review|truncatewords:20}}</p>
+                        <div class="row mx-3">
+                            <div class="col-md text-warning d-flex align-items-center justify-content-lg-start justify-content-center p-2">
+                                <i class="fas fa-gavel mr-1"></i> {{movie.jury_rating}}/10
+                                <i class="ml-3 fas fa-users mr-1"></i> {{movie.audience_rating}}/10<br/>
+                            </div>
+                            <div class="col-md d-flex align-items-center justify-content-lg-end justify-content-center p-2">
+                                <a href="{% url 'dff2020:shortlist-result' shortlist_id=movie.id %}" class="btn btn-warning btn-sm text-dark font-weight-bold">Results</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {%endfor%}
+</div>
+{%endblock%}
+
+{%block head%}
+{{block.super}}
+
+<link rel="stylesheet" href="{% static '/dff2020/css/shortlists.css' %}" />
+{%endblock%}
+
+{% block scripts%}
+<script src="{% static '/js/vendor/compiled-addons.min.js'%}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.31/moment-timezone-with-data.min.js"></script>
+<script src="{% static '/dff2020/js/shortlists.js'%}"></script>
+<script>
+    var set_time = function() {
+        $(".timer").each((i, item)=>{
+            item = $(item)
+            var now = moment()
+            var timer_end = moment(item.data('publishedon')).add(24, "hours");
+            if(now < timer_end){
+                    var seconds = (timer_end - now)/1000
+                    if (seconds == 0)
+                        window.location.reload()
+                    var hours = String(parseInt(seconds/3600))
+                    var minutes = String(parseInt((seconds - hours*3600) / 60))
+                    var seconds = String(parseInt(seconds - minutes*60 - hours*3600))
+                    item.html(hours.padStart(2, '0') + ':' + minutes.padStart(2, '0')+ ':' + seconds.padStart(2, '0'))
+            }
+        })
+        setTimeout(set_time, 1000)
+    };
+    $(document).ready(set_time)
+</script>
+{%endblock%}

@@ -41,6 +41,27 @@
                 Password should match
             </small>
         </div>
+        <div class="md-form">
+            <!-- Director -->
+            <select class="mdb-select" name="gender" required>
+                <option value="">Gender</option>
+                <option value="M">Male</option>
+                <option value="F">Female</option>
+                <option value="O">Others</option>
+            </select>
+            <small id="gender_helptxt" class="form-text text-muted d-none">
+                Please select your gender
+            </small>
+        </div>
+        <div class="md-form">
+            <!-- Director -->
+            <input type="text" id="location" name="location"
+                class="form-control text-reset"/>
+            <label for="location">City</label>
+            <small id="location_helptxt" class="form-text text-muted d-none">
+                Please specify your current city
+            </small>
+        </div>
         <div class="form-check text-left">
             <input type="checkbox" class="form-check-input " id="agree" name="agree" required>
             <label class="form-check-label text-warning text-sm" for="agree">I Agree to the <a href="/tos"
@@ -73,6 +94,7 @@
 <script>
     $(document).ready(function () {
         $('.stepper').mdbStepper();
+        $('.mdb-select').materialSelect();
 
     })
     var check_match = function () {

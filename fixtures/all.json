@@ -1,0 +1,224 @@
+[
+    {
+        "model": "auth.user",
+        "pk": 1,
+        "fields": {
+            "password": "pbkdf2_sha256$180000$qFt9Zxe1UKhr$6GyShkxZtfc1HHTXrr4hP/78gtDUeX6rEpixqaWluLc=",
+            "last_login": null,
+            "is_superuser": true,
+            "username": "zkhan1093@gmail.com",
+            "first_name": "Zeeshan",
+            "last_name": "Khan",
+            "email": "zkhan1093@gmail.com",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2020-07-11T14:44:36.503Z",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "auth.user",
+        "pk": 2,
+        "fields": {
+            "password": "pbkdf2_sha256$180000$VmNAdldc2rml$0Ca9wmsFBAlTqJs28O+wd8sy7+QMccgvYLWdTgqpaAo=",
+            "last_login": "2020-07-15T03:07:53.967Z",
+            "is_superuser": true,
+            "username": "admin",
+            "first_name": "",
+            "last_name": "",
+            "email": "",
+            "is_staff": true,
+            "is_active": true,
+            "date_joined": "2020-07-15T03:07:41.632Z",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "dff2020.order",
+        "pk": 1,
+        "fields": {
+            "rzp_order_id": "order_123486345sd",
+            "rzp_payment_id": "pay_1234u86787345",
+            "receipt_number": "receipt_234865845",
+            "amount": 29900,
+            "created_at": "2020-07-04T08:23:55.715Z",
+            "owner": 1
+        }
+    },
+    {
+        "model": "dff2020.entry",
+        "pk": 1,
+        "fields": {
+            "name": "Piper",
+            "director": "Disney",
+            "link": "https://www.youtube.com/embed/lkQTe0Wdo2k",
+            "synopsis": "A hungry sandpiper hatchling ventures from her nest for the first time to dig for food by the shoreline. The only problem is that the food is buried beneath the sand where scary waves roll up onto the shore.",
+            "runtime": 2,
+            "order": 1
+        }
+    },
+    {
+        "model": "dff2020.entry",
+        "pk": 2,
+        "fields": {
+            "name": "Piper1",
+            "director": "Disney",
+            "link": "https://www.youtube.com/embed/lkQTe0Wdo2k",
+            "synopsis": "A hungry sandpiper hatchling ventures from her nest for the first time to dig for food by the shoreline. The only problem is that the food is buried beneath the sand where scary waves roll up onto the shore.",
+            "runtime": 2,
+            "order": 1
+        }
+    },
+    {
+        "model": "dff2020.entry",
+        "pk": 3,
+        "fields": {
+            "name": "Piper2",
+            "director": "Disney",
+            "link": "https://www.youtube.com/embed/lkQTe0Wdo2k",
+            "synopsis": "A hungry sandpiper hatchling ventures from her nest for the first time to dig for food by the shoreline. The only problem is that the food is buried beneath the sand where scary waves roll up onto the shore.",
+            "runtime": 2,
+            "order": 1
+        }
+    },
+    {
+        "model": "dff2020.shortlist",
+        "pk": 1,
+        "fields": {
+            "entry": 1,
+            "review": "I enjoyed this video thoroughly, it was insightful and well put together. Keep working, keep improving. The visuals and audio have continued to improve also",
+            "jury_rating": 6.0,
+            "publish_at": "2020-07-14",
+            "is_jury_rating_locked": false
+        }
+    },
+    {
+        "model": "dff2020.shortlist",
+        "pk": 2,
+        "fields": {
+            "entry": 2,
+            "review": "I enjoyed this video thoroughly, it was insightful and well put together. Keep working, keep improving. The visuals and audio have continued to improve also",
+            "jury_rating": 7.0,
+            "publish_at": "2020-07-15",
+            "is_jury_rating_locked": false
+        }
+    },
+    {
+        "model": "dff2020.shortlist",
+        "pk": 3,
+        "fields": {
+            "entry": 3,
+            "review": "I enjoyed this video thoroughly, it was insightful and well put together. Keep working, keep improving. The visuals and audio have continued to improve also",
+            "jury_rating": 8.0,
+            "publish_at": "2020-07-16",
+            "is_jury_rating_locked": false
+        }
+    },
+    {
+        "model": "dff2020.question",
+        "pk": 1,
+        "fields": {
+            "shortlist": 1,
+            "text": "Who is the lead actor in the movie ?"
+        }
+    },
+    {
+        "model": "dff2020.question",
+        "pk": 2,
+        "fields": {
+            "shortlist": 1,
+            "text": "Who is the lead actress in the movie ?"
+        }
+    },
+    {
+        "model": "dff2020.question",
+        "pk": 3,
+        "fields": {
+            "shortlist": 1,
+            "text": "what is the year in the movie ?"
+        }
+    },
+    {
+        "model": "dff2020.option",
+        "pk": 1,
+        "fields": {
+            "question": 1,
+            "text": "a baby bird",
+            "is_correct": true
+        }
+    },
+    {
+        "model": "dff2020.option",
+        "pk": 2,
+        "fields": {
+            "question": 1,
+            "text": "a Cat",
+            "is_correct": false
+        }
+    },
+    {
+        "model": "dff2020.option",
+        "pk": 3,
+        "fields": {
+            "question": 1,
+            "text": "Dog",
+            "is_correct": false
+        }
+    },
+    {
+        "model": "dff2020.option",
+        "pk": 4,
+        "fields": {
+            "question": 2,
+            "text": "Mother bird",
+            "is_correct": true
+        }
+    },
+    {
+        "model": "dff2020.option",
+        "pk": 5,
+        "fields": {
+            "question": 2,
+            "text": "A monkey",
+            "is_correct": false
+        }
+    },
+    {
+        "model": "dff2020.option",
+        "pk": 6,
+        "fields": {
+            "question": 2,
+            "text": "A donkey",
+            "is_correct": false
+        }
+    },
+    {
+        "model": "dff2020.option",
+        "pk": 7,
+        "fields": {
+            "question": 3,
+            "text": "2004",
+            "is_correct": true
+        }
+    },
+    {
+        "model": "dff2020.option",
+        "pk": 8,
+        "fields": {
+            "question": 3,
+            "text": "1999",
+            "is_correct": false
+        }
+    },
+    {
+        "model": "dff2020.option",
+        "pk": 9,
+        "fields": {
+            "question": 3,
+            "text": "2020",
+            "is_correct": false
+        }
+    }
+]

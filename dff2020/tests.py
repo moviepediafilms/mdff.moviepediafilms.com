@@ -2,26 +2,33 @@ from django.test import TestCase
 from django.shortcuts import reverse
 from django.contrib.auth.models import User
 from datetime import datetime
-from dff2020.models import Order
+from dff2020.models import Order, Question
 from unittest import mock
 
 
 class LoggedInTestCase(TestCase):
+    fixtures = ["user.json"]
+
     def setUp(self):
-        self.user = User.objects.create_user(username="test", password="password")
-        assert self.client.login(username="test", password="password")
+        assert self.client.login(username="test", password="testing123")
+        self.user = User.objects.get(pk=1)
 
     def tearDown(self):
-        self.user.delete()
         return super().tearDown()
 
 
 # feature disabled/inactive
 class RegistrationTestCase:
     def set_late_user(self, is_late):
-        june_30 = datetime.strptime("2020-07-01T00:00:01+05:30", "%Y-%m-%dT%H:%M:%S%z")
-        june_29 = datetime.strptime("2020-06-30T00:00:01+05:30", "%Y-%m-%dT%H:%M:%S%z")
-        self.user.date_joined = june_30 if is_late else june_29
+        after_late_regitation_date = datetime.strptime(
+            "2020-07-01T00:00:01+05:30", "%Y-%m-%dT%H:%M:%S%z"
+        )
+        before_late_regitation_date = datetime.strptime(
+            "2020-06-30T00:00:01+05:30", "%Y-%m-%dT%H:%M:%S%z"
+        )
+        self.user.date_joined = (
+            after_late_regitation_date if is_late else before_late_regitation_date
+        )
         self.user.save()
 
     @mock.patch("dff2020.views.rzp_client")
@@ -153,3 +160,99 @@ class SubmissionTestCase(LoggedInTestCase):
         self.order.save()
         self.client.get(reverse("dff2020:delete-order", args=(self.order.id,)))
         self.assertEqual(Order.objects.filter(owner=self.user).count(), 1)
+
+
+class SignupTestCase(TestCase):
+    def setUp(self):
+        self.send_welcome_email_patcher = mock.patch("dff2020.views.send_welcome_email")
+        self.verify_recapcha_patcher = mock.patch("dff2020.views.verify_recapcha")
+        self.send_welcome_email = self.send_welcome_email_patcher.start()
+        self.verify_recapcha = self.verify_recapcha_patcher.start()
+
+    def tearDown(self):
+        self.send_welcome_email_patcher.stop()
+        self.verify_recapcha_patcher.stop()
+
+    def test_new_account_create(self):
+        "Allow new users to create account"
+        self.verify_recapcha.return_value = True
+        res = self.client.post(
+            reverse("dff2020:signup"),
+            data={
+                "name": "A",
+                "email": "abcd@gmail.com",
+                "password": "B",
+                "agree": True,
+                "g-recaptcha-response": "sdfhgjjsdf",
+            },
+        )
+        self.assertEqual(res.status_code, 302)
+        self.assertEqual(User.objects.filter(username="abcd@gmail.com").count(), 1)
+
+    def test_new_account_create(self):
+        "Allow new users to create account"
+        self.verify_recapcha.return_value = True
+        res = self.client.post(
+            reverse("dff2020:signup"),
+            data={
+                "name": "A",
+                "email": "abcd@gmail.com",
+                "password": "B",
+                "agree": True,
+                "g-recaptcha-response": "sdfhgjjsdf",
+            },
+        )
+        self.assertEqual(res.status_code, 302)
+        self.assertEqual(User.objects.filter(username="abcd@gmail.com").count(), 1)
+
+    def test_new_account_create_after_allowed_date(self):
+        "New account creation not allowed after END_USER_CREATION_DATE"
+        self.verify_recapcha.return_value = True
+        res = self.client.post(
+            reverse("dff2020:signup"),
+            data={
+                "name": "A",
+                "email": "abcd@gmail.com",
+                "password": "B",
+                "agree": True,
+                "g-recaptcha-response": "sdfhgjjsdf",
+            },
+        )
+        self.assertEqual(res.status_code, 302)
+        self.assertEqual(User.objects.filter(username="abcd@gmail.com").count(), 1)
+
+
+class StartQuizViewTestCase(LoggedInTestCase):
+    fixtures = [
+        "user.json",
+        "order.json",
+        "entry.json",
+        "shortlist.json",
+        "question.json",
+        "option.json",
+    ]
+
+    def test_start_quiz_for_invalid_shortlist(self):
+        res = self.client.get(reverse("dff2020:api-quiz-start", args=(2,)))
+        self.assertEqual(res.status_code, 200)
+        self.assertEquals(res.json()["success"], False)
+        self.assertEquals(res.json()["error"], "Invalid shortlist")
+
+    def test_start_quiz_with_insufficient_questions(self):
+        Question.objects.first().delete()
+        res = self.client.get(reverse("dff2020:api-quiz-start", args=(1,)))
+        self.assertEqual(res.status_code, 200)
+        self.assertEquals(res.json()["success"], False)
+        self.assertEquals(
+            res.json()["error"],
+            "Sufficient questions are not ready, please try again after some time!",
+        )
+
+    def test_start_quiz_with_sufficient_questions(self):
+        res = self.client.get(reverse("dff2020:api-quiz-start", args=(1,)))
+        self.assertEqual(res.status_code, 200)
+        self.assertEquals(res.json()["success"], True)
+        self.assertIn("new", res.json())
+        self.assertIn("start_time", res.json())
+        self.assertIn("question", res.json())
+        self.assertIsNotNone(res.json()["question"])

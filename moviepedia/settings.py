@@ -71,6 +71,8 @@ ALLOWED_HOSTS = (
         "moviepediafilms.com",
         "www.moviepediafilms.com",
         "139.59.70.233",
+        "uat.moviepediafilms.com",
+        "139.59.28.20",
         "localhost",
     ]
 )
@@ -112,6 +114,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "moviepedia.context_processors.base",
             ],
         },
     },
@@ -126,7 +129,7 @@ WSGI_APPLICATION = "moviepedia.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "moviepedia",
+        "NAME": os.getenv("MOVEIPEDIA_DB_NAME", "moviepedia"),
         "USER": os.getenv("MOVEIPEDIA_DB_USER"),
         "PASSWORD": os.getenv("MOVEIPEDIA_DB_PASSWORD"),
         "HOST": os.getenv("MOVEIPEDIA_DB_IP"),
@@ -197,3 +200,15 @@ RECAPTCHA_SECRET_KEY = os.getenv("RECAPTCHA_SECRET_KEY")
 
 RAZORPAY_API_KEY = os.getenv("RAZORPAY_API_KEY")
 RAZORPAY_API_SECRET = os.getenv("RAZORPAY_API_SECRET")
+
+
+# dff2020 specific settings
+END_USER_CREATION_DATE = ""
+
+
+GOOGLE_ANALYTICS = os.getenv("GOOGLE_ANALYTICS")
+
+FIXTURE_DIRS = (os.path.join(BASE_DIR, "fixtures/",),)
+
+GRAVTAR_BASE_URL = os.getenv("GRAVTAR_BASE_URL")
+SKIP_GRAVATAR = os.getenv("SKIP_GRAVATAR") == "true"

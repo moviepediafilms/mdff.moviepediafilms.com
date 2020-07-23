@@ -1,0 +1,343 @@
+{% extends 'dff2020/base_single_panel.html' %}
+{% load static %}
+{% load dff2020_extras %}
+
+{%block head%}
+{{block.super}}
+<style> 
+@font-face {
+  src: url("{% static '/dff2020/fonts/JoyPixels.woff' %}");
+  font-family: JoyPixels;
+}
+</style>
+<link rel="stylesheet" href="{% static '/dff2020/css/shortlist_details.css' %}" />
+{%endblock%}
+
+{%block left%}
+<div class="container py-5 px-4">
+    <div class="text-left ">
+    {% comment %} added emoji just for the font to load {% endcomment %}
+        <a class="img-fluid emoji" href="{%url 'dff2020:home'%}"><img src="{% static 'dff2020/img/icon.png'%}"
+                height="150px" /></a>
+    </div>
+    <div class=" text-warning mt-5 font-weight-bold text-uppercase"> <a class=" text-warning" href="{%url 'dff2020:shortlists'%}">MDFF-2020 Shortlist</a></div>
+    <div class="text-warning mt-4">
+
+        <div class="embed-responsive embed-responsive-16by9">
+            <iframe class="embed-responsive-item" frameborder="0"
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                src="{{movie.entry.link}}" allowfullscreen></iframe>
+        </div>
+        <div class="row mt-2 d-none">
+            <div class="mr-4 align-self-middle">
+                <small class="text-muted">Share the Film</small>
+                <a href="#" class="text-warning ml-2 mr-2">
+                    <i class="fab fa-lg fa-twitter"></i>
+                </a>
+                <a href="#" class="text-warning ml-2 mr-2">
+                    <i class="fab fa-lg fa-whatsapp"></i>
+                </a>
+                <a href="#" class="text-warning ml-2 mr-2">
+                    <i class="fab fa-lg fa-instagram"></i>
+                </a>
+            </div>
+        </div>
+        <div class="row mt-3" id="lock-key-app">
+            <div class="col-md-6 col-sm-12">
+                <h2><i class="fas fa-film"></i> {{movie.entry.name}}</h2>
+                <h4 class="text-muted"><small>by </small> {{movie.entry.director}}</h4>
+                <p class="text-muted"><i class="fas fa-quote-left"></i> {{movie.entry.synopsis}}</p>
+            </div>
+
+            <div class="col-6 col-md-3 text-center mt-5">
+                <span class="min-chart mt-0 mb-3" id="chart-jury" data-percent="{{jury_rating}}" @click.prevent="call_btn_action">
+                    <span class="percent text-muted font-weight-bold">
+                        {%if not user_voted%}
+                        <i class="fas fa-key text-success" ></i>
+                        {%endif%}
+                    </span>
+                </span>
+                <p class="text-success font-weight-bold"><i class="fas fa-gavel"></i> JURY</p>
+            </div>
+            <div class="col-6 col-md-3 text-center mt-5">
+                <span class="min-chart mt-0 mb-3" id="chart-audience" data-percent="{{audience_rating}}" @click.prevent="call_btn_action">
+                    <span class="percent text-muted font-weight-bold" >
+                        {%if not user_voted%}
+                        <i class="fas fa-key text-warning" ></i>
+                        {%endif%}
+                    </span>
+                </span>
+                <p class="font-weight-bold"><i class="fas fa-users"></i> AUDIENCE</p>
+            </div>
+        </div>
+
+        {% verbatim %}
+        <div class="text-center my-4" id="center-button-app">
+            <button class="btn btn-sm text-dark font-weight-bold btn-warning" @click="btn_action"
+                v-cloak>{{btn_txt}}</button><br/>
+            <small class="text-muted mt-2" v-cloak>{{p_text}}</small>
+        </div>
+        {% endverbatim %}
+
+        {% if reviews|length > 0 %}
+            <h5 class="mt-5 mb-4 text-uppercase font-weight-bold">Audience Reviews</h5>
+        {%endif%}
+        
+        {% if user_voted %}
+            <div class="card-columns">
+                {% for review in reviews%}
+                <div class="card bg-dark">
+                    <div class="card-header">
+                        <div class="row">
+
+                            <img class="d-inline-block mr-3 rounded-circle" height="40px" src="{{review.profile_pic}}"
+                                alt="{{review.get_full_name}}">
+
+                            <small class="text-light">
+                                <span class="">{{review.user_full_name}}</span><br />
+                                <span class="text-muted font-weight-bolder">{{review.rating}}</span>
+                            </small>
+
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">{{review.content}}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {%else%}
+        <div class="card bg-light">
+            <div class="card-body  py-4">
+                <h5 class="card-title text-center text-muted">
+                    <i class="fas fa-lock mb-2"></i>
+                    <br />
+                    <small>Rate to Unlock Audience Reviews</small>
+                </h5>
+            </div>
+        </div>
+        {%endif %}
+    </div>
+</div>
+
+<!-- Model login -->
+{%verbatim%}
+<div class="modal fade" id="model-login" tabindex="-1" role="dialog" aria-labelledby="model-login" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content bg-light text-dark p-3" id="login-model-app">
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100">Sign in</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <i class="fas fa-sm fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form v-on:submit.prevent="signin">
+                    <div class="md-form mb-3">
+                        <input type="email" id="login-email" class="form-control validate" v-model:value="form.email"
+                            required>
+                        <label data-error="wrong" data-success="right" for="login-email">Your Email</label>
+                    </div>
+                    <div class="md-form">
+                        <input type="password" id="login-pass" class="form-control validate"
+                            v-model:value="form.password" required>
+                        <label data-error="wrong" data-success="right" for="login-pass">Your password</label>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-danger" v-cloak>{{form.error}}</p>
+                        <button type="submit" class="btn btn-warning btn-sm text-reset font-weight-bold">Sign
+                            in</button>
+                        <br />
+                        <p class="mt-3">Don't have account ? <a href="#" @click.prevent="open_signup">Sign up</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{%endverbatim%}
+
+<!-- Model signup -->
+{%verbatim%}
+<div class="modal fade" id="model-signup" tabindex="-1" role="dialog" aria-labelledby="model-signup-label"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class=" bg-light text-dark p-3" id="signup-model-app">
+                <div class="modal-header text-center">
+                    <h4 class="modal-title w-100" id="model-signup-label">Sign up</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i class="fas fa-sm fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form v-on:submit.prevent="signup">
+                        <div class="md-form mb-3">
+                            <input type="text" id="signup-name" class="form-control validate"
+                                v-model:value="form.name.value" required>
+                            <label data-error="wrong" data-success="right" for="signup-name">Your Name</label>
+                        </div>
+                        <div class="md-form mb-3">
+                            <input type="email" id="signup-email" class="form-control validate"
+                                v-model:value="form.email.value" required>
+                            <label data-error="wrong" data-success="right" for="signup-email">Your Email</label>
+                        </div>
+                        <div class="form-row">
+                            <div class="col">
+                                <div class="md-form m-0">
+                                    <input type="password" id="signup-pass" class="form-control validate" minlength="8"
+                                        v-model:value="form.password.value" required>
+                                    <label data-error="wrong" data-success="right" for="signup-pass">Your password</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="md-form m-0">
+                                    <input type="password" id="signup-cnf-pass" class="form-control validate"
+                                        v-bind:class="{ 'is-invalid' : form.cnf_password.error}"
+                                        v-model:value="form.cnf_password.value" required>
+                                    <label data-error="wrong" for="signup-cnf-pass">Confirm password</label>
+                                    <small class="invalid-feedback" style="margin-top: -30px">
+                                        {{form.cnf_password.error}}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row mt-0">
+                            <div class="col">
+                                <div class="md-form m-0">
+                                    <select class="mdb-select" name="gender" v-model:value="form.gender.value" required>
+                                        <option value="" disabled>Gender</option>
+                                        <option value="M">Male</option>
+                                        <option value="F">Female</option>
+                                        <option value="O">Others</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="md-form m-0">
+                                    <input type="text" id="signup-city" class="form-control validate" v-model:value="form.location.value" required/>
+                                    <label data-error="wrong" data-success="right" for="signup-city">City</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-check text-left mt-0">
+                            <input type="checkbox" class="form-check-input " id="agree" name="agree" required>
+                            <label data-error="wrong" class="form-check-label text-dark text-sm" for="agree">I Agree to the
+                                <a href="/tos" target="_blank" class="text-dark font-weight-bold "><u>terms &
+                                        conditions</u></a> of the event</label>
+                        </div>
+                        <div class="text-center mt-3">
+                            <p class="text-danger" v-cloak>{{form.error}}</p>
+                            <button class="btn btn-warning btn-sm text-reset font-weight-bold" type="submit">Sign
+                                up</button>
+                            <p class="mt-3">Already have an account ? <a href="#" @click.prevent="open_signin">Sign in</a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{%endverbatim%}
+<!-- Model quiz -->
+{%verbatim%}
+<div class="modal fade" id="model-quiz" tabindex="-1" role="dialog" aria-labelledby="model-quiz" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+
+        <div class="modal-content bg-light text-dark p-3" id="quiz-model-app">
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100 font-weight-bold" :class="{'text-danger': secs_left > 0 && secs_left<=10}">{{title}}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body mx-3 text-center">
+                <div v-if="!quiz_started">
+                    <p>Click Start to proceed with the quiz. You'll be asked 3 questions on this film and you'll have 90 seconds to answer them all.</p>
+                    <button class=" mt-3 btn btn-warning btn-sm text-reset font-weight-bold" @click.prevent="start_quiz">Start</button>
+                </div>
+                <!-- Material unchecked -->
+                <div class="text-center" v-if="quiz_started && !quiz_ended">
+                        <p class="font-weight-bolder question">{{question.content}}</p>
+                        <div class="list-group options" v-if="question.id">
+                            <a @click.prevent="submit_question(option)"
+                               class="list-group-item list-group-item-action"
+                               :class="{correct: !sending && selected_option.id == option.id && option.was_correct,
+                                        selected: sending && selected_option.id == option.id,
+                                        incorrect: !sending && selected_option.id == option.id && !option.was_correct,
+                                        disabled: !!selected_option.id}"
+                               v-for="option in question.options"
+                               :key="option.id"
+                               >
+                                {{option.content}}
+                            </a>
+                        </div>
+                </div>
+                <div v-if="quiz_ended">
+                    <p>Answers submitted successfully.<br/>Check leaderboard to view your score.</p>
+                </div>
+                <small class="text-danger">{{error}}</small>
+            </div>
+        </div>
+    </div>
+</div>
+{%endverbatim%}
+
+<!-- Model Rating -->
+{%verbatim%}
+<div class="modal fade" id="model-rating" tabindex="-1" role="dialog" aria-labelledby="model-rating" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content bg-light text-dark p-3" id="rating-model-app">
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100 font-weight-bold">Rate and Review</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body mx-3">
+                <form v-on:submit.prevent="rate">
+                    <input type="hidden" name="" value="" />
+                    <div class="text-center font-weight-bolder emoji mt-2">{{rating_text}}</div>
+                    <div class="d-flex justify-content-center">
+                        <span class="font-weight-bold mr-2 mt-1"><i class="fas fa-thumbs-down" aria-hidden="true"></i></span>
+                        <div class="range-field w-100">
+                            <input class="border-0 text-warning " type="range" min="0" max="10" v-model="form.rating" />
+                        </div>
+                        <span class="font-weight-bold ml-2 mt-1"><i class="fas fa-thumbs-up" aria-hidden="true"></i></span>
+                    </div>
+                    <div class="md-form mb-4" >
+                        <textarea v-model="form.review" id="rating-review" class="md-textarea form-control" :class="{'is-invalid': form.review.trim().length > 0 && form.review.trim().length < 50}" counter rows="3"></textarea>
+                        <label for="rating-review">Review (Optional)</label>
+
+                        <div class="invalid-feedback">
+                            add {{50 - form.review.trim().length}} more characters
+                        </div>
+                    </div>
+                    <div class="text-center mt-3">
+                        <p class="text-danger" v-cloak>{{form.error}}</p>
+                        <button class="btn btn-warning btn-sm text-reset font-weight-bold" type="submit"
+                            :class="{disabled: loading}">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{%endverbatim%}
+{%endblock%}
+
+{%block scripts%}
+<script src="{% static '/js/vendor/compiled-addons.min.js'%}"></script>
+<script src="https://unpkg.com/vue@2.6.11/dist/vue.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script>
+    var csrf = "{{csrf}}"
+    var locked = "{{user_voted}}" === "False"
+    var logged_in = "{{user.is_authenticated}}" === "True"
+    var shortlist_id = {{movie.id}}
+    var quiz_over = "{{quiz_over}}" === "True"
+</script>
+<script src="{% static '/dff2020/js/shortlist_details.js'%}"></script>
+{%endblock%}

@@ -1,4 +1,5 @@
 from django import template
+from django.conf import settings
 import hashlib
 from urllib.parse import urlencode
 
@@ -7,13 +8,28 @@ register = template.Library()
 
 @register.filter
 def get_gravatar(user):
-    default_link = "https://moviepediafilms.com/static/dff2020/img/avatar.jpg"
+    if not user:
+        return
+    profile = getattr(user, "profile", None)
+    gender = profile and profile.gender
+    avatar = {
+        "M": "male.png",
+        "F": "female.png",
+        "O": "neutral.png",
+        None: "male.png",
+    }.get(gender)
+
+    if profile:
+        avatar = user.profile.avatar
+    default_link = f"{settings.GRAVTAR_BASE_URL}/dff2020/img/avatar/{avatar}"
+    if settings.SKIP_GRAVATAR:
+        return default_link
     gravatar_url = (
         "https://www.gravatar.com/avatar/"
         + hashlib.md5(user.email.lower().encode()).hexdigest()
         + "?"
     )
-    gravatar_url += urlencode({"d": default_link, "s": str(70)})
+    gravatar_url += urlencode({"d": default_link})
     return gravatar_url
 
 

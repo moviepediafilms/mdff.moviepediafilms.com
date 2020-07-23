@@ -1,0 +1,49 @@
+.percent::after {
+    content: "" !important;
+}
+.sec-text {
+    color: #ff4444 !important;
+}
+.range-field {
+    color: #f7cd23 !important;
+}
+.thumb {
+    background-color: #f7cd23 !important;
+}
+.thumb .value {
+    color: #343434 !important;
+    font-weight: bold;
+}
+.options a,
+.options a.disabled {
+    background-color: transparent;
+    border: none;
+    /* border-bottom: 1px solid rgba(0, 0, 0, 0.125); */
+}
+.options a.selected {
+    background-color: #f7cd23;
+    border: none;
+    /* border-bottom: 1px solid rgba(0, 0, 0, 0.125); */
+}
+.options a.correct {
+    background-color: #00c851;
+    border: none;
+    /* border-bottom: 1px solid rgba(0, 0, 0, 0.125); */
+}
+.options a.incorrect {
+    background-color: #ff4444;
+    border: none;
+    /* border-bottom: 1px solid rgba(0, 0, 0, 0.125); */
+}
+.options a:hover:not(.disabled) {
+    background-color: #f7cd23;
+    /* border: none; */
+    /* border-bottom: 1px solid rgba(0, 0, 0, 0.125); */
+}
+.emoji {
+    font-family: "JoyPixels";
+    font-size: 100px;
+}
+.attempts {
+    margin-right: 50%;
+}

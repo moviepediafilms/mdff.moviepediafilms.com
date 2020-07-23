@@ -6,8 +6,21 @@ app_name = "dff2020"
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="dff2020/home.html"), name="home"),
-    path("signup", views.SignUp.as_view(), name="signup"),
+    path("signup", views.SignUpView.as_view(), name="signup"),
     path("login", views.Login.as_view(), name="login"),
+    path("api/login", views.LoginApiView.as_view(), name="api-login"),
+    path("api/signup/quick", views.SignupApiView.as_view(), name="api-signup-login"),
+    path("api/rate/<int:shortlist_id>", views.RateApiView.as_view(), name="api-rate"),
+    path(
+        "api/quiz/start/<int:shortlist_id>",
+        views.StartQuizView.as_view(),
+        name="api-quiz-start",
+    ),
+    path(
+        "api/quiz/<int:shortlist_id>/<int:question_id>/<int:answer>",
+        views.SaveQuizResponseView.as_view(),
+        name="api-quiz-question",
+    ),
     path("forgot-password", views.ForgotPasswordView.as_view(), name="forgot_password"),
     path("reset/<uid>/<token>", views.PasswordReset.as_view(), name="password-reset",),
     path(
@@ -36,4 +49,29 @@ urlpatterns = [
     ),
     path("tos/", TemplateView.as_view(template_name="dff2020/tos.html"), name="tos"),
     path("judges/", views.JudgesView.as_view(), name="judges"),
+    path(
+        "shortlist/<int:shortlist_id>",
+        views.DetailShortlistView.as_view(),
+        name="shortlist-detail",
+    ),
+    path(
+        "shortlist/today",
+        views.DetailShortlistTodayView.as_view(),
+        name="shortlist-today",
+    ),
+    path("shortlist/all", views.ShortlistView.as_view(), name="shortlists"),
+    path(
+        "shortlist/<int:shortlist_id>/result",
+        views.ResultShortlistView.as_view(),
+        name="shortlist-result",
+    ),
+    path(
+        "api/shortlist/<int:shortlist_id>/result",
+        views.ResultShortlistApiView.as_view(),
+        name="api-shortlist-result",
+    ),
+    path("quiz/results", views.QuizResultsView.as_view(), name="quiz-results",),
+    path(
+        "api/quiz/results", views.QuizResultsApiView.as_view(), name="api-quiz-results",
+    ),
 ]

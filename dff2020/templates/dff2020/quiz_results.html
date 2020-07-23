@@ -1,0 +1,65 @@
+{% extends 'dff2020/base_single_panel.html' %}
+{% load static %}
+
+{%block head%}
+{{block.super}}
+<link rel="stylesheet" href="{% static '/dff2020/css/quiz_results.css' %}" />
+{%endblock%}
+
+{%block left%}
+<div class="container py-5 px-0 text-center">
+     <div>
+        <a class="img-fluid" href="{%url 'dff2020:home'%}"><img src="{% static 'dff2020/img/icon.png'%}"
+                height="150px" /></a>
+    </div>
+    {%verbatim%}
+    <div id="result-app">
+        <div class=" text-warning text-center mt-5 font-weight-bold text-uppercase">Audience Leaderboard</div>
+        <div class="text-danger mt-3" v-cloak>{{error}}</div>
+        <div v-if="winners.length" class="w-responsive mx-auto">
+            <div v-for="user in winners" v-cloak>
+                <div class="d-flex user px-3 text-dark" 
+                    :class="{'bg-white': !user.is_viewer, 'bg-warning': user.is_viewer}">
+                    <div class="align-self-center">
+                        <img :src="user.profile_pic" width="50px" class="z-depth-1 rounded-circle avatar" :class="{'bg-warning': !user.is_viewer, 'bg-white': user.is_viewer,}" :alt="user.name"/>
+                    </div>  
+                    <div class="flex-grow-1 flex-row-reverse pt-4">
+                        <div class="d-flex">
+                            <div class="d-flex flex-grow-1">
+                                <div class="w-100 ml-2 align-self-center text-left">
+                                    <div class="font-weight-normal winner-name" v-cloak>{{ user.name }}</div>
+                                    <small class="text-muted" v-cloak>{{user.location}}</small></br>
+                                </div>
+                            </div>
+                            <div class="align-self-center ml-1">
+                                <span><i class="fas fa-film"></i> {{get_time_str(user.movie_secs)}}</span>
+                            </div>
+                            <div class="align-self-center ml-2">
+                                <span><i class="fas fa-rupee-sign"></i> {{user.amount}}</span>
+                            </div>
+                        </div>
+                        <div class="pb-2 score-bar">
+                            <small v-cloak>
+                                <span v-for="score in user.scores" >
+                                    <i class="fas fa-bullseye mr-1" :class="{'text-danger': score==0, 'text-primary': score==2 || score==1, 'text-success': score==3}"></i>
+                                </span>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-muted" v-else>Take the quiz and claim your position here</div>
+    </div>
+    {%endverbatim%}
+    <div>
+        <a href="{% url 'dff2020:shortlists' %}" class="btn btn-sm text-dark font-weight-bold btn-warning">Shortlists</a>
+    </div>
+</div>
+{%endblock%}
+
+{% block scripts%}
+<script src="https://unpkg.com/vue@2.6.11/dist/vue.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="{% static 'dff2020/js/quiz_results.js'%}"></script>
+{%endblock%}

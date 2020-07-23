@@ -59,6 +59,6 @@ def _send(data):
         logger.exception(ex)
         logger.warning("sending email failed!")
         logger.debug(data)
-        logger.debug(json.dumps(ex.body))
+        logger.debug(ex.body)
     else:
         logger.debug(f"sendgrid: {response.status_code}")
