@@ -71,7 +71,7 @@ class Shortlist(models.Model):
         validators=[MaxValueValidator(10), MinValueValidator(0)]
     )
     thumbnail = models.CharField(max_length=500)
-    publish_on = models.DateField()
+    publish_at = models.DateTimeField()
     is_jury_rating_locked = models.BooleanField(default=False)
 
     def __str__(self):

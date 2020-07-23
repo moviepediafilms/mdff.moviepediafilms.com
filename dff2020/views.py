@@ -63,6 +63,11 @@ rzp_client = razorpay.Client(
 random.seed(0)
 
 
+def _get_ist_now():
+    now = datetime.now().replace(tzinfo=timezone.utc)
+    return now
+
+
 def get_ip(request):
     x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
     if x_forwarded_for:
@@ -94,15 +99,20 @@ def verify_recapcha(request, recapcha_response):
 
 
 def _is_shortlist_published(shortlist):
-    ist_today = (datetime.now() + timedelta(hours=5, minutes=30)).date()
-    logger.debug(f"{shortlist.publish_on} <= {ist_today}")
-    return shortlist.publish_on <= ist_today
+    ist_now = _get_ist_now()
+    logger.debug(f"{shortlist.publish_at} <= {ist_now}")
+    return shortlist.publish_at <= ist_now
 
 
 def _is_shortlist_active(shortlist):
-    ist_today = (datetime.now() + timedelta(hours=5, minutes=30)).date()
-    logger.debug(f"{shortlist.publish_on} <= {ist_today}")
-    return shortlist.publish_on == ist_today
+    ist_now = _get_ist_now()
+    a_day = timedelta(days=1)
+    logger.debug(
+        f"{shortlist} {shortlist.publish_at} {shortlist.publish_at + a_day} {ist_now}"
+    )
+    logger.debug(f"{shortlist.publish_at < ist_now}")
+    logger.debug(f"{ist_now < (shortlist.publish_at + a_day)}")
+    return shortlist.publish_at < ist_now and ist_now < (shortlist.publish_at + a_day)
 
 
 class Logout(View):
@@ -625,7 +635,7 @@ class ShortlistView(TemplateView):
             audience_rating = sum(r.rating for r in user_ratings) / len(user_ratings)
         return {
             "id": shortlist.id,
-            "publish_on": shortlist.publish_on.isoformat(),
+            "publish_at": shortlist.publish_at.isoformat(),
             "thumbnail": shortlist.thumbnail,
             "link": shortlist.entry.link,
             "user_has_voted": user_has_voted,
@@ -638,22 +648,31 @@ class ShortlistView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        ist_today = datetime.now() + timedelta(hours=5, minutes=30)
-        context["locked_shortlists"] = [
-            self._serialize(self.request, shortlist)
-            for shortlist in Shortlist.objects.filter(publish_on=ist_today).all()
-        ]
-        context["unlocked_shortlists"] = [
-            self._serialize(self.request, shortlist)
-            for shortlist in Shortlist.objects.filter(publish_on__lt=ist_today).all()
-        ]
+        ist_now = _get_ist_now()
+
+        locked_shortlists = []
+        unlocked_shortlists = []
+        published_shortlists = Shortlist.objects.filter(publish_at__lte=ist_now).all()
+        for shortlist in published_shortlists:
+            serialized_shortlist = self._serialize(self.request, shortlist)
+            if _is_shortlist_active(shortlist):
+                locked_shortlists.append(serialized_shortlist)
+            else:
+                unlocked_shortlists.append(serialized_shortlist)
+
+        context["locked_shortlists"] = locked_shortlists
+        context["unlocked_shortlists"] = unlocked_shortlists
         return context
 
 
 class DetailShortlistTodayView(View):
     def get(self, request):
-        ist_today = (datetime.now() + timedelta(hours=5, minutes=30)).date()
-        shortlist = Shortlist.objects.filter(publish_on=ist_today).first()
+        ist_now = _get_ist_now()
+        shortlist = (
+            Shortlist.objects.filter(publish_at__lte=ist_now)
+            .order_by("publish_at")
+            .first()
+        )
         if shortlist:
             return redirect("dff2020:shortlist-detail", shortlist_id=shortlist.id)
         return redirect("dff2020:shortlists")
@@ -1065,9 +1084,9 @@ class QuizResultsApiView(View):
         return winning_users
 
     def get(self, request):
-        ist_today = (datetime.now() + timedelta(hours=5, minutes=30)).date()
+        ist_now = _get_ist_now()
         top_attempts_all_quiz = []
-        shortlists = Shortlist.objects.filter(publish_on__lte=ist_today).all()
+        shortlists = Shortlist.objects.filter(publish_at__lte=ist_now).all()
         for shortlist in shortlists:
             top_attempts = _get_attempts(
                 shortlist,

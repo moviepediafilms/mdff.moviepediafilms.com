@@ -120,7 +120,7 @@ class ShortlistAdmin(admin.ModelAdmin):
         "entry",
         "jury_rating",
         "review",
-        "publish_on",
+        "publish_at",
         "is_jury_rating_locked",
     ]
 
