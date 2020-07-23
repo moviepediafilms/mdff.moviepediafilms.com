@@ -1,8 +1,8 @@
 from django.test import TestCase
 from django.shortcuts import reverse
 from django.contrib.auth.models import User
-from datetime import datetime
-from dff2020.models import Order, Question
+from datetime import datetime, timedelta
+from dff2020.models import Order, Question, Shortlist, UserRating
 from unittest import mock
 
 
@@ -10,7 +10,7 @@ class LoggedInTestCase(TestCase):
     fixtures = ["user.json"]
 
     def setUp(self):
-        assert self.client.login(username="test", password="testing123")
+        assert self.client.login(username="test", password="testing")
         self.user = User.objects.get(pk=1)
 
     def tearDown(self):
@@ -233,14 +233,18 @@ class StartQuizViewTestCase(LoggedInTestCase):
     ]
 
     def test_start_quiz_for_invalid_shortlist(self):
-        res = self.client.get(reverse("dff2020:api-quiz-start", args=(2,)))
+        shortlist = Shortlist.objects.get(pk=1)
+        self._fix_shortlist_time(shortlist)
+        res = self.client.get(reverse("dff2020:api-quiz-start", args=(shortlist.id,)))
         self.assertEqual(res.status_code, 200)
         self.assertEquals(res.json()["success"], False)
         self.assertEquals(res.json()["error"], "Invalid shortlist")
 
     def test_start_quiz_with_insufficient_questions(self):
         Question.objects.first().delete()
-        res = self.client.get(reverse("dff2020:api-quiz-start", args=(1,)))
+        shortlist = Shortlist.objects.get(pk=1)
+        self._fix_shortlist_time(shortlist)
+        res = self.client.get(reverse("dff2020:api-quiz-start", args=(shortlist.id,)))
         self.assertEqual(res.status_code, 200)
         self.assertEquals(res.json()["success"], False)
         self.assertEquals(
@@ -248,8 +252,32 @@ class StartQuizViewTestCase(LoggedInTestCase):
             "Sufficient questions are not ready, please try again after some time!",
         )
 
-    def test_start_quiz_with_sufficient_questions(self):
-        res = self.client.get(reverse("dff2020:api-quiz-start", args=(1,)))
+    def _fix_shortlist_time(self, shortlist):
+        shortlist.publish_at = datetime.now() + timedelta(hours=-1)
+        shortlist.save()
+
+    def test_start_quiz_without_rating(self):
+        shortlist = Shortlist.objects.get(pk=1)
+        self._fix_shortlist_time(shortlist)
+        res = self.client.get(reverse("dff2020:api-quiz-start", args=(shortlist.id,)))
+        print(res.json())
+        self.assertEqual(res.status_code, 200)
+        res_json = res.json()
+        self.assertEquals(res_json["success"], False)
+        self.assertIn("error", res_json)
+        self.assertEquals(
+            res_json["error"], "You should rate before you start taking quiz"
+        )
+
+    def test_start_quiz_after_rating_with_sufficient_questions(self):
+        shortlist = Shortlist.objects.get(pk=1)
+        rating = UserRating.objects.create(
+            shortlist=shortlist, user=self.user, rating=5
+        )
+        rating.save()
+        self._fix_shortlist_time(shortlist)
+        res = self.client.get(reverse("dff2020:api-quiz-start", args=(shortlist.id,)))
+        print(res.json())
         self.assertEqual(res.status_code, 200)
         self.assertEquals(res.json()["success"], True)
         self.assertIn("new", res.json())

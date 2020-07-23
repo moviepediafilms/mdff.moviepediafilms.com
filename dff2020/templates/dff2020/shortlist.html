@@ -44,7 +44,11 @@
                                 </div>
                             </div>
                             <div class="col-lg text-right d-flex justify-content-lg-end  justify-content-center p-2">
+                                {% if not movie.user_took_quiz %}
                                 <a href="{% url 'dff2020:shortlist-detail' shortlist_id=movie.id %}" class="btn btn-warning btn-sm text-dark font-weight-bold">Take The Quiz</a>
+                                {% else %}
+                                <a href="{% url 'dff2020:shortlist-result' shortlist_id=movie.id %}" class="btn btn-warning btn-sm text-dark font-weight-bold">Leaderboard</a>
+                                {% endif %}
                             </div>
                         </div>
                     </div>

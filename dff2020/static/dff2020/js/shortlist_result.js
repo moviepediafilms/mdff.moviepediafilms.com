@@ -3,7 +3,9 @@ var app = new Vue({
     data: {
         error: '',
         message: '',
-        attempts: []
+        attempts: [],
+        pages: 10,
+        curr_page: 1
     },
     created() {
         axios.get(`/api/shortlist/${shortlist_id}/result`)
@@ -25,6 +27,15 @@ var app = new Vue({
             var minutes = String(parseInt(secs / 60))
             var secs = String(parseInt(secs - minutes * 60))
             return minutes.padStart(2, '0') + ":" + secs.padStart(2, '0')
-        }
+        },
+        goto_prev() {
+            this.curr_page -= 1;
+        },
+        goto_page(page) {
+            this.curr_page = page;
+        },
+        goto_next() {
+            this.curr_page += 1;
+        },
     }
 })
