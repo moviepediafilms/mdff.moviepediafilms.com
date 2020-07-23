@@ -943,10 +943,15 @@ class StartQuizView(LoginRequiredMixin, View):
             shortlist = Shortlist.objects.get(pk=shortlist_id)
             if not _is_shortlist_active(shortlist):
                 raise Exception("Shortlist is not open for quiz")
+            if request.user == shortlist.entry.order.owner:
+                raise Exception(
+                    "Can't proceed. Since you've made the film, there's absolutely nothing here you can't answer."
+                )
             if not UserRating.objects.filter(
                 shortlist=shortlist, user=request.user
             ).exists():
                 raise Exception("You should rate before you start taking quiz")
+
         except Shortlist.DoesNotExist as ex:
             logger.exception(ex)
             error = "Invalid shortlist"
