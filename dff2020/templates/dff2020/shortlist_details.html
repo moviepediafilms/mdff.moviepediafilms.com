@@ -28,16 +28,16 @@
                 allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
                 src="{{movie.entry.link}}" allowfullscreen></iframe>
         </div>
-        <div class="row mt-2 d-none">
-            <div class="mr-4 align-self-middle">
+        <div class="row mt-2 d-flex flex-row-reverse">
+            <div class="mr-4 align-self-middle ">
                 <small class="text-muted">Share the Film</small>
-                <a href="#" class="text-warning ml-2 mr-2">
+                <a target="_blank" href="https://twitter.com/share?url=https://moviepediafilms.com{% url 'dff2020:shortlist-detail' movie.id %} Check out this film I watched on Moviepedia. Absolutely loved it! 😍" class="text-warning ml-2 mr-2">
                     <i class="fab fa-lg fa-twitter"></i>
                 </a>
-                <a href="#" class="text-warning ml-2 mr-2">
+                <a target="_blank" href="whatsapp://send?text=https://moviepediafilms.com{% url 'dff2020:shortlist-detail' movie.id %} Check out this film I watched on Moviepedia. Absolutely loved it! 😍" class="text-warning ml-2 mr-2">
                     <i class="fab fa-lg fa-whatsapp"></i>
                 </a>
-                <a href="#" class="text-warning ml-2 mr-2">
+                <a target="_blank" href="#" class="text-warning ml-2 mr-2">
                     <i class="fab fa-lg fa-instagram"></i>
                 </a>
             </div>
