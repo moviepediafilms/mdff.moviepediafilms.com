@@ -10,9 +10,15 @@ register = template.Library()
 def get_gravatar(user):
     if not user:
         return
-    gender = getattr(user, "profile", None) and user.profile.gender
-    avatar = {"M": "male.png", "F": "female.png", "O": "neutral.png"}.get(gender)
     profile = getattr(user, "profile", None)
+    gender = profile and profile.gender
+    avatar = {
+        "M": "male.png",
+        "F": "female.png",
+        "O": "neutral.png",
+        None: "male.png",
+    }.get(gender)
+
     if profile:
         avatar = user.profile.avatar
     default_link = f"{settings.GRAVTAR_BASE_URL}/dff2020/img/avatar/{avatar}"
