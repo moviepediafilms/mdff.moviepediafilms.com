@@ -180,8 +180,8 @@ var button_app = new Vue({
             if (!this.rated_movie)
                 return "Rate to Unlock Scores and Claim Your Prize"
             if (this.quiz_over)
-                return "Check leaderboard to view your score"
-            return "Take a quiz about this movie and claim your prize"
+                return "Check Leaderboard to View Your Score"
+            return "Rate to Unlock Scores and Claim Your Prize"
         }
     },
 })
