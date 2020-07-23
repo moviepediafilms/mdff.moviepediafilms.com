@@ -51,6 +51,11 @@
                     </div>
                 </div>
             </div>
+            <div class="d-none">
+                    <a href= "#" class="mx-1 text-warning" @click.prevent="goto_prev">Prev</a>
+                    <a href= "#" class="mx-1" :class="{'text-light': n==curr_page, 'text-warning': n!=curr_page}" v-for="n in pages" @click.prevent="goto_page(n)">{{n}}</a>
+                    <a href= "#" class="mx-1 text-warning" @click.prevent="goto_next">Next</a>
+            </div>
         </div>
         <div class="text-muted" v-else>Take the quiz and claim your position here</div>
     </div>

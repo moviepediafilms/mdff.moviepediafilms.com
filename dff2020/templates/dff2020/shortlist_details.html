@@ -4,6 +4,28 @@
 
 {%block head%}
 {{block.super}}
+<meta property="og:title" content="{{movie.entry.name}} | MDFF Shortlist | Moviepedia Films" class="next-head"/>
+<meta property="og:url" content="https://uat.moviepediafilms.com/{% url 'dff2020:shortlist-detail' movie.id %}" class="next-head"/>
+<meta property="og:type" content="video.movie" class="next-head"/>
+<meta property="og:description" content="{{movie.review}}" class="next-head"/>
+<meta property="og:image" content="{{movie.thumbnail}}" class="next-head"/>
+
+<meta itemProp="name" content="{{movie.entry.name}} | MDFF Shortlist | Moviepedia Films" class="next-head"/>
+<meta itemProp="headline" content="{{movie.entry.name}} | MDFF Shortlist | Moviepedia Films" class="next-head"/>
+<meta itemProp="description" content="{{movie.review}}" class="next-head"/>
+<meta itemProp="image" content="{{movie.thumbnail}}" class="next-head"/>
+<meta itemProp="author" content="moviepediafilms" class="next-head"/>
+
+<meta name="twitter:title" content="{{movie.entry.name}} | MDFF Shortlist | Moviepedia Films" class="next-head"/>
+<meta name="twitter:url" content="https://uat.moviepediafilms.com/{% url 'dff2020:shortlist-detail' movie.id %}" class="next-head"/>
+<meta name="twitter:description" content="{{movie.review}}" class="next-head"/>
+<meta name="twitter:image" content="{{movie.thumbnail}}" class="next-head"/>
+<meta name="twitter:card" content="summary_large_image" class="next-head"/>
+
+<meta name="description" content="{{movie.review}}" class="next-head"/>
+<meta name="publisher" content="Moviepedia Films" class="next-head"/>
+<meta property="article:published_time" content="{{movie.publish_at.isoformat}}" class="next-head"/>
+
 <style> 
 @font-face {
   src: url("{% static '/dff2020/fonts/JoyPixels.woff' %}");
@@ -34,11 +56,8 @@
                 <a target="_blank" href="https://twitter.com/share?url=https://moviepediafilms.com{% url 'dff2020:shortlist-detail' movie.id %} Check out this film I watched on Moviepedia. Absolutely loved it! 😍" class="text-warning ml-2 mr-2">
                     <i class="fab fa-lg fa-twitter"></i>
                 </a>
-                <a target="_blank" href="whatsapp://send?text=https://moviepediafilms.com{% url 'dff2020:shortlist-detail' movie.id %} Check out this film I watched on Moviepedia. Absolutely loved it! 😍" class="text-warning ml-2 mr-2">
+                <a target="_blank" href="https://api.whatsapp.com/send?text=https://moviepediafilms.com{% url 'dff2020:shortlist-detail' movie.id %} Check out this film I watched on Moviepedia. Absolutely loved it! 😍" class="text-warning ml-2 mr-2">
                     <i class="fab fa-lg fa-whatsapp"></i>
-                </a>
-                <a target="_blank" href="#" class="text-warning ml-2 mr-2">
-                    <i class="fab fa-lg fa-instagram"></i>
                 </a>
             </div>
         </div>
