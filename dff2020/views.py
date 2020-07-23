@@ -629,9 +629,11 @@ class ShortlistView(TemplateView):
 
     def _serialize(self, request, shortlist):
         user_ratings = shortlist.userrating_set.all()
-        user_took_quiz = UserQuizAttempt.objects.filter(
-            user=request.user, shortlist=shortlist
-        ).exists()
+        user_took_quiz = False
+        if request.user.is_authenticated:
+            user_took_quiz = UserQuizAttempt.objects.filter(
+                user=request.user, shortlist=shortlist
+            ).exists()
         user_has_voted = any(rating.user == request.user for rating in user_ratings)
         audience_rating = 0
         if user_ratings:
