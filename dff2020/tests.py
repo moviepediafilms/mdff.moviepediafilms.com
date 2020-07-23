@@ -10,7 +10,7 @@ class LoggedInTestCase(TestCase):
     fixtures = ["user.json"]
 
     def setUp(self):
-        assert self.client.login(username="test", password="testuser123")
+        assert self.client.login(username="test", password="testing123")
         self.user = User.objects.get(pk=1)
 
     def tearDown(self):
