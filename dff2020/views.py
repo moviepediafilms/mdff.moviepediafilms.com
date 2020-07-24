@@ -1079,21 +1079,24 @@ class QuizResultsApiView(View):
             users_attempts_map[attempt.get("user_id")].append(attempt)
         for user_id, attempts in users_attempts_map.items():
             if attempts:
+                user = User.objects.get(pk=user_id)
                 user_attempt_summary = attempts[0].copy()
                 user_attempt_summary.pop("movie_mins")
                 user_attempt_summary.pop("score")
-                movie_secs = 0
+                movie_secs = sum(
+                    rating.shortlist.entry.runtime
+                    for rating in UserRating.objects.filter(user=user).all()
+                )
                 amount = 0
                 scores = []
                 for attempt in attempts:
-                    movie_secs += attempt.get("movie_mins", 0) * 60
                     amount += attempt.get("amount", 0)
                     scores.append(attempt.get("score", 0))
                 user_attempt_summary["amount"] = amount
                 user_attempt_summary["movie_secs"] = movie_secs
                 user_attempt_summary["scores"] = scores
                 winning_users.append(user_attempt_summary)
-        return winning_users
+        return sorted(winning_users, key=lambda w: w.get("amount"), reverse=True)
 
     def get(self, request):
         ist_now = _get_ist_now()
