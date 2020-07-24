@@ -339,7 +339,7 @@
                     <div class="text-center mt-3">
                         <p class="text-danger" v-cloak>{{form.error}}</p>
                         <button class="btn btn-warning btn-sm text-reset font-weight-bold" type="submit"
-                            :class="{disabled: loading}">Submit</button>
+                            :class="{disabled: loading || (form.review.trim().length > 0 && form.review.trim().length < 50)}">Submit</button>
                     </div>
                 </form>
             </div>
