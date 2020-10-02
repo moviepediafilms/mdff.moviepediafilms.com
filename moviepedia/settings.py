@@ -68,6 +68,7 @@ ALLOWED_HOSTS = (
     ["*"]
     if DEBUG
     else [
+        "mdff.moviepediafilms.com",
         "moviepediafilms.com",
         "www.moviepediafilms.com",
         "139.59.70.233",
