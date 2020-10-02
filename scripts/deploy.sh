@@ -4,7 +4,7 @@ cd /home/zeeshan/mdff.moviepediafilms.com
 echo $(pwd) | systemd-cat
 
 echo "git pull" | systemd-cat
-sudo /usr/bin/git pull
+/usr/bin/git pull
 echo "ok" | systemd-cat
 
 echo "pipenv sync" | systemd-cat
@@ -28,6 +28,6 @@ echo "pipenv run python manage.py migrate --noinput" | systemd-cat
 /home/zeeshan/.local/bin/pipenv run python manage.py migrate --noinput
 echo "ok" | systemd-cat
 
-echo "sudo service gunicorn restart" | systemd-cat
-sudo /usr/sbin/service gunicorn restart
+echo "sudo service mdff.moviepediafilms restart" | systemd-cat
+sudo /usr/sbin/service mdff.moviepediafilms restart
 echo "ok" | systemd-cat
