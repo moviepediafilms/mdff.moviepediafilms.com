@@ -14,7 +14,7 @@ mysqlclient = "*"
 requests = "*"
 razorpay = "*"
 sendgrid = "*"
-django = "==3.0"
+django = "==3.0.14"
 
 [requires]
 python_version = "3.8"
